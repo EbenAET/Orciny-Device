@@ -1,0 +1,84 @@
+ORCINY DEVICE - EXAMPLE ASCII CIRCUIT DIAGRAM
+=============================================
+
+Power:
+  +12V rail -> Motor FeatherWing VM input, Pump supply, Stepper supply, Peltier supply
+  +5V rail  -> RP2040 Feather, M0 Feather, NeoPXL8 logic, NeoPixel strip power (if your strips are 5V)
+  GND       -> COMMON to every board, switch, driver, and load
+
+
+                           +---------------------------+
+                           |       FEATHER RP2040      |
+                           |   Main FX Controller      |
+                           |                           |
+Switch 1 (On/Off) ---------| GP2   (INPUT_PULLUP)      |
+Switch 2 (Prev) -----------| GP3   (INPUT_PULLUP)      |
+Switch 3 (Next) -----------| GP4   (INPUT_PULLUP)      |
+                           |                           |
+Spark Filament 1 driver <--| GP5   PWM                 |
+Spark Filament 2 driver <--| GP6   PWM                 |
+Spark Filament 3 driver <--| GP9   PWM                 |
+Spark Filament 4 driver <--| GP10  PWM                 |
+Pulse Filament driver  <---| GP11  PWM                 |
+                           |                           |
+Beam Red MOSFET gate   <---| GP12  PWM                 |
+Beam Green MOSFET gate <---| GP13  PWM                 |
+Beam Blue MOSFET gate  <---| GP14  PWM                 |
+Peltier MOSFET/Relay   <---| GP15                      |
+                           |                           |
+I2C SDA/SCL -------------> | Motor FeatherWing         |
+Serial1 TX ------------->  | M0 Serial1 RX             |
+                           +---------------------------+
+
+     NOTE: Switches are wired from pin to GND. Internal pull-ups are enabled.
+
+
+                 +--------------------------------------+
+                 |          MOTOR FEATHERWING           |
+                 | (attached to / wired with RP2040)    |
+                 |                                      |
+                 | M1  ---------------------------> DC Pump
+                 | Stepper Port 2 (M3/M4) -------> Claw Stepper
+                 +--------------------------------------+
+
+
+                           +---------------------------+
+                           |        FEATHER M0         |
+                           |    Core LED Controller    |
+                           |                           |
+RP2040 Serial1 TX -------->| Serial1 RX                |
+                           |                           |
+NeoPXL8 outputs D0..D3 --->| 4 Core Strip Sets         |
+(remaining D4..D7 unused)  |                           |
+                           +---------------------------+
+
+
+NeoPXL8 / Core Strips:
+  D0 -> Core Strip Set 1
+  D1 -> Core Strip Set 2
+  D2 -> Core Strip Set 3
+  D3 -> Core Strip Set 4
+
+
+Driver Stages (required for high current loads):
+  RP2040 GPIO -> Gate resistor -> MOSFET gate
+  MOSFET source -> GND
+  MOSFET drain  -> Load negative
+  Load positive -> +V rail (5V or 12V per device)
+
+
+Grounding Rules:
+  [MANDATORY] Tie all grounds together:
+    - RP2040 ground
+    - M0 ground
+    - Motor FeatherWing ground
+    - NeoPXL8 / strip ground
+    - Pump/stepper/beam/peltier driver grounds
+    - Switch grounds
+
+
+Quick Net Summary:
+  RP2040 GP2  <- SW1 to GND  (toggle on/off)
+  RP2040 GP3  <- SW2 to GND  (previous sequence, 1->3 wrap)
+  RP2040 GP4  <- SW3 to GND  (next sequence, 3->1 wrap)
+  Hold SW1 + SW3 for 5s => reset sequence to 1

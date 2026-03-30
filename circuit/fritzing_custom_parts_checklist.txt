@@ -1,0 +1,135 @@
+ORCINY FRITZING CUSTOM-PARTS CHECKLIST
+======================================
+
+Goal
+----
+Replace generic parts in orciny_wiring_starter.fzz with exact (or closest) parts,
+then reconnect nets to match the firmware pin map.
+
+Files in this folder
+--------------------
+- orciny_wiring_starter.fzz
+- orciny_fritzing_mapping.txt
+- orciny_wiring_ascii.txt
+- orciny_wiring.mmd
+
+Primary Target Hardware
+-----------------------
+1) Adafruit Feather RP2040
+2) Adafruit Feather M0
+3) Adafruit Motor FeatherWing (or equivalent motor shield module)
+4) Adafruit NeoPXL8 FeatherWing (or equivalent 8-way NeoPixel breakout)
+5) 3x momentary switches
+6) MOSFET channels for filaments, beam RGB, and peltier enable
+7) DC pump
+8) Stepper motor
+9) 4 core strip outputs
+
+Part Search Terms (Fritzing Parts Bin)
+--------------------------------------
+Use these exact search strings in Fritzing's parts search:
+
+RP2040 side
+- "Feather RP2040"
+- "Adafruit Feather"
+- "Raspberry Pi Pico" (fallback footprint reference only)
+
+M0 side
+- "Feather M0"
+- "Adafruit Feather M0"
+- "Feather"
+
+Motor control
+- "motor shield"
+- "L293D"
+- "TB6612"
+- "DC motor"
+- "stepper"
+
+NeoPixel / strip outputs
+- "NeoPixel"
+- "WS2812"
+- "LED strip"
+- "RGB LED strip"
+
+Switch and drivers
+- "pushbutton"
+- "momentary switch"
+- "N-MOSFET"
+- "logic level MOSFET"
+- "relay module"
+
+Power and distribution
+- "screw terminal"
+- "barrel jack"
+- "power connector"
+- "ground"
+
+Replacement Mapping (Generic -> Exact)
+--------------------------------------
+1) Replace generic main controller with: Feather RP2040
+2) Replace generic secondary controller with: Feather M0
+3) Replace generic motor block with: Motor FeatherWing or nearest motor shield
+4) Replace generic LED output block with: NeoPXL8 or nearest NeoPixel breakout
+5) Keep three discrete pushbuttons (one per control input)
+6) Keep one MOSFET channel per high-current output path
+
+Netlist To Verify After Replacement
+-----------------------------------
+Switches (to ground, INPUT_PULLUP in firmware)
+- SW1 -> RP2040 pin 2 and GND
+- SW2 -> RP2040 pin 3 and GND
+- SW3 -> RP2040 pin 4 and GND
+
+RP2040 PWM / control outputs
+- pin 5  -> Spark filament 1 driver
+- pin 6  -> Spark filament 2 driver
+- pin 9  -> Spark filament 3 driver
+- pin 10 -> Spark filament 4 driver
+- pin 11 -> Pulse filament driver
+- pin 12 -> Beam R MOSFET gate
+- pin 13 -> Beam G MOSFET gate
+- pin 14 -> Beam B MOSFET gate
+- pin 15 -> Peltier MOSFET/relay input
+
+Inter-controller link
+- RP2040 Serial1 TX -> Feather M0 Serial1 RX
+- RP2040 GND -> Feather M0 GND
+
+Motor outputs
+- Motor port M1 -> DC pump
+- Stepper port 2 (M3/M4) -> Claw stepper
+
+Core LED outputs (M0 / NeoPXL8 side)
+- D0 -> Core strip set 1
+- D1 -> Core strip set 2
+- D2 -> Core strip set 3
+- D3 -> Core strip set 4
+
+Power rails
+- +12V -> motor power domain (motor wing VM, pump, stepper, peltier power stage)
+- +5V  -> controller logic + NeoPixel power domain (if your strips are 5V)
+- GND  -> common return for all modules, switches, and drivers
+
+Board-View Completion Steps
+---------------------------
+1) Open orciny_wiring_starter.fzz.
+2) Replace one part at a time from controllers outward.
+3) After each replacement, reconnect only the nets for that part.
+4) Lock placed parts to avoid accidental movement.
+5) Add labels to every critical wire (pin numbers and rail names).
+6) Save as: orciny_wiring_custom.fzz.
+
+Schematic-View Sanity Checks
+----------------------------
+1) Confirm SW1/SW2/SW3 each only connect to one GPIO and GND.
+2) Confirm no direct high-current load is tied to MCU GPIO pin.
+3) Confirm RP2040 TX goes only to M0 RX for serial link.
+4) Confirm all grounds are tied together.
+5) Confirm +12V and +5V domains are not shorted.
+
+Optional Export Targets
+-----------------------
+- Breadboard view screenshot for assembly
+- Schematic view PDF for electrical review
+- Net labels printed for wiring harness build

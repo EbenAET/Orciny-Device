@@ -1,0 +1,79 @@
+flowchart TD
+  PS5[5V Supply]
+  PS12[12V Supply]
+  GND[Common Ground]
+
+  RP[Feather RP2040]
+  M0[Feather M0]
+  MW[Motor FeatherWing]
+  NP[NeoPXL8 FeatherWing]
+
+  SW1[Switch 1 to GND\nPin 2: On/Off]
+  SW2[Switch 2 to GND\nPin 3: Previous]
+  SW3[Switch 3 to GND\nPin 4: Next]
+
+  SP1[Spark Filament 1\nPin 5 via MOSFET]
+  SP2[Spark Filament 2\nPin 6 via MOSFET]
+  SP3[Spark Filament 3\nPin 9 via MOSFET]
+  SP4[Spark Filament 4\nPin 10 via MOSFET]
+  PF[Pulse Filament\nPin 11 via MOSFET]
+
+  BR[Beam R\nPin 12 via MOSFET]
+  BG[Beam G\nPin 13 via MOSFET]
+  BB[Beam B\nPin 14 via MOSFET]
+  PEL[Peltier Enable\nPin 15 via MOSFET/Relay]
+
+  PUMP[DC Pump on M1]
+  CLAW[Stepper on Port 2 (M3/M4)]
+
+  C1[Core Strip Set 1]
+  C2[Core Strip Set 2]
+  C3[Core Strip Set 3]
+  C4[Core Strip Set 4]
+
+  RP --> MW
+  RP -- Serial1 TX --> M0
+  M0 --> NP
+  NP --> C1
+  NP --> C2
+  NP --> C3
+  NP --> C4
+
+  RP --> SP1
+  RP --> SP2
+  RP --> SP3
+  RP --> SP4
+  RP --> PF
+  RP --> BR
+  RP --> BG
+  RP --> BB
+  RP --> PEL
+
+  RP --- SW1
+  RP --- SW2
+  RP --- SW3
+
+  MW --> PUMP
+  MW --> CLAW
+
+  PS5 --> RP
+  PS5 --> M0
+  PS5 --> NP
+  PS12 --> MW
+  PS12 --> PUMP
+  PS12 --> CLAW
+  PS12 --> PEL
+
+  GND --- RP
+  GND --- M0
+  GND --- MW
+  GND --- NP
+  GND --- SW1
+  GND --- SW2
+  GND --- SW3
+  GND --- PUMP
+  GND --- CLAW
+  GND --- C1
+  GND --- C2
+  GND --- C3
+  GND --- C4
