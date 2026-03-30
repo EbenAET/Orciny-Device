@@ -1,0 +1,8 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Adafruit_Eagle")
+    (type "Eagle")
+    (uri "${KIPRJMOD}/Adafruit-Eagle-Library/adafruit.lbr")
+    (options "")
+    (descr "Official Adafruit Eagle library used as footprint source"))
+)
