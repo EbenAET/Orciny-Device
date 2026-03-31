@@ -24,13 +24,10 @@ This project now includes official Adafruit CAD repositories under this folder:
 
 - RP2040 Feather controller: `Adafruit_Eagle:FEATHERWING`
 - M0 Feather controller: `Adafruit_Eagle:FEATHERWING`
-- Motor FeatherWing: `Adafruit_Eagle:FEATHERWING`
-- NeoPXL8 FeatherWing: `Adafruit_Eagle:FEATHERWING`
-- Feather Doubler carrier: `Adafruit_Eagle:FEATHERWING_DIM`
 - SW1/SW2/SW3 momentary buttons: `Adafruit_Eagle:PUSHBUTTON_SMD_SJ`
-- 12V DC input jack: `Adafruit_Eagle:DCJACK_2MM_PTH`
+- 5V DC input jack: `Adafruit_Eagle:DCJACK_2MM_PTH`
 - Pump/Peltier 2-pin connector: `Adafruit_Eagle:JST-PH-2-THM`
-- Stepper or beam terminal (4-pin): `Adafruit_Eagle:1X04-3.5MM`
+- Beam terminal (4-pin): `Adafruit_Eagle:1X04-3.5MM`
 - TO-220 MOSFET stages: `Adafruit_Eagle:TO220`
 
 ## Notes

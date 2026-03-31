@@ -7,50 +7,50 @@ Starter file:
 Why starter and not final exact layout:
   Stock Fritzing installs often do not include exact parts for:
   - Adafruit Feather RP2040
-  - Adafruit Feather M0 + NeoPXL8 FeatherWing
-  - Adafruit Motor FeatherWing
+  - Adafruit Feather M0
+  - Exact MOSFET/power modules used in your build
   So this starter is a valid openable project base. Replace generic blocks with exact parts if available.
 
 Target wiring to implement in the Fritzing project:
 
 1) Controller link
-  RP2040 Serial1 TX  -> M0 Serial1 RX
-  RP2040 GND         -> M0 GND
+  M0 Serial1 TX      -> RP2040 Serial1 RX
+  M0 GND             -> RP2040 GND
 
 2) Switches (momentary to GND, INPUT_PULLUP in firmware)
-  SW1 -> RP2040 pin 2 and GND
-  SW2 -> RP2040 pin 3 and GND
-  SW3 -> RP2040 pin 4 and GND
+  SW1 -> M0 pin 2 and GND
+  SW2 -> M0 pin 3 and GND
+  SW3 -> M0 pin 4 and GND
 
-3) Spark / pulse filaments (via MOSFET drivers)
-  RP pin 5  -> Spark 1 driver gate
-  RP pin 6  -> Spark 2 driver gate
-  RP pin 9  -> Spark 3 driver gate
-  RP pin 10 -> Spark 4 driver gate
-  RP pin 11 -> Pulse filament driver gate
+3) Spark / pulse filaments (via MOSFET drivers, 3V line)
+  RP2040 pin 5  -> Spark 1 driver gate
+  RP2040 pin 6  -> Spark 2 driver gate
+  RP2040 pin 9  -> Spark 3 driver gate
+  RP2040 pin 10 -> Spark 4 driver gate
+  RP2040 pin 11 -> Pulse filament driver gate
+  (All drain supplies: +3V_FILAMENT)
 
-4) Beam and peltier control (via MOSFET/relay)
-  RP pin 12 -> Beam R gate
-  RP pin 13 -> Beam G gate
-  RP pin 14 -> Beam B gate
-  RP pin 15 -> Peltier enable gate/relay input
+4) Beam and peltier control (via MOSFET/relay, 5V line)
+  RP2040 pin 12 -> Beam R gate
+  RP2040 pin 13 -> Beam G gate
+  RP2040 pin 14 -> Beam B gate
+  RP2040 pin 15 -> Peltier enable gate/relay input
+  (All drain supplies: +5V_BUS)
 
-5) Motor FeatherWing outputs
-  Motor port M1      -> DC pump
-  Stepper port 2     -> Claw stepper (M3/M4)
+5) Pump and servo outputs
+  RP2040 pin 8  -> Pump MOSFET gate -> 5V peristaltic pump (via +5V_BUS)
+  RP2040 pin 7  -> FP-S14B servo signal (via +5V_BUS power)
 
-6) NeoPXL8 core outputs from M0
-  D0 -> Core strip set 1
-  D1 -> Core strip set 2
-  D2 -> Core strip set 3
-  D3 -> Core strip set 4
+6) M0 core output
+  M0 pin 13 -> NeoPixel data (single strip, 30 pixels)
 
 7) Power rails
-  +12V -> motor wing VM, pump, stepper, peltier power stage
-  +5V  -> MCU logic and NeoPixel power (if strips are 5V type)
-  GND  -> common ground for all supplies, controllers, loads, and switch returns
+  +5V_BUS       -> main 5V input (fused); powers RP2040 (with internal LDO), M0 (with internal LDO),
+                    NeoPixel strip, beam RGB, peltier, servo, pump
+  +3V_FILAMENT  -> spark/pulse filament MOSFETs power stage (Q1-Q5)
+  GND           -> common ground for all supplies, controllers, loads, and switch returns
 
 Safety checks
-  - Use flyback diodes where required by motor/pump driver design.
+  - Use flyback diodes where required by pump driver design.
   - Do not drive filaments, peltier, or high-power LED channels directly from MCU pins.
   - Confirm current capacity and thermal design before powering full load.

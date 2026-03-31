@@ -1,11 +1,11 @@
-#include <Adafruit_MotorShield.h>
-#include <Wire.h>
+#include <Servo.h>
 
 #include <OrcinyCommon.h>
 
 #include "DeviceConfig.h"
 
 using orciny::CoreFrame;
+using orciny::EffectCommand;
 using orciny::CoreMode;
 
 enum SequenceId : uint8_t {
@@ -120,10 +120,12 @@ class SparkChannel {
 
 class PulseEffect {
  public:
-  void begin(Adafruit_DCMotor *pumpMotor, uint8_t filamentPin) {
-    pumpMotor_ = pumpMotor;
+  void begin(uint8_t pumpPin, uint8_t filamentPin) {
+    pumpPin_ = pumpPin;
     filamentPin_ = filamentPin;
+    pinMode(pumpPin_, OUTPUT);
     pinMode(filamentPin_, OUTPUT);
+    digitalWrite(pumpPin_, LOW);
     analogWrite(filamentPin_, 0);
   }
 
@@ -142,25 +144,24 @@ class PulseEffect {
     }
 
     analogWrite(filamentPin_, wave);
-    pumpMotor_->setSpeed(map(wave, 40, 255, 120, 255));
-    pumpMotor_->run(FORWARD);
+    digitalWrite(pumpPin_, wave >= 96 ? HIGH : LOW);
     active_ = true;
   }
 
   void stop() {
     if (!active_) {
       analogWrite(filamentPin_, 0);
-      pumpMotor_->run(RELEASE);
+      digitalWrite(pumpPin_, LOW);
       return;
     }
 
     analogWrite(filamentPin_, 0);
-    pumpMotor_->run(RELEASE);
+    digitalWrite(pumpPin_, LOW);
     active_ = false;
   }
 
  private:
-  Adafruit_DCMotor *pumpMotor_ = nullptr;
+  uint8_t pumpPin_ = 0;
   uint8_t filamentPin_ = 0;
   bool active_ = false;
 };
@@ -213,18 +214,19 @@ class BeamEffect {
 
 class ClawEffect {
  public:
-  void begin(Adafruit_StepperMotor *stepperMotor, uint16_t travelMicrosteps) {
-    stepperMotor_ = stepperMotor;
-    travelMicrosteps_ = max<uint16_t>(1, travelMicrosteps);
-    stepperMotor_->setSpeed(30);
+  void begin(uint8_t servoPin, uint8_t minAngle, uint8_t maxAngle) {
+    servoPin_ = servoPin;
+    minAngle_ = min(minAngle, maxAngle);
+    maxAngle_ = max(minAngle, maxAngle);
+    angle_ = minAngle_;
+    direction_ = 1;
+    servo_.attach(servoPin_);
+    servo_.write(angle_);
   }
 
   void update(uint32_t now, bool enabled) {
     if (!enabled) {
-      if (active_) {
-        stepperMotor_->release();
-      }
-      active_ = false;
+      stop();
       return;
     }
 
@@ -232,32 +234,38 @@ class ClawEffect {
       return;
     }
 
-    stepperMotor_->onestep(direction_ > 0 ? FORWARD : BACKWARD, MICROSTEP);
-    position_ += direction_;
-    if (position_ >= travelMicrosteps_) {
-      position_ = travelMicrosteps_;
+    angle_ += direction_;
+    if (angle_ >= maxAngle_) {
+      angle_ = maxAngle_;
       direction_ = -1;
-    } else if (position_ <= 0) {
-      position_ = 0;
+    } else if (angle_ <= minAngle_) {
+      angle_ = minAngle_;
       direction_ = 1;
     }
 
+    servo_.write(static_cast<uint8_t>(angle_));
     nextStepMs_ = now + device_config::kClawStepIntervalMs;
     active_ = true;
   }
 
+  void stop() {
+    if (!active_) {
+      return;
+    }
+    servo_.write(minAngle_);
+    active_ = false;
+  }
+
  private:
-  Adafruit_StepperMotor *stepperMotor_ = nullptr;
-  uint16_t travelMicrosteps_ = 0;
-  int32_t position_ = 0;
+  Servo servo_;
+  uint8_t servoPin_ = 0;
+  int16_t angle_ = 0;
+  uint8_t minAngle_ = 0;
+  uint8_t maxAngle_ = 180;
   int8_t direction_ = 1;
   bool active_ = false;
   uint32_t nextStepMs_ = 0;
 };
-
-Adafruit_MotorShield motorWing;
-Adafruit_DCMotor *pumpMotor = nullptr;
-Adafruit_StepperMotor *clawStepper = nullptr;
 
 SparkChannel sparks[device_config::kSparkCount];
 PulseEffect pulseEffect;
@@ -271,11 +279,14 @@ MomentarySwitch nextSwitch;
 SequenceId currentSequence = SEQUENCE_1;
 bool outputEnabled = false;
 String usbCommandBuffer;
+String effectLinkBuffer;
 uint32_t lastCoreFrameMs = 0;
+uint32_t lastEffectCommandMs = 0;
 uint32_t resetChordStartMs = 0;
 bool resetChordTriggered = false;
 bool suppressPowerRelease = false;
 bool suppressNextRelease = false;
+EffectCommand currentEffectCommand = orciny::defaultEffectCommand();
 
 void printHelp() {
   Serial.println(F("Commands: help, on, off, toggle, prev, next, seq1, seq2, seq3, reset"));
@@ -340,6 +351,17 @@ SceneProfile buildActiveProfile() {
       profile.coreFrame.brightness = 0;
       return profile;
   }
+}
+
+EffectCommand profileToEffectCommand(const SceneProfile &profile) {
+  EffectCommand command = orciny::defaultEffectCommand();
+  command.outputEnabled = outputEnabled;
+  command.sparksEnabled = profile.sparksEnabled;
+  command.sparksIntensity = profile.sparksIntensity;
+  command.pulseEnabled = profile.pulseEnabled;
+  command.beamEnabled = profile.beamEnabled;
+  command.clawEnabled = profile.clawEnabled;
+  return command;
 }
 
 SequenceId previousSequenceValue(SequenceId sequence) {
@@ -448,19 +470,50 @@ void handleSwitches(uint32_t now) {
   }
 }
 
-void updateEffects(uint32_t now) {
-  const SceneProfile profile = buildActiveProfile();
-  for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {
-    sparks[i].update(now, profile.sparksEnabled, profile.sparksIntensity);
-  }
-  pulseEffect.update(now, profile.pulseEnabled);
-  beamEffect.update(now, profile.beamEnabled);
-  clawEffect.update(now, profile.clawEnabled);
+void processEffectLink(uint32_t now) {
+  while (Serial1.available() > 0) {
+    const char incoming = static_cast<char>(Serial1.read());
+    if (incoming == '\r') {
+      continue;
+    }
 
-  if (now - lastCoreFrameMs >= device_config::kCoreLinkPeriodMs) {
-    orciny::writeCoreFrame(Serial1, profile.coreFrame);
-    lastCoreFrameMs = now;
+    if (incoming != '\n') {
+      effectLinkBuffer += incoming;
+      continue;
+    }
+
+    EffectCommand command = orciny::defaultEffectCommand();
+    if (orciny::readEffectCommand(effectLinkBuffer, command)) {
+      currentEffectCommand = command;
+      lastEffectCommandMs = now;
+    }
+    effectLinkBuffer = "";
   }
+}
+
+EffectCommand resolveEffectCommand(uint32_t now) {
+  const bool commandIsFresh = (lastEffectCommandMs > 0) &&
+                              ((now - lastEffectCommandMs) <= device_config::kEffectCommandTimeoutMs);
+  if (commandIsFresh) {
+    return currentEffectCommand;
+  }
+  return orciny::defaultEffectCommand();
+}
+
+void updateEffects(uint32_t now) {
+  const EffectCommand command = resolveEffectCommand(now);
+
+  const bool sparksEnabled = command.outputEnabled && command.sparksEnabled;
+  const bool pulseEnabled = command.outputEnabled && command.pulseEnabled;
+  const bool beamEnabled = command.outputEnabled && command.beamEnabled;
+  const bool clawEnabled = command.outputEnabled && command.clawEnabled;
+
+  for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {
+    sparks[i].update(now, sparksEnabled, command.sparksIntensity);
+  }
+  pulseEffect.update(now, pulseEnabled);
+  beamEffect.update(now, beamEnabled);
+  clawEffect.update(now, clawEnabled);
 }
 
 void setup() {
@@ -468,33 +521,24 @@ void setup() {
   Serial1.begin(device_config::kCoreLinkBaudRate);
   randomSeed(analogRead(A0));
 
-  motorWing.begin();
-  pumpMotor = motorWing.getMotor(device_config::kPumpMotorPort);
-  clawStepper = motorWing.getStepper(device_config::kClawStepsPerRevolution,
-                                     device_config::kClawStepperPort);
-
   for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {
     sparks[i].begin(device_config::kSparkPins[i]);
   }
 
-  pulseEffect.begin(pumpMotor, device_config::kPulseFilamentPin);
+  pulseEffect.begin(device_config::kPumpControlPin,
+                    device_config::kPulseFilamentPin);
   beamEffect.begin(device_config::kBeamRedPin,
                    device_config::kBeamGreenPin,
                    device_config::kBeamBluePin,
                    device_config::kPeltierEnablePin);
-  clawEffect.begin(clawStepper, device_config::kClawTravelMicrosteps);
-  powerSwitch.begin(device_config::kPowerSwitchPin);
-  previousSwitch.begin(device_config::kPreviousSwitchPin);
-  nextSwitch.begin(device_config::kNextSwitchPin);
-
-  delay(250);
-  printHelp();
-  printSequenceStatus();
+  clawEffect.begin(device_config::kClawServoPin,
+                   device_config::kClawMinAngle,
+                   device_config::kClawMaxAngle);
+  currentEffectCommand = orciny::defaultEffectCommand();
 }
 
 void loop() {
   const uint32_t now = millis();
-  handleUsbCommands();
-  handleSwitches(now);
+  processEffectLink(now);
   updateEffects(now);
 }

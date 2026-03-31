@@ -1,52 +1,39 @@
 label,from,to,domain,notes
-SW1_TOGGLE,RP2040_PIN2,SW1,Logic,Switch to GND with INPUT_PULLUP
-SW2_PREV,RP2040_PIN3,SW2,Logic,Switch to GND with INPUT_PULLUP
-SW3_NEXT,RP2040_PIN4,SW3,Logic,Switch to GND with INPUT_PULLUP
+SW1_TOGGLE,M0_PIN2,SW1,Logic,Switch to GND with INPUT_PULLUP
+SW2_PREV,M0_PIN3,SW2,Logic,Switch to GND with INPUT_PULLUP
+SW3_NEXT,M0_PIN4,SW3,Logic,Switch to GND with INPUT_PULLUP
 SW1_GND,SW1,GND,Ground,Shared return
 SW2_GND,SW2,GND,Ground,Shared return
 SW3_GND,SW3,GND,Ground,Shared return
-SPARK1_PWM,RP2040_PIN5,SPARK1_DRIVER_GATE,Control,Use gate resistor
-SPARK2_PWM,RP2040_PIN6,SPARK2_DRIVER_GATE,Control,Use gate resistor
-SPARK3_PWM,RP2040_PIN9,SPARK3_DRIVER_GATE,Control,Use gate resistor
-SPARK4_PWM,RP2040_PIN10,SPARK4_DRIVER_GATE,Control,Use gate resistor
-PULSE_PWM,RP2040_PIN11,PULSE_DRIVER_GATE,Control,Use gate resistor
-BEAM_R_PWM,RP2040_PIN12,BEAM_R_DRIVER_GATE,Control,Use gate resistor
-BEAM_G_PWM,RP2040_PIN13,BEAM_G_DRIVER_GATE,Control,Use gate resistor
-BEAM_B_PWM,RP2040_PIN14,BEAM_B_DRIVER_GATE,Control,Use gate resistor
+SPARK1_PWM,RP2040_PIN5,SPARK1_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
+SPARK2_PWM,RP2040_PIN6,SPARK2_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
+SPARK3_PWM,RP2040_PIN9,SPARK3_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
+SPARK4_PWM,RP2040_PIN10,SPARK4_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
+PULSE_PWM,RP2040_PIN11,PULSE_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
+BEAM_R_PWM,RP2040_PIN12,BEAM_R_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
+BEAM_G_PWM,RP2040_PIN13,BEAM_G_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
+BEAM_B_PWM,RP2040_PIN14,BEAM_B_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
 PELTIER_EN,RP2040_PIN15,PELTIER_DRIVER_IN,Control,MOSFET or relay input
-I2C_SDA,RP2040_SDA,MOTOR_FEATHERWING_SDA,Logic,Shared bus
-I2C_SCL,RP2040_SCL,MOTOR_FEATHERWING_SCL,Logic,Shared bus
-SERIAL_LINK_TX,RP2040_SERIAL1_TX,M0_SERIAL1_RX,Logic,Controller-to-render-node link
-SERIAL_LINK_GND,RP2040_GND,M0_GND,Ground,Required reference for serial
-MOTOR_M1_POS,MOTOR_FEATHERWING_M1_A,DC_PUMP_POS,Power,Follow wing terminal naming
-MOTOR_M1_NEG,MOTOR_FEATHERWING_M1_B,DC_PUMP_NEG,Power,Follow wing terminal naming
-STEPPER_P2_A1,MOTOR_FEATHERWING_M3,CLAW_STEPPER_COIL_A1,Power,Stepper port 2 uses M3/M4
-STEPPER_P2_A2,MOTOR_FEATHERWING_M3_ALT,CLAW_STEPPER_COIL_A2,Power,Exact naming depends on part
-STEPPER_P2_B1,MOTOR_FEATHERWING_M4,CLAW_STEPPER_COIL_B1,Power,Exact naming depends on part
-STEPPER_P2_B2,MOTOR_FEATHERWING_M4_ALT,CLAW_STEPPER_COIL_B2,Power,Exact naming depends on part
-CORE_D0,M0_NEOPXL8_D0,CORE_STRIP_SET_1_DI,Data,Series resistor near source recommended
-CORE_D1,M0_NEOPXL8_D1,CORE_STRIP_SET_2_DI,Data,Series resistor near source recommended
-CORE_D2,M0_NEOPXL8_D2,CORE_STRIP_SET_3_DI,Data,Series resistor near source recommended
-CORE_D3,M0_NEOPXL8_D3,CORE_STRIP_SET_4_DI,Data,Series resistor near source recommended
-CORE_5V_1,PSU_5V,CORE_STRIP_SET_1_5V,Power,Inject power as needed
-CORE_5V_2,PSU_5V,CORE_STRIP_SET_2_5V,Power,Inject power as needed
-CORE_5V_3,PSU_5V,CORE_STRIP_SET_3_5V,Power,Inject power as needed
-CORE_5V_4,PSU_5V,CORE_STRIP_SET_4_5V,Power,Inject power as needed
-CORE_GND_1,GND,CORE_STRIP_SET_1_GND,Ground,Common return
-CORE_GND_2,GND,CORE_STRIP_SET_2_GND,Ground,Common return
-CORE_GND_3,GND,CORE_STRIP_SET_3_GND,Ground,Common return
-CORE_GND_4,GND,CORE_STRIP_SET_4_GND,Ground,Common return
-RP2040_5V,PSU_5V,RP2040_5V_IN,Power,Regulated logic rail
-M0_5V,PSU_5V,M0_5V_IN,Power,Regulated logic rail
-NPXL8_5V,PSU_5V,NEOPXL8_5V_IN,Power,Logic and strip interface power
-MW_VM_12V,PSU_12V,MOTOR_FEATHERWING_VM,Power,Motor rail
-PUMP_12V,PSU_12V,DC_PUMP_SUPPLY,Power,If pump is 12V model
-STEPPER_12V,PSU_12V,CLAW_STEPPER_SUPPLY,Power,If stepper is 12V model
-PELTIER_12V,PSU_12V,PELTIER_SUPPLY,Power,High current path
+SERIAL_LINK_TX,M0_SERIAL1_TX,RP2040_SERIAL1_RX,Logic,Primary-controller-to-executor link
+SERIAL_LINK_GND,M0_GND,RP2040_GND,Ground,Required reference for serial
+PUMP_EN,RP2040_PIN8,PUMP_DRIVER_GATE,Control,Direct GPIO pump control via MOSFET gate
+SERVO_SIG,RP2040_PIN7,FP_S14B_SIGNAL,Control,Servo control output
+SERVO_5V,PSU_5V_BUS,FP_S14B_5V,Power,Shared 5V bus for actuator power
+SERVO_GND,GND,FP_S14B_GND,Ground,Common return with controller
+CORE_DATA,M0_PIN13,CORE_STRIP_DI,Data,Single WS2812 data line
+CORE_5V,PSU_5V_BUS,CORE_STRIP_5V,Power,Single-strip power input
+CORE_GND,GND,CORE_STRIP_GND,Ground,Common return
+RP2040_5V,PSU_5V_BUS,RP2040_5V_IN,Power,Main 5V bus input
+M0_5V,PSU_5V_BUS,M0_5V_IN,Power,Main 5V bus input
+PUMP_5V,PSU_5V_BUS,DC_PUMP_SUPPLY,Power,5V peristaltic pump branch
+PUMP_GND,GND,DC_PUMP_GND,Ground,Common return for pump
+PELTIER_5V,PSU_5V_BUS,PELTIER_SUPPLY,Power,High current switched path
+FILAMENT_3V,PSU_3V_FILAMENT,FILAMENT_DRIVER_SUPPLY,Power,3V branch for spark and pulse channels
 GND_RP2040,GND,RP2040_GND,Ground,Star ground preferred
 GND_M0,GND,M0_GND,Ground,Star ground preferred
-GND_MW,GND,MOTOR_FEATHERWING_GND,Ground,Star ground preferred
-GND_NEOPXL8,GND,NEOPXL8_GND,Ground,Star ground preferred
+FUSE_MAIN,PSU_5V_IN,PSU_5V_MAIN,Power,Main fuse before bus split
+FUSE_5V_BUS,PSU_5V_MAIN,PSU_5V_BUS,Power,Main 5V bus branch protection
+FUSE_3V_FIL,PSU_5V_MAIN,BUCK_3V_FIL_IN,Power,Branch protection for filament buck
 GND_BEAM_DRV,GND,BEAM_DRIVER_GND,Ground,Shared driver return
 GND_SPARK_DRV,GND,SPARK_DRIVERS_GND,Ground,Shared driver return
 GND_PULSE_DRV,GND,PULSE_DRIVER_GND,Ground,Shared driver return

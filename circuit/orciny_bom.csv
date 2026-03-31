@@ -1,0 +1,45 @@
+Reference,Qty,Description,Value/Specification,Package,Preferred Source,Source Part #,Notes
+U101,1,Adafruit Feather RP2040,ARM Cortex-M0+ 125MHz 4MB Flash RP2040,Feather,Adafruit,4884,FX executor controller
+U201,1,Adafruit Feather M0 Basic Proto,ARM Cortex-M0+ 256KB Flash SAMD21,Feather,Adafruit,2772,Primary scene controller
+—,1,3V Step-Down Buck Regulator 2A,+3V_FILAMENT rail from 5V; 2A capacity,Module,Seeed Studio,Search: 5V to 3V 2A DC-DC buck module,Filament power for spark and pulse loads
+F801,1,SMD Slow-Blow Fuse 3A,+5V_BUS main branch protection,1206 SMD,McMaster-Carr,Search: 1206 SMD slow-blow fuse 3A,Direct 5V rail; all loads peak ~2.5A
+F802,1,SMD Slow-Blow Fuse 2A,+3V_FILAMENT branch protection,1206 SMD,McMaster-Carr,Search: 1206 SMD slow-blow fuse 2A,Buck output; filament peak ~1.5A
+R601,1,Resistor 10Ω 1/4W Thick Film,SPARK1 channel series limiter,0805 SMD,Seeed Studio,Search: 0805 10 ohm SMD resistor,Series protection on spark filament 1
+R602,1,Resistor 10Ω 1/4W Thick Film,SPARK2 channel series limiter,0805 SMD,Seeed Studio,Search: 0805 10 ohm SMD resistor,Series protection on spark filament 2
+R603,1,Resistor 10Ω 1/4W Thick Film,SPARK3 channel series limiter,0805 SMD,Seeed Studio,Search: 0805 10 ohm SMD resistor,Series protection on spark filament 3
+R604,1,Resistor 10Ω 1/4W Thick Film,SPARK4 channel series limiter,0805 SMD,Seeed Studio,Search: 0805 10 ohm SMD resistor,Series protection on spark filament 4
+R605,1,Resistor 10Ω 1/4W Thick Film,PULSE channel series limiter,0805 SMD,Seeed Studio,Search: 0805 10 ohm SMD resistor,Series protection on pulse filament
+R701,1,Resistor 10Ω 1/4W Thick Film,BEAM_R channel series limiter,0805 SMD,Seeed Studio,Search: 0805 10 ohm SMD resistor,Series protection on beam red leg for 5V operation
+R702,1,Resistor 10Ω 1/4W Thick Film,BEAM_G channel series limiter,0805 SMD,Seeed Studio,Search: 0805 10 ohm SMD resistor,Series protection on beam green leg for 5V operation
+R703,1,Resistor 10Ω 1/4W Thick Film,BEAM_B channel series limiter,0805 SMD,Seeed Studio,Search: 0805 10 ohm SMD resistor,Series protection on beam blue leg for 5V operation
+SW1,1,Momentary Push Button 6mm,Toggle sequence ON/OFF; M0 D2 to GND,Through-hole,Adafruit,1119,INPUT_PULLUP; debounce 30ms in firmware
+SW2,1,Momentary Push Button 6mm,Previous sequence; M0 D3 to GND,Through-hole,Adafruit,1119,INPUT_PULLUP
+SW3,1,Momentary Push Button 6mm,Next sequence; M0 D4 to GND,Through-hole,Adafruit,1119,Hold SW1+SW3 5s to reset to seq 1
+Q1,1,N-Channel Logic-Level MOSFET,SPARK1 gate driver GP5; Vgs(th) < 2.5V,TO-220,Adafruit,355,IRLB8721 or NTD4906N or equivalent
+Q2,1,N-Channel Logic-Level MOSFET,SPARK2 gate driver GP6; Vgs(th) < 2.5V,TO-220,Adafruit,355,Same as Q1
+Q3,1,N-Channel Logic-Level MOSFET,SPARK3 gate driver GP9; Vgs(th) < 2.5V,TO-220,Adafruit,355,Same as Q1
+Q4,1,N-Channel Logic-Level MOSFET,SPARK4 gate driver GP10; Vgs(th) < 2.5V,TO-220,Adafruit,355,Same as Q1
+Q5,1,N-Channel Logic-Level MOSFET,PULSE filament gate driver GP11,TO-220,Adafruit,355,Same as Q1
+Q6,1,N-Channel Logic-Level MOSFET,BEAM_R gate driver GP12,TO-220,Adafruit,355,Same as Q1
+Q7,1,N-Channel Logic-Level MOSFET,BEAM_G gate driver GP13,TO-220,Adafruit,355,Same as Q1
+Q8,1,N-Channel Logic-Level MOSFET,BEAM_B gate driver GP14,TO-220,Adafruit,355,Same as Q1
+Q9,1,N-Channel Logic-Level MOSFET,Peltier enable gate GP15; verify current rating,TO-220,McMaster-Carr,Search: N-channel logic-level MOSFET TO-220 10A+,Rate to the selected 5V peltier module peak current with thermal margin
+Q10,1,N-Channel Logic-Level MOSFET,Pump enable gate GP8; 1-2A rating min,TO-220,Adafruit,355,Direct control of 5V peristaltic pump; logic-level gate drive
+J801,1,5V Power Connector,5V battery input receptacle (JST XT60 or barrel jack),Connector,Adafruit,373,Mates with 5V rechargeable battery pack or bench supply
+J802,1,3-Pin 0.1in Header,Power distribution hub connector,0.1in pitch THT,Adafruit,392,+5V_BUS / +3V_FILAMENT / GND outputs
+J601,1,6-Pin 0.1in Header,Filament PWM bus input (SPARK1-4 + PULSE + GND),0.1in pitch THT,Adafruit,392,From RP2040 GP5/6/9/10/11 + GND
+J602,1,2-Pin JST PH Connector,Filament 3V power input,JST PH 2mm THT,Adafruit,261,+3V_FILAMENT rail to filament driver stage supply
+J603,1,5-Pin 0.1in Header,Filament load channel outputs (SPARK1-4 + PULSE),0.1in pitch THT,Adafruit,392,Post-resistor outputs to LED filament loads
+J701,1,4-Pin 0.1in Header,Beam RGB PWM input bus (R/G/B + GND),0.1in pitch THT,Adafruit,392,From RP2040 GP12/13/14 + GND
+J702,1,4-Position 3.5mm Screw Terminal,Beam RGB LED load output,3.5mm screw terminal,Adafruit,677,Post-resistor outputs to high-power RGB LED
+J703,1,2-Pin JST PH Connector,Peltier load output,JST PH 2mm THT,Adafruit,261,Switched 5V to peltier module via Q9
+J401,1,2-Pin JST PH Connector,5V peristaltic pump output,JST PH 2mm THT,Adafruit,261,From Q10 MOSFET drain via +5V_BUS to pump terminals
+J402,1,3-Pin 0.1in Header or JST,Servo signal connector (replaces stepper),0.1in pitch,Adafruit,392,GP7 signal + 5V_BUS + GND for FP-S14B
+—,1,FP-S14B Claw Servo,Standard RC servo; 6V max operation,Standard RC servo,Seeed Studio,Search: FP-S14B servo,GP7 signal from RP2040; power from +5V_BUS
+—,1,5V Peristaltic Pump,DC motor liquid pump 3V-6V,2-wire,Adafruit,1150,Direct GPIO control via Q10; +5V_BUS supply
+—,1,5V Peltier Module,5V thermoelectric cooler module sized to the +5V_BUS budget,40x40mm,Grainger,Search: 5V peltier module,Q9 switch rating must match selected module current; heatsink required on both faces
+—,4,Spark LED Filament,High-current incandescent-style LED filament,Custom,Adafruit,Search: LED filament strip,Series R601-R604; verify forward voltage and current
+—,1,Pulse LED Filament,Pulsing LED filament for glow effect,Custom,Adafruit,Search: LED filament strip,Series R605; same spec as spark filaments
+—,1,3-9W High-Power RGB LED,Star-format or module RGB LED for beam,Star PCB module,Seeed Studio,Search: 3W RGB LED star module,R/G/B legs through Q6-Q8 and R701-R703; heatsink required
+—,1,NeoPixel LED Strip 30 LEDs WS2812B,Addressable RGB strip cut to 30 pixels; 5V,60 LED/m strip,Adafruit,1460,Single data line to M0 pin 13; power from +5V_BUS; single-strand firmware variant
+—,1,5V Battery Pack or Bench Supply,Main 5V input source sized for total device load,Wall adapter or battery pack,Adafruit,Search: 5V battery pack or 5V bench supply,Verify current capacity for pump servo peltier and lighting peaks

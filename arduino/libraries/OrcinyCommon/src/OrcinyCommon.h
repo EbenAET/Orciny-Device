@@ -22,9 +22,23 @@ struct CoreFrame {
   uint8_t blue;
 };
 
+struct EffectCommand {
+  bool outputEnabled;
+  bool sparksEnabled;
+  uint8_t sparksIntensity;
+  bool pulseEnabled;
+  bool beamEnabled;
+  bool clawEnabled;
+};
+
 inline CoreFrame defaultFrame() {
   CoreFrame frame = {CORE_MODE_OFF, 24, 80, 255, 96, 16};
   return frame;
+}
+
+inline EffectCommand defaultEffectCommand() {
+  EffectCommand command = {false, false, 0, false, false, false};
+  return command;
 }
 
 inline uint8_t clampByte(int value) {
@@ -87,6 +101,59 @@ inline bool readCoreFrame(const String &line, CoreFrame &frame) {
   frame.red = clampByte(values[3]);
   frame.green = clampByte(values[4]);
   frame.blue = clampByte(values[5]);
+  return true;
+}
+
+inline void writeEffectCommand(Stream &stream, const EffectCommand &command) {
+  stream.print(F("FX,"));
+  stream.print(command.outputEnabled ? 1 : 0);
+  stream.print(',');
+  stream.print(command.sparksEnabled ? 1 : 0);
+  stream.print(',');
+  stream.print(command.sparksIntensity);
+  stream.print(',');
+  stream.print(command.pulseEnabled ? 1 : 0);
+  stream.print(',');
+  stream.print(command.beamEnabled ? 1 : 0);
+  stream.print(',');
+  stream.println(command.clawEnabled ? 1 : 0);
+}
+
+inline bool readEffectCommand(const String &line, EffectCommand &command) {
+  String trimmed = line;
+  trimmed.trim();
+  if (!trimmed.startsWith(F("FX,"))) {
+    return false;
+  }
+
+  int values[6] = {0};
+  int start = 3;
+  for (uint8_t i = 0; i < 6; ++i) {
+    int comma = trimmed.indexOf(',', start);
+    String token;
+    if (comma >= 0) {
+      token = trimmed.substring(start, comma);
+      start = comma + 1;
+    } else {
+      token = trimmed.substring(start);
+      start = trimmed.length();
+    }
+
+    if (token.length() == 0) {
+      return false;
+    }
+    values[i] = token.toInt();
+    if ((comma < 0) && (i < 5)) {
+      return false;
+    }
+  }
+
+  command.outputEnabled = values[0] > 0;
+  command.sparksEnabled = values[1] > 0;
+  command.sparksIntensity = clampByte(values[2]);
+  command.pulseEnabled = values[3] > 0;
+  command.beamEnabled = values[4] > 0;
+  command.clawEnabled = values[5] > 0;
   return true;
 }
 
