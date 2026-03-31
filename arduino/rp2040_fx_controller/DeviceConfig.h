@@ -23,7 +23,7 @@ static constexpr uint8_t kBeamGreenPin = 13;
 static constexpr uint8_t kBeamBluePin = 14;
 static constexpr uint8_t kPeltierEnablePin = 15;
 
-static constexpr uint8_t kPumpMotorPort = 1;
+static constexpr uint8_t kPumpControlPin = 8;
 static constexpr uint8_t kClawServoPin = 7;
 static constexpr uint8_t kClawMinAngle = 22;
 static constexpr uint8_t kClawMaxAngle = 120;

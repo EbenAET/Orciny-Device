@@ -1,4 +1,4 @@
-#include <Adafruit_NeoPXL8.h>
+#include <Adafruit_NeoPixel.h>
 
 #include <OrcinyCommon.h>
 
@@ -69,9 +69,9 @@ class MomentarySwitch {
   uint32_t lastChangeMs_ = 0;
 };
 
-Adafruit_NeoPXL8 leds(device_config::kPixelsPerStrip,
-                      device_config::kCorePins,
-                      device_config::kColorOrder);
+Adafruit_NeoPixel leds(device_config::kTotalPixels,
+                       device_config::kCoreDataPin,
+                       device_config::kColorOrder);
 
 CoreFrame currentFrame = orciny::defaultFrame();
 EffectCommand currentEffectCommand = orciny::defaultEffectCommand();
@@ -90,8 +90,9 @@ bool suppressNextRelease = false;
 uint32_t lastRenderMs = 0;
 uint32_t lastEffectLinkMs = 0;
 
-uint16_t pixelIndex(uint8_t strip, uint16_t pixel) {
-  return static_cast<uint16_t>(strip) * device_config::kPixelsPerStrip + pixel;
+uint16_t pixelIndex(uint16_t pixel) {
+  // Single strand, direct pixel index
+  return pixel;
 }
 
 uint8_t wave8(uint32_t now, uint16_t rate, uint16_t offset) {
@@ -122,44 +123,43 @@ uint32_t colorWheel(uint8_t position) {
   return leds.Color(position * 3, 255 - position * 3, 0);
 }
 
-uint32_t colorForPixel(uint32_t now, uint8_t strip, uint16_t pixel) {
+uint32_t colorForPixel(uint32_t now, uint16_t pixel) {
+  // For single-strand mode, use pixel position to create pseudo-strip variation
+  const uint8_t pseudoStrip = pixel / 8;  // Divide 30 pixels into 4 zones (~8 pixels each)
+  
   switch (currentFrame.mode) {
     case orciny::CORE_MODE_OFF:
       return 0;
 
     case orciny::CORE_MODE_EMBER: {
-      const uint8_t flicker = wave8(now + strip * 17U, currentFrame.speed, pixel * 9U);
+      const uint8_t flicker = wave8(now + pseudoStrip * 17U, currentFrame.speed, pixel * 9U);
       const uint8_t level = map(flicker, 0, 255, 16, currentFrame.brightness);
       return scaledColor(currentFrame.red, currentFrame.green, currentFrame.blue, level);
     }
 
     case orciny::CORE_MODE_PULSE: {
-      const uint8_t pulse = wave8(now, currentFrame.speed, strip * 32U);
-      const uint8_t rim = map(abs(static_cast<int>(pixel) - (device_config::kPixelsPerStrip / 2)),
-                              0,
-                              device_config::kPixelsPerStrip / 2,
-                              255,
-                              80);
+      const uint8_t pulse = wave8(now, currentFrame.speed, pseudoStrip * 32U);
+      const uint8_t rim = map(abs(static_cast<int>(pixel) - 15), 0, 15, 255, 80);
       const uint8_t level = static_cast<uint16_t>(pulse) * rim / 255U;
       return scaledColor(currentFrame.red, currentFrame.green, currentFrame.blue, level);
     }
 
     case orciny::CORE_MODE_BEAM: {
-      const uint8_t front = (now / max<uint8_t>(1, 30 - (currentFrame.speed / 12))) % device_config::kPixelsPerStrip;
+      const uint8_t front = (now / max<uint8_t>(1, 30 - (currentFrame.speed / 12))) % 30;
       const uint8_t distance = abs(static_cast<int>(pixel) - static_cast<int>(front));
       const uint8_t level = distance > 10 ? 24 : map(distance, 0, 10, currentFrame.brightness, 24);
       return scaledColor(currentFrame.red, currentFrame.green, currentFrame.blue, level);
     }
 
     case orciny::CORE_MODE_CLAW: {
-      const uint16_t chase = (now / max<uint8_t>(1, 36 - (currentFrame.speed / 10)) + strip * 7U) % device_config::kPixelsPerStrip;
+      const uint16_t chase = (now / max<uint8_t>(1, 36 - (currentFrame.speed / 10)) + pseudoStrip * 7U) % 30;
       const uint8_t distance = abs(static_cast<int>(pixel) - static_cast<int>(chase));
       const uint8_t level = distance > 5 ? 8 : map(distance, 0, 5, currentFrame.brightness, 8);
       return scaledColor(currentFrame.red, currentFrame.green, currentFrame.blue, level);
     }
 
     case orciny::CORE_MODE_SHOW: {
-      const uint8_t hue = static_cast<uint8_t>((now / max<uint8_t>(1, 10 - (currentFrame.speed / 32))) + pixel * 5U + strip * 16U);
+      const uint8_t hue = static_cast<uint8_t>((now / max<uint8_t>(1, 10 - (currentFrame.speed / 32))) + pixel * 5U + pseudoStrip * 16U);
       return colorWheel(hue);
     }
 
@@ -170,18 +170,9 @@ uint32_t colorForPixel(uint32_t now, uint8_t strip, uint16_t pixel) {
 
 void renderCore(uint32_t now) {
   leds.setBrightness(currentFrame.brightness);
-  for (uint8_t strip = 0; strip < device_config::kActiveCoreStrips; ++strip) {
-    for (uint16_t pixel = 0; pixel < device_config::kPixelsPerStrip; ++pixel) {
-      leds.setPixelColor(pixelIndex(strip, pixel), colorForPixel(now, strip, pixel));
-    }
+  for (uint16_t pixel = 0; pixel < device_config::kTotalPixels; ++pixel) {
+    leds.setPixelColor(pixelIndex(pixel), colorForPixel(now, pixel));
   }
-
-  for (uint8_t strip = device_config::kActiveCoreStrips; strip < 8; ++strip) {
-    for (uint16_t pixel = 0; pixel < device_config::kPixelsPerStrip; ++pixel) {
-      leds.setPixelColor(pixelIndex(strip, pixel), 0);
-    }
-  }
-
   leds.show();
 }
 

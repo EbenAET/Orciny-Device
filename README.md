@@ -2,43 +2,42 @@
 
 Arduino IDE scaffold for a two-controller multi-effect device built around:
 
-- Feather RP2040 + Motor FeatherWing
-- Feather M0 + NeoPXL8 FeatherWing
-- Feather Doubler
+- Feather RP2040
+- Feather M0 Basic Proto
 
 The framework splits responsibilities like this:
 
-- M0 sketch: primary scene control, switch and USB command handling, four NeoPixel core banks via NeoPXL8, and outbound effect commands over Serial1
-- RP2040 sketch: effect executor for sparks, pulse filament, DC pump channel, beam RGB LED, peltier control, and FP-S14B servo claw
+- M0 sketch: primary scene control, switch and USB command handling, single-strand NeoPixel core rendering, and outbound effect commands over Serial1
+- RP2040 sketch: effect executor for sparks, pulse filament, direct GPIO pump control, beam RGB LED, peltier control, and FP-S14B servo claw
 
 ## Folder Layout
 
 - `arduino/rp2040_fx_controller`: main effects controller sketch for the Feather RP2040
-- `arduino/m0_core_controller`: NeoPXL8 core controller sketch for the Feather M0
+- `arduino/m0_core_controller`: single-strand NeoPixel core controller sketch for the Feather M0
 - `arduino/libraries/OrcinyCommon`: shared protocol and data structures
 
 ## Arduino Libraries
 
 Install these in the Arduino IDE before compiling:
 
-- Adafruit Motor Shield V2 Library
 - Adafruit NeoPixel
-- Adafruit NeoPXL8
-- Adafruit ZeroDMA
+- Servo
 
 ## Wiring Assumptions
 
 The scaffold makes a few deliberate assumptions that you should verify against your hardware:
 
-- RP2040 Motor FeatherWing port `M1` drives the 5V peristaltic pump channel
+- Main input is a 5V source split into a fused `+5V_BUS` rail and a fused `+3V_FILAMENT` buck-fed rail
+- RP2040 pin `GP8` drives the 5V peristaltic pump enable MOSFET gate
 - RP2040 servo output pin `GP7` drives the FP-S14B claw servo signal
 - M0 uses three momentary switches wired to ground with internal pull-ups enabled
-- The 3-9W RGB LED channels are driven through external MOSFETs from three PWM pins on the RP2040, with 1 ohm series current-limiting resistors on each RGB leg
+- The 3-9W RGB LED channels are driven through external MOSFETs from three PWM pins on the RP2040, with 10 ohm series current-limiting resistors on each RGB leg
 - The peltier is switched through a separate MOSFET or relay from one RP2040 digital pin
 - Four spark LED filaments and one pulse LED filament are each driven through suitable transistor stages and 10 ohm series current-limiting resistors
 - M0 `TX` is connected to RP2040 `RX` for effect command updates, with shared ground
+- M0 pin `D13` drives one WS2812/NeoPixel data line for a 30-pixel strip
 
-The M0 NeoPXL8 sketch uses a four-output pin set that preserves `Serial1` so the boards can communicate. Because NeoPXL8 pin muxing on SAMD21 is strict, treat the pin map in `DeviceConfig.h` as the first thing to validate on hardware.
+This revision intentionally removes NeoPXL8, Motor FeatherWing, and Feather Doubler dependencies.
 
 ## How To Use
 
@@ -91,4 +90,4 @@ Send any of these lines from the M0 serial monitor:
 - The project-level footprint library table is at `circuit/kicad/fp-lib-table`.
 - It registers Adafruit's official Eagle library (`Adafruit-Eagle-Library/adafruit.lbr`) as an Eagle-type footprint source for KiCad.
 - Integration notes are in `circuit/kicad/adafruit_footprint_import.md`.
-- Concrete per-subsystem footprint mapping is in `circuit/kicad/orciny_kicad_netmap.txt`.
+- Concrete per-subsystem footprint mapping is in `circuit/kicad/orciny_netmap_no_motor_wing.txt`.

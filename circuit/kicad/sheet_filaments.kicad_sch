@@ -3,8 +3,8 @@
   (paper "A4")
   (title_block
     (title "Spark and Pulse Filaments")
-    (date "2026-03-30")
-    (rev "B")
+    (date "2026-03-31")
+    (rev "C")
   )
   (lib_symbols)
 
@@ -28,7 +28,7 @@
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid ae3f7822-227e-4d9b-95c0-f88f4a79a55a)
   )
-  (hierarchical_label "+12V_MAIN" (shape input) (at 20 112 180)
+  (hierarchical_label "+3V_FILAMENT" (shape input) (at 20 112 180)
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid 063e3f2e-b6df-40e4-a0be-bca177777f65)
   )
@@ -179,7 +179,7 @@
     (uuid 24cc6ea0-7568-4acf-a4d8-2ee3e4d56e05)
   )
 
-  (label "+12V_MAIN" (at 84.92 106.73 0)
+  (label "+3V_FILAMENT" (at 84.92 106.73 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 8b81ab8f-4218-49da-9572-d55fc795fbbf)
   )

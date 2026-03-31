@@ -1,6 +1,4 @@
-#include <Adafruit_MotorShield.h>
 #include <Servo.h>
-#include <Wire.h>
 
 #include <OrcinyCommon.h>
 
@@ -122,10 +120,12 @@ class SparkChannel {
 
 class PulseEffect {
  public:
-  void begin(Adafruit_DCMotor *pumpMotor, uint8_t filamentPin) {
-    pumpMotor_ = pumpMotor;
+  void begin(uint8_t pumpPin, uint8_t filamentPin) {
+    pumpPin_ = pumpPin;
     filamentPin_ = filamentPin;
+    pinMode(pumpPin_, OUTPUT);
     pinMode(filamentPin_, OUTPUT);
+    digitalWrite(pumpPin_, LOW);
     analogWrite(filamentPin_, 0);
   }
 
@@ -144,25 +144,24 @@ class PulseEffect {
     }
 
     analogWrite(filamentPin_, wave);
-    pumpMotor_->setSpeed(map(wave, 40, 255, 120, 255));
-    pumpMotor_->run(FORWARD);
+    digitalWrite(pumpPin_, wave >= 96 ? HIGH : LOW);
     active_ = true;
   }
 
   void stop() {
     if (!active_) {
       analogWrite(filamentPin_, 0);
-      pumpMotor_->run(RELEASE);
+      digitalWrite(pumpPin_, LOW);
       return;
     }
 
     analogWrite(filamentPin_, 0);
-    pumpMotor_->run(RELEASE);
+    digitalWrite(pumpPin_, LOW);
     active_ = false;
   }
 
  private:
-  Adafruit_DCMotor *pumpMotor_ = nullptr;
+  uint8_t pumpPin_ = 0;
   uint8_t filamentPin_ = 0;
   bool active_ = false;
 };
@@ -267,9 +266,6 @@ class ClawEffect {
   bool active_ = false;
   uint32_t nextStepMs_ = 0;
 };
-
-Adafruit_MotorShield motorWing;
-Adafruit_DCMotor *pumpMotor = nullptr;
 
 SparkChannel sparks[device_config::kSparkCount];
 PulseEffect pulseEffect;
@@ -525,14 +521,12 @@ void setup() {
   Serial1.begin(device_config::kCoreLinkBaudRate);
   randomSeed(analogRead(A0));
 
-  motorWing.begin();
-  pumpMotor = motorWing.getMotor(device_config::kPumpMotorPort);
-
   for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {
     sparks[i].begin(device_config::kSparkPins[i]);
   }
 
-  pulseEffect.begin(pumpMotor, device_config::kPulseFilamentPin);
+  pulseEffect.begin(device_config::kPumpControlPin,
+                    device_config::kPulseFilamentPin);
   beamEffect.begin(device_config::kBeamRedPin,
                    device_config::kBeamGreenPin,
                    device_config::kBeamBluePin,

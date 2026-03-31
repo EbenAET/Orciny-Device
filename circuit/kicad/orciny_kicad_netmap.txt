@@ -1,5 +1,8 @@
-ORCINY KICAD NET MAP (apply to orciny_device.kicad_sch)
-=======================================================
+ORCINY KICAD NET MAP (compatibility copy)
+=========================================
+
+This file is retained as a compatibility copy.
+The current revision is documented in `orciny_netmap_no_motor_wing.txt`.
 
 Project files
 - orciny_device.kicad_pro
@@ -29,25 +32,22 @@ RP2040 effect outputs (all high-current paths require MOSFET/driver stages)
 - RP2040_PIN13 -> BEAM_G_GATE
 - RP2040_PIN14 -> BEAM_B_GATE
 - RP2040_PIN15 -> PELTIER_ENABLE_GATE
+- RP2040_PIN8  -> PUMP_ENABLE_GATE
 - RP2040_PIN7  -> CLAW_SERVO_SIGNAL
 
-Motor FeatherWing section
-- RP2040_SDA -> MOTOR_WING_SDA
-- RP2040_SCL -> MOTOR_WING_SCL
-- MOTOR_PORT_M1_A/B -> DC_PUMP_5V_BRANCH
-- STEPPER_PORT2_M3/M4 -> UNUSED_IN_SERVO_REVISION
-
-M0 + NeoPXL8 core outputs
-- NEOPXL8_D0 -> CORE_STRIP_1_DATA
-- NEOPXL8_D1 -> CORE_STRIP_2_DATA
-- NEOPXL8_D2 -> CORE_STRIP_3_DATA
-- NEOPXL8_D3 -> CORE_STRIP_4_DATA
+M0 core output (single strand)
+- M0_PIN13 -> CORE_STRIP_DATA (30-pixel WS2812/NeoPixel strip)
+- +5V_BUS -> CORE_STRIP_5V
+- GND_COMMON -> CORE_STRIP_GND
 
 Power domains
-- +12V_MAIN -> Beam/spark/pulse driver supply, peltier branch, Motor wing VM input
-- +5V_LOGIC -> RP2040, M0, NeoPXL8 logic, NeoPixel strip power
-- +5V_ACT   -> FP-S14B servo and 5V peristaltic pump branch
-- GND_COMMON -> all grounds tied together
+- +5V_IN (from battery via main fuse)
+  +-> F801 (+5V_BUS direct, no buck needed)
+  +-> F802 (+3V_FILAMENT buck input)
+
+- +5V_BUS -> RP2040 (built-in LDO for 3.3V logic), M0 (built-in LDO for 3.3V logic),
+            NeoPixel strip power, beam RGB, peltier, servo, pump
+- +3V_FILAMENT -> Spark/pulse filament MOSFET drains (Q1-Q5)
 
 KiCad checklist
 1) Open orciny_device.kicad_pro in KiCad.
@@ -55,26 +55,23 @@ KiCad checklist
 3) Add named net labels exactly as above.
 4) Add MOSFET symbols for each high-current channel and wire gate/source/drain appropriately.
 5) Add 10 ohm series resistors on SPARK1/2/3/4 and PULSE output legs.
-6) Add 1 ohm series resistors on BEAM_R, BEAM_G, and BEAM_B output legs.
-7) Add main fuse and branch fuses for +12V_MAIN, +5V_LOGIC buck input, and +5V_ACT buck input.
+6) Add 10 ohm series resistors on BEAM_R, BEAM_G, and BEAM_B output legs.
+7) Add a main 5V fuse for +5V_BUS and a fused buck-fed branch for +3V_FILAMENT.
 8) Run ERC and resolve only intentional warnings.
 9) Save as a new revision if you want to preserve the starter state.
 
 Concrete Adafruit_Eagle footprint mapping (project-local)
 - Library: Adafruit_Eagle (from fp-lib-table)
 
-Primary boards and wings
+Primary boards
 - Feather RP2040 controller placement: Adafruit_Eagle:FEATHERWING
 - Feather M0 controller placement: Adafruit_Eagle:FEATHERWING
-- Motor FeatherWing placement: Adafruit_Eagle:FEATHERWING
-- NeoPXL8 FeatherWing placement: Adafruit_Eagle:FEATHERWING
-- Feather Doubler carrier: Adafruit_Eagle:FEATHERWING_DIM
 
 Switches
 - SW1, SW2, SW3 (momentary): Adafruit_Eagle:PUSHBUTTON_SMD_SJ
 
 Power and high-current staging
-- 12V input jack: Adafruit_Eagle:DCJACK_2MM_PTH
+- 5V input jack: Adafruit_Eagle:DCJACK_2MM_PTH
 - Pump / peltier / external load connectors (2-pin JST option): Adafruit_Eagle:JST-PH-2-THM
 - Stepper or beam/power screw terminal option (4-pin): Adafruit_Eagle:1X04-3.5MM
 - Through-hole TO-220 MOSFET stages: Adafruit_Eagle:TO220
