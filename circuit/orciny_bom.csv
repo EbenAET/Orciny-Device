@@ -23,7 +23,7 @@ Q5,1,N-Channel Logic-Level MOSFET,PULSE filament gate driver GP11,TO-220,Adafrui
 Q6,1,N-Channel Logic-Level MOSFET,BEAM_R gate driver GP12,TO-220,Adafruit,355,Same as Q1
 Q7,1,N-Channel Logic-Level MOSFET,BEAM_G gate driver GP13,TO-220,Adafruit,355,Same as Q1
 Q8,1,N-Channel Logic-Level MOSFET,BEAM_B gate driver GP14,TO-220,Adafruit,355,Same as Q1
-Q9,1,N-Channel Logic-Level MOSFET,Peltier enable gate GP15; verify current rating,TO-220,McMaster-Carr,Search: N-channel logic-level MOSFET TO-220 10A+,Rate to peltier peak current (TEC1-12706 ~6A max)
+Q9,1,N-Channel Logic-Level MOSFET,Peltier enable gate GP15; verify current rating,TO-220,McMaster-Carr,Search: N-channel logic-level MOSFET TO-220 10A+,Rate to the selected 5V peltier module peak current with thermal margin
 Q10,1,N-Channel Logic-Level MOSFET,Pump enable gate GP8; 1-2A rating min,TO-220,Adafruit,355,Direct control of 5V peristaltic pump; logic-level gate drive
 J801,1,5V Power Connector,5V battery input receptacle (JST XT60 or barrel jack),Connector,Adafruit,373,Mates with 5V rechargeable battery pack or bench supply
 J802,1,3-Pin 0.1in Header,Power distribution hub connector,0.1in pitch THT,Adafruit,392,+5V_BUS / +3V_FILAMENT / GND outputs

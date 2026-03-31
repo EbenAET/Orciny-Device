@@ -86,7 +86,7 @@ Grounding Rules
   - NeoPixel strip ground
   - Pump/servo/peltier driver grounds
   - Switch grounds
-  - 12V supply negative (barrel jack shell)
+  - 5V input negative (battery pack or barrel jack shell)
 
 Firmware Implementation Notes
 - RP2040 DeviceConfig.h: Pump control uses GPIO GP8 through Q10 MOSFET gate
