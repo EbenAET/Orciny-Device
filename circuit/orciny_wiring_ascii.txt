@@ -2,18 +2,15 @@ ORCINY DEVICE - EXAMPLE ASCII CIRCUIT DIAGRAM
 =============================================
 
 Power:
-  +12V rail -> Motor FeatherWing VM input, Pump supply, Stepper supply, Peltier supply
-  +5V rail  -> RP2040 Feather, M0 Feather, NeoPXL8 logic, NeoPixel strip power (if your strips are 5V)
-  GND       -> COMMON to every board, switch, driver, and load
+  +12V main rail     -> Beam/Spark/Pulse driver supply, Peltier branch, Motor Wing VM input
+  +5V logic buck     -> RP2040 Feather, M0 Feather, NeoPXL8 logic, NeoPixel strip power
+  +5V actuator buck  -> FP-S14B servo power, 5V peristaltic pump branch
+  GND                -> COMMON to every board, switch, driver, and load
 
 
                            +---------------------------+
                            |       FEATHER RP2040      |
-                           |   Main FX Controller      |
-                           |                           |
-Switch 1 (On/Off) ---------| GP2   (INPUT_PULLUP)      |
-Switch 2 (Prev) -----------| GP3   (INPUT_PULLUP)      |
-Switch 3 (Next) -----------| GP4   (INPUT_PULLUP)      |
+                           |     FX Executor Node      |
                            |                           |
 Spark Filament 1 driver <--| GP5   PWM                 |
 Spark Filament 2 driver <--| GP6   PWM                 |
@@ -25,28 +22,31 @@ Beam Red MOSFET gate   <---| GP12  PWM                 |
 Beam Green MOSFET gate <---| GP13  PWM                 |
 Beam Blue MOSFET gate  <---| GP14  PWM                 |
 Peltier MOSFET/Relay   <---| GP15                      |
+Servo signal (FP-S14B) <---| GP7                       |
                            |                           |
 I2C SDA/SCL -------------> | Motor FeatherWing         |
-Serial1 TX ------------->  | M0 Serial1 RX             |
+Serial1 RX <-------------  | M0 Serial1 TX             |
                            +---------------------------+
-
-     NOTE: Switches are wired from pin to GND. Internal pull-ups are enabled.
 
 
                  +--------------------------------------+
                  |          MOTOR FEATHERWING           |
                  | (attached to / wired with RP2040)    |
                  |                                      |
-                 | M1  ---------------------------> DC Pump
-                 | Stepper Port 2 (M3/M4) -------> Claw Stepper
+                 | M1  ---------------------------> 5V Peristaltic Pump
+                 | Stepper Port 2 (M3/M4) -------> (unused in servo-claw revision)
                  +--------------------------------------+
 
 
                            +---------------------------+
+                           +---------------------------+
                            |        FEATHER M0         |
-                           |    Core LED Controller    |
+                           |   Primary Scene Control   |
                            |                           |
-RP2040 Serial1 TX -------->| Serial1 RX                |
+Switch 1 (On/Off) ---------| D2   (INPUT_PULLUP)       |
+Switch 2 (Prev) -----------| D3   (INPUT_PULLUP)       |
+Switch 3 (Next) -----------| D4   (INPUT_PULLUP)       |
+Serial1 TX --------------->| RP2040 Serial1 RX         |
                            |                           |
 NeoPXL8 outputs D0..D3 --->| 4 Core Strip Sets         |
 (remaining D4..D7 unused)  |                           |
@@ -66,6 +66,10 @@ Driver Stages (required for high current loads):
   MOSFET drain  -> Load negative
   Load positive -> +V rail (5V or 12V per device)
 
+Current-limiting resistor rules:
+  Spark1..4 and Pulse channels: 10 ohm series resistor per LED load leg
+  Beam R/G/B channels: 1 ohm series resistor per color leg
+
 
 Grounding Rules:
   [MANDATORY] Tie all grounds together:
@@ -78,7 +82,9 @@ Grounding Rules:
 
 
 Quick Net Summary:
-  RP2040 GP2  <- SW1 to GND  (toggle on/off)
-  RP2040 GP3  <- SW2 to GND  (previous sequence, 1->3 wrap)
-  RP2040 GP4  <- SW3 to GND  (next sequence, 3->1 wrap)
+  M0 D2       <- SW1 to GND  (toggle on/off)
+  M0 D3       <- SW2 to GND  (previous sequence, 1->3 wrap)
+  M0 D4       <- SW3 to GND  (next sequence, 3->1 wrap)
   Hold SW1 + SW3 for 5s => reset sequence to 1
+  M0 TX       -> RP2040 RX   (FX command frames)
+  RP2040 GP7  -> FP-S14B signal

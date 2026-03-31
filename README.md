@@ -8,8 +8,8 @@ Arduino IDE scaffold for a two-controller multi-effect device built around:
 
 The framework splits responsibilities like this:
 
-- RP2040 sketch: sparks, pulse filament, DC pump, beam RGB LED, peltier control, claw stepper, top-level scene control
-- M0 sketch: four NeoPixel core banks driven through NeoPXL8, listening for scene frames from the RP2040 over Serial1
+- M0 sketch: primary scene control, switch and USB command handling, four NeoPixel core banks via NeoPXL8, and outbound effect commands over Serial1
+- RP2040 sketch: effect executor for sparks, pulse filament, DC pump channel, beam RGB LED, peltier control, and FP-S14B servo claw
 
 ## Folder Layout
 
@@ -30,13 +30,13 @@ Install these in the Arduino IDE before compiling:
 
 The scaffold makes a few deliberate assumptions that you should verify against your hardware:
 
-- RP2040 Motor FeatherWing port `M1` drives the pump
-- RP2040 Motor FeatherWing stepper port `M3/M4` drives the claw stepper
-- RP2040 uses three momentary switches wired to ground with internal pull-ups enabled
-- The 3-9W RGB LED channels are driven through external MOSFETs from three PWM pins on the RP2040
+- RP2040 Motor FeatherWing port `M1` drives the 5V peristaltic pump channel
+- RP2040 servo output pin `GP7` drives the FP-S14B claw servo signal
+- M0 uses three momentary switches wired to ground with internal pull-ups enabled
+- The 3-9W RGB LED channels are driven through external MOSFETs from three PWM pins on the RP2040, with 1 ohm series current-limiting resistors on each RGB leg
 - The peltier is switched through a separate MOSFET or relay from one RP2040 digital pin
-- Four spark LED filaments and one pulse LED filament are each driven through suitable transistor stages, not directly from GPIO
-- RP2040 `TX` is connected to M0 `RX` for scene updates, with shared ground
+- Four spark LED filaments and one pulse LED filament are each driven through suitable transistor stages and 10 ohm series current-limiting resistors
+- M0 `TX` is connected to RP2040 `RX` for effect command updates, with shared ground
 
 The M0 NeoPXL8 sketch uses a four-output pin set that preserves `Serial1` so the boards can communicate. Because NeoPXL8 pin muxing on SAMD21 is strict, treat the pin map in `DeviceConfig.h` as the first thing to validate on hardware.
 
@@ -46,11 +46,11 @@ The M0 NeoPXL8 sketch uses a four-output pin set that preserves `Serial1` so the
 2. Open `arduino/m0_core_controller/m0_core_controller.ino` in another Arduino IDE window and select the Feather M0 target.
 3. Adjust both `DeviceConfig.h` files to match your actual wiring and strip lengths.
 4. Upload the M0 sketch first, then the RP2040 sketch.
-5. Open the RP2040 USB serial monitor at `115200` baud.
+5. Open the M0 USB serial monitor at `115200` baud for operator commands and status.
 
 ## Switch Inputs
 
-The RP2040 sketch expects three momentary switches connected from GPIO to GND and uses `INPUT_PULLUP`.
+The M0 sketch expects three momentary switches connected from GPIO to GND and uses `INPUT_PULLUP`.
 
 - Switch 1 on pin `2`: toggle the current sequence on or off
 - Switch 2 on pin `3`: move to the previous sequence, wrapping `1 -> 3`
@@ -65,9 +65,9 @@ Turning the sequence off does not lose its position. Turning it back on resumes 
 - Sequence 2: pulse pump/filament + beam + pulsing core
 - Sequence 3: full show with sparks, pulse, beam, claw, and animated core
 
-## RP2040 Serial Commands
+## M0 Serial Commands
 
-Send any of these lines from the serial monitor:
+Send any of these lines from the M0 serial monitor:
 
 - `help`
 - `on`
@@ -84,7 +84,7 @@ Send any of these lines from the serial monitor:
 
 - This is a framework, not a final tuned show controller. PWM levels, animation timing, motor speeds, and thermal limits all need bench validation.
 - The peltier and high-power RGB LED should have their own power design, thermal protection, and current handling outside the Feather GPIO domain.
-- If you want deterministic synchronized behavior between the two boards, keep the RP2040 as the single source of truth and treat the M0 as a render node.
+- Deterministic behavior depends on reliable M0->RP2040 FX command delivery; RP2040 now applies a timeout-safe shutdown when command frames go stale.
 
 ## KiCad Adafruit Footprints
 

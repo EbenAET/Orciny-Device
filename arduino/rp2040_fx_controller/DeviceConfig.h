@@ -24,9 +24,10 @@ static constexpr uint8_t kBeamBluePin = 14;
 static constexpr uint8_t kPeltierEnablePin = 15;
 
 static constexpr uint8_t kPumpMotorPort = 1;
-static constexpr uint8_t kClawStepperPort = 2;
-static constexpr uint16_t kClawStepsPerRevolution = 200;
-static constexpr uint16_t kClawTravelMicrosteps = 320;
+static constexpr uint8_t kClawServoPin = 7;
+static constexpr uint8_t kClawMinAngle = 22;
+static constexpr uint8_t kClawMaxAngle = 120;
 static constexpr uint16_t kClawStepIntervalMs = 8;
+static constexpr uint16_t kEffectCommandTimeoutMs = 400;
 
 }  // namespace device_config
