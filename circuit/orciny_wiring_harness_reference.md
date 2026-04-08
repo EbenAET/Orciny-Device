@@ -20,12 +20,15 @@ Design intent in this reference:
 | H-SW | Switch input harness | SW1/SW2/SW3 to controller inputs | Shared ground return. |
 | H-SPARK | Spark output harness | RP2040 spark PWM channels to spark loads | DMX cable runs down shaft; pins 1-4 are Spark 1-4, pin 5 is spare if needed, and GND is common. |
 | H-SERVO | Servo output harness | ServoWing outputs and power out to servos | ServoWing stacks on the Feather, so no separate Feather-to-wing harness is needed. |
-| H-BEAM-PWR | Beam/peltier load harness | +5V_BUS load-side runs to Prop-Maker and peltier path | Prop-Maker FeatherWing stacks on the Feather; harness is load-side wiring only. |
+| H-BEAM-PWR | Beam load harness | +5V_BUS load-side runs to beam path | Prop-Maker FeatherWing stacks on the Feather; harness is beam load-side wiring only. |
+| H-PELTIER-PWR | Peltier load harness | +5V_BUS load-side runs to peltier path | Separate high-current branch for peltier load wiring. |
+| H-PUMP-OPT | Optional pump harness | Optional pump gate control and load power | Not populated in current build. |
 
 
 ## Harness Definitions
 
 ### H-PWR-5V - 5V Load Backbone
+- Harness Label 1
 - Source: J801 (5V input)
 - Path: Main fuse -> F801 -> +5V_BUS
 - Loads: Servo FeatherWing V+, Prop-Maker load domain, optional pump/peltier load supply
@@ -33,6 +36,7 @@ Design intent in this reference:
 - Notes: Keep this harness physically separated from low-level signal bundles.
 
 ### H-BAT-RP - RP2040 Battery Harness
+- Harness Label 10
 - Source: LP503562 cell #1
 - Destination: Feather RP2040 BAT and GND
 - Charging: Feather onboard charger path
@@ -41,6 +45,7 @@ Design intent in this reference:
 - Connector note: Battery connects directly to the Feather Battery JST port.
 
 ### H-BAT-NEO - NeoPixel Battery and Charger Harness
+- Harness Label 2
 - Source: LP503562 cell #2
 - Charger: U812 (Adafruit 259)
 - Destination rail: +3V7_NEO
@@ -50,6 +55,7 @@ Design intent in this reference:
 - Capacity note: Running the strip from 3.7V still requires the harness to carry strip current; size connector and wire for at least the 2A strip budget used in project docs, with margin for any brightness or pixel-count increase.
 
 ### H-CORE - NeoPixel Strip Harness
+- Harness Label 3
 - Signal run: RP2040 GP11 -> strip DI
 - Power run: +3V7_NEO -> strip +V
 - Ground run: GND_COMMON -> strip GND
@@ -58,6 +64,7 @@ Design intent in this reference:
 - Capacity note: On a 3.7V rail there is less voltage-drop headroom than at 5V, so keep +V/GND path resistance low and maintain the same 2A minimum current capacity in this run.
 
 ### H-SW - Switch Input Harness
+- Harness Label 4
 - SW1 -> RP2040 GP2
 - SW2 -> RP2040 GP3
 - SW3 -> RP2040 GP4
@@ -67,6 +74,7 @@ Design intent in this reference:
 - Connector note: Use a 4-pin JST connector.
 
 ### H-SPARK - Spark Output Harness
+- Harness Label 5
 - Channels: RP2040 GP5/GP6/GP9/GP10 (through series resistors) -> Spark 1-4
 - Supply domain: RP2040_BAT
 - Return: GND_COMMON
@@ -75,6 +83,7 @@ Design intent in this reference:
 - Connector note: Use a 5-pin DMX cable.
 
 ### H-SERVO - Servo Output Harness
+- Harness Label 6
 - Stack note: ServoWing stacks directly on the Feather RP2040; SDA/SCL, control, and wing power are handled by the stack headers.
 - Output runs: ServoWing CH0 -> Servo A signal, CH1 -> Servo B signal
 - Power runs: ServoWing V+ and GND -> servo power branches
@@ -82,19 +91,30 @@ Design intent in this reference:
 - Notes: Match positive and return gauge on each servo branch; no separate Feather-to-ServoWing harness is required.
 - Connector note: Use a 4-pin JST connector.
 
-### H-BEAM-PWR - Beam and Peltier Load Harness
+### H-BEAM-PWR - Beam Load Harness
+- Harness Label 7
 - Stack note: Prop-Maker FeatherWing stacks directly on the Feather RP2040; no separate controller-to-wing harness is required.
-- +5V_BUS -> Prop-Maker load domain and peltier load source path
-- GND_COMMON returns from load stages
+- +5V_BUS -> Prop-Maker load domain (beam path only)
+- GND_COMMON returns from beam load stage
 - Recommended wire: 20 AWG minimum
-- Notes: Treat as high-current branch; keep runs short and consider this harness load-side only.
-- Connector note: Beam uses a 4-pin JST connector; peltier uses a Deans Micro2R connector.
+- Notes: Treat as high-current branch; keep runs short; this harness is beam load-side only.
+- Connector note: Use a 4-pin JST connector.
+
+### H-PELTIER-PWR - Peltier Load Harness
+- Harness Label 8
+- +5V_BUS -> peltier load source path
+- GND_COMMON returns from peltier load stage
+- Recommended wire: 20 AWG minimum
+- Notes: Treat as high-current branch; keep separate physical run from H-BEAM-PWR.
+- Connector note: Use a Deans Micro2R connector.
 
 ### H-PUMP-OPT - Optional Pump Harness
+- Harness Label 9
 - Gate control: RP2040 GP8 -> pump driver gate (if populated)
 - Load power: +5V_BUS and GND_COMMON pump branch
 - Recommended wire: 24-26 AWG control, 20 AWG load branch
 - Notes: Firmware currently keeps pump actions disabled.
+- Connector note: Project-defined; populate as needed.
 
 ## Labeling Convention
 
@@ -110,4 +130,5 @@ Use heat-shrink or tags at both ends:
 3. Verify H-CORE data continuity from RP2040 GP11 to strip DI.
 4. Verify H-SPARK channel mapping (GP5/6/9/10 to Spark 1/2/3/4).
 5. Verify H-SERVO polarity before connecting servos.
-6. Verify U812 charger wiring only touches Neo battery rail.
+6. Verify H-BEAM-PWR and H-PELTIER-PWR are not cross-connected.
+7. Verify U812 charger wiring only touches Neo battery rail.
