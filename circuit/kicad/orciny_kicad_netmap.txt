@@ -1,82 +1,16 @@
-ORCINY KICAD NET MAP (compatibility copy)
-=========================================
+ORCINY KICAD NET MAP (REFERENCE POINTER)
+========================================
 
-This file is retained as a compatibility copy.
-The current revision is documented in `orciny_netmap_no_motor_wing.txt`.
+This file is intentionally minimal.
+
+Use this document as the source of truth for current wiring:
+- `circuit/kicad/orciny_netmap_no_motor_wing.txt`
 
 Project files
 - orciny_device.kicad_pro
 - orciny_device.kicad_sch
 
-Purpose
-- This KiCad project is an openable starter.
-- Replace template symbols with your preferred parts and wire according to this net map.
-
-Controller-to-controller link
-- M0_SERIAL1_TX      -> RP2040_SERIAL1_RX
-- M0_GND             -> RP2040_GND
-
-Switch controls (momentary switches to GND, firmware uses INPUT_PULLUP)
-- SW1: M0_PIN2 -> switch -> GND  (toggle on/off)
-- SW2: M0_PIN3 -> switch -> GND  (previous sequence, 1->3 wrap)
-- SW3: M0_PIN4 -> switch -> GND  (next sequence, 3->1 wrap)
-- Hold SW1+SW3 for 5 seconds -> reset to sequence 1
-
-RP2040 effect outputs (all high-current paths require MOSFET/driver stages)
-- RP2040_PIN5  -> SPARK1_GATE
-- RP2040_PIN6  -> SPARK2_GATE
-- RP2040_PIN9  -> SPARK3_GATE
-- RP2040_PIN10 -> SPARK4_GATE
-- RP2040_PIN11 -> PULSE_FILAMENT_GATE
-- RP2040_PIN12 -> BEAM_R_GATE
-- RP2040_PIN13 -> BEAM_G_GATE
-- RP2040_PIN14 -> BEAM_B_GATE
-- RP2040_PIN15 -> PELTIER_ENABLE_GATE
-- RP2040_PIN8  -> PUMP_ENABLE_GATE
-- RP2040_PIN7  -> CLAW_SERVO_SIGNAL
-
-M0 core output (single strand)
-- M0_PIN13 -> CORE_STRIP_DATA (30-pixel WS2812/NeoPixel strip)
-- +5V_BUS -> CORE_STRIP_5V
-- GND_COMMON -> CORE_STRIP_GND
-
-Power domains
-- +5V_IN (from battery via main fuse)
-  +-> F801 (+5V_BUS direct, no buck needed)
-  +-> F802 (+3V_FILAMENT buck input)
-
-- +5V_BUS -> RP2040 (built-in LDO for 3.3V logic), M0 (built-in LDO for 3.3V logic),
-            NeoPixel strip power, beam RGB, peltier, servo, pump
-- +3V_FILAMENT -> Spark/pulse filament MOSFET drains (Q1-Q5)
-
-KiCad checklist
-1) Open orciny_device.kicad_pro in KiCad.
-2) In Schematic Editor, replace template Arduino symbols with your board symbols or generic headers.
-3) Add named net labels exactly as above.
-4) Add MOSFET symbols for each high-current channel and wire gate/source/drain appropriately.
-5) Add 10 ohm series resistors on SPARK1/2/3/4 and PULSE output legs.
-6) Add 10 ohm series resistors on BEAM_R, BEAM_G, and BEAM_B output legs.
-7) Add a main 5V fuse for +5V_BUS and a fused buck-fed branch for +3V_FILAMENT.
-8) Run ERC and resolve only intentional warnings.
-9) Save as a new revision if you want to preserve the starter state.
-
-Concrete Adafruit_Eagle footprint mapping (project-local)
-- Library: Adafruit_Eagle (from fp-lib-table)
-
-Primary boards
-- Feather RP2040 controller placement: Adafruit_Eagle:FEATHERWING
-- Feather M0 controller placement: Adafruit_Eagle:FEATHERWING
-
-Switches
-- SW1, SW2, SW3 (momentary): Adafruit_Eagle:PUSHBUTTON_SMD_SJ
-
-Power and high-current staging
-- 5V input jack: Adafruit_Eagle:DCJACK_2MM_PTH
-- Pump / peltier / external load connectors (2-pin JST option): Adafruit_Eagle:JST-PH-2-THM
-- Stepper or beam/power screw terminal option (4-pin): Adafruit_Eagle:1X04-3.5MM
-- Through-hole TO-220 MOSFET stages: Adafruit_Eagle:TO220
-
-Header options for custom daughter wiring
-- 1x03 signal headers: Adafruit_Eagle:1X03
-- 1x04 signal headers: Adafruit_Eagle:1X04-BIG
-- 1x06 signal headers: Adafruit_Eagle:1X06
+Quick workflow
+1. Open orciny_device.kicad_pro.
+2. Apply net labels and domains from `orciny_netmap_no_motor_wing.txt`.
+3. Run ERC and resolve non-intentional warnings.

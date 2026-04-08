@@ -2,13 +2,13 @@
   (uuid 48f4e7af-8b1a-4250-9d40-38c8d1e4385d)
   (paper "A4")
   (title_block
-    (title "Feather M0 + Core Strip")
+    (title "Core NeoPixel Strip")
     (date "2026-03-31")
-    (rev "C")
+    (rev "D")
   )
   (lib_symbols)
 
-  (hierarchical_label "SERIAL_LINK" (shape input) (at 20 28 180)
+  (hierarchical_label "CORE_DATA" (shape input) (at 20 28 180)
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid b8f39331-7c2a-47bf-8fd2-a17e0fd70d5f)
   )
@@ -29,7 +29,7 @@
     (in_bom yes) (on_board yes)
     (uuid c5b4f389-cf4f-4e2a-88f6-c5db8e5c4fec)
     (property "Reference" "U201" (id 0) (at 62 27 0))
-    (property "Value" "Feather_M0" (id 1) (at 64.54 42 90))
+    (property "Value" "Core_Controller_IO" (id 1) (at 64.54 42 90))
     (property "Footprint" "Adafruit_Eagle:FEATHERWING" (id 2) (at 62 42 0)
       (effects (font (size 1.27 1.27)) hide)
     )
@@ -62,7 +62,7 @@
     (pin "3" (uuid ec7e7164-1dac-486f-b337-f8e13c94f2f1))
   )
 
-  (label "SERIAL_LINK" (at 56.92 28.03 0)
+  (label "CORE_DATA" (at 56.92 28.03 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 125fed08-b2bf-48fb-a2ca-71f89a7605f4)
   )
@@ -142,7 +142,7 @@
 
   (symbol_instances
     (path "/c5b4f389-cf4f-4e2a-88f6-c5db8e5c4fec"
-      (reference "U201") (unit 1) (value "Feather_M0") (footprint "Adafruit_Eagle:FEATHERWING")
+      (reference "U201") (unit 1) (value "Core_Controller_IO") (footprint "Adafruit_Eagle:FEATHERWING")
     )
     (path "/e89d3fd8-1532-4ec1-ba22-eb20f36ec0de"
       (reference "J201") (unit 1) (value "Core_Strip") (footprint "Adafruit_Eagle:JST-PH-3-THM")

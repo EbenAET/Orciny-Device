@@ -1,16 +1,23 @@
 ORCINY DEVICE - ASCII CIRCUIT DIAGRAM
 ======================================
-Rev D  (single-strand NeoPixel; direct GPIO pump control)
+Rev F  (RP2040-only control; split battery domains)
+
+Harness cross-reference: see `circuit/orciny_wiring_harness_reference.md`.
 
 Power:
+  Harness IDs: H-PWR-5V, H-BAT-RP, H-BAT-NEO
   5V battery (J801)  -> main fused input -> +5V_MAIN trunk
-  +5V_MAIN trunk     -+-> F801 (direct) -------- +5V_BUS rail (RP2040, M0 power; NeoPixel power; load supply)
-                      +-> F802 -> +3V_FILAMENT buck -> +3V_FILAMENT rail (filaments Q1-Q5 drains only)
+  +5V_MAIN trunk     -+-> F801 (direct) -------- +5V_BUS rail (ServoWing + Prop-Maker/peltier load domain)
+  3.7V battery (J811, PKCell LP503562 1200mAh) -> Feather RP2040 BAT input (controller + spark domain)
+  Adafruit 259 charger (U812, CHG_NEO) -> charges LP503562 battery at J812 -> +3V7_NEO rail
+  3.7V battery (J812, PKCell LP503562 1200mAh) -> +3V7_NEO rail (NeoPixel strip supply only)
 
-  +5V_BUS rail       -> RP2040 (internal LDO -> 3.3V logic), M0 (internal LDO -> 3.3V logic),
-                        NeoPixel strip power, beam/peltier/servo/pump supply
-  +3V_FILAMENT rail  -> Spark/pulse filament MOSFET drains (Q1-Q5)
+  +5V_BUS rail       -> Servo FeatherWing/load supply, Prop-Maker LED load supply, peltier source domain
+  RP2040_BAT rail    -> RP2040 logic supply and direct spark filament source domain
+  +3V7_NEO rail      -> NeoPixel strip power
   GND_COMMON         -> COMMON to every board, switch, driver, and load
+
+  Note: only the NeoPixel battery uses external Adafruit 259 charging; the RP2040 battery uses Feather onboard charging.
 
 
  5V BATTERY
@@ -20,73 +27,94 @@ Power:
      [Main fuse]
        |
        +---- F801 (3A) -------- +5V_BUS ----+
-       |                                     |
-       +---- F802 ---- [3V buck] +3V_FIL    |
                                              |
          +-----------------------------------+
-         | +5V_BUS (MCU power, NeoPixel, loads, servo, pump, peltier)
+         | +5V_BUS (ServoWing + Prop-Maker/peltier load domain)
          v
 
- ┌──────────────────────────────────────────┐
- │             FEATHER M0                   │
- │          Primary Scene Control           │
- │                                          │
- │  D2  (INPUT_PULLUP) <----- SW1 (On/Off)  │
- │  D3  (INPUT_PULLUP) <----- SW2 (Prev)    │
- │  D4  (INPUT_PULLUP) <----- SW3 (Next)    │
- │                                          │
- │  D13 (NeoPixel data) ----> [NeoPixel     │
- │                              Strip 30px] │
- │                                          │
- │  Serial1 TX ----------------> RP2040 RX  │
- └──────────────────────────────────────────┘
+ ┌─────────────────────────────────────────────────────────────────┐
+ │                      FEATHER RP2040                             │
+ │                    Primary Scene + FX Node                      │
+ │                                                                 │
+ │  GP2/GP3/GP4  <------------------------- SW1/SW2/SW3            │
+ │  GP11 (NeoPixel data) -----------------> NeoPixel strip DI      │
+ │                                                                 │
+ │  GP5  PWM ---> [R601 10Ω] ---> Spark Filament 1                │
+ │  GP6  PWM ---> [R602 10Ω] ---> Spark Filament 2                │
+ │  GP9  PWM ---> [R603 10Ω] ---> Spark Filament 3                │
+ │  GP10 PWM ---> [R604 10Ω] ---> Spark Filament 4                │
+ │                                                                 │
+ │  GP12 PWM ---> Prop-Maker LED1 MOSFET out ---> 3-9W LED CH1    │
+ │  GP13 PWM ---> Prop-Maker LED2 MOSFET out ---> 3-9W LED CH2    │
+ │  GP14 PWM ---> Prop-Maker LED3 MOSFET out ---> 3-9W LED CH3    │
+ │                                                                 │
+ │  I2C SDA/SCL ---------------------------> Servo FeatherWing     │
+ │                                           (PCA9685 @ 0x40)      │
+ │  GP8      ---> (optional) Pump MOSFET gate [disabled in FW]    │
+ └─────────────────────────────────────────────────────────────────┘
+
+   +3V7_NEO (NeoPixel strip power)
        |
-   | +5V_BUS  (NeoPixel strip power)
        v
  ┌──────────────────────────────┐
- │  WS2812B NeoPixel Strip      │
- │  30 pixels  (single strand)  │
- │  Data <-- M0 D13             │
- │  +5V  <-- +5V_BUS            │
+ │  SK6812 NeoPixel Strip       │
+ │  166 pixels (single strand)  │
+ │  Data <-- RP2040 GP11        │
+ │  +V   <-- +3V7_NEO           │
  │  GND  --> GND_COMMON         │
  └──────────────────────────────┘
 
 
- ┌─────────────────────────────────────────────────────────────────┐
- │                      FEATHER RP2040                             │
- │                    FX Executor Node                             │
- │                                                                 │
- │  GP5  PWM ---> Q1 gate ---> [R601 10Ω] ---> Spark Filament 1   │
- │  GP6  PWM ---> Q2 gate ---> [R602 10Ω] ---> Spark Filament 2   │
- │  GP9  PWM ---> Q3 gate ---> [R603 10Ω] ---> Spark Filament 3   │
- │  GP10 PWM ---> Q4 gate ---> [R604 10Ω] ---> Spark Filament 4   │
- │  GP11 PWM ---> Q5 gate ---> [R605 10Ω] ---> Pulse Filament     │
- │                                                                 │
- │  GP12 PWM ---> Q6 gate ---> [R701 10Ω] ---> Beam Red           │
- │  GP13 PWM ---> Q7 gate ---> [R702 10Ω] ---> Beam Green         │
- │  GP14 PWM ---> Q8 gate ---> [R703 10Ω] ---> Beam Blue          │
- │  GP15     ---> Q9 gate ------------------> Peltier load        │
- │                                                                 │
- │  GP8      ---> Q10 gate -----------------> 5V Peristaltic Pump │
- │  GP7      ---> FP-S14B servo signal                             │
- │                                                                 │
- │  Serial1 RX  <-- M0 Serial1 TX  (FX command frames @ 40ms)     │
- └─────────────────────────────────────────────────────────────────┘
+ ┌──────────────────────────────────────────────┐
+ │     8-Channel Servo FeatherWing (PCA9685)   │
+ │                                              │
+ │  I2C from RP2040: SDA, SCL, GND             │
+ │  V+ from +5V_BUS (servo power domain)       │
+ │                                              │
+ │  CH0 PWM ---> Servo A signal                │
+ │  CH1 PWM ---> Servo B signal                │
+ │                                              │
+ │  Servo A +5V/GND from +5V_BUS/GND_COMMON    │
+ │  Servo B +5V/GND from +5V_BUS/GND_COMMON    │
+ └──────────────────────────────────────────────┘
 
+ ┌──────────────────────────────────────────────┐
+ │       Prop-Maker FeatherWing (LED Driver)   │
+ │                                              │
+ │  LED1/LED2/LED3 are MOSFET-switched outputs │
+ │  for the high-power 3-9W LED channels.      │
+ │                                              │
+ │  Input control from RP2040 GP12/13/14       │
+ │  Power from +5V_BUS, return to GND_COMMON   │
+ └──────────────────────────────────────────────┘
 
 
  Switches (momentary, wired to GND; firmware uses INPUT_PULLUP):
+ Harness ID: H-SW
  ┌────────┐        ┌────────┐        ┌────────┐
  │  SW1   │        │  SW2   │        │  SW3   │
  │ On/Off │        │  Prev  │        │  Next  │
  └───┬────┘        └───┬────┘        └───┬────┘
      |                 |                 |
-   M0 D2             M0 D3             M0 D4
+ RP2040 GP2         RP2040 GP3         RP2040 GP4
    GND               GND               GND
    Hold SW1 + SW3 together for 5s -> reset to sequence 1
 
 
- MOSFET Driver Stage (each high-current channel):
+ Direct Spark Filament Stage:
+ Harness ID: H-SPARK
+
+   RP2040 GPIO pin
+         |
+   [10 ohm series resistor]
+         |
+   Spark filament channel
+
+  Spark branch is supplied from RP2040_BAT in this revision.
+
+
+ MOSFET Driver Stage (beam / optional pump paths):
+ Harness IDs: H-BEAM-CTL, H-BEAM-PWR, H-PUMP-OPT
 
    RP2040 GPIO pin
          |
@@ -95,46 +123,78 @@ Power:
    drain -- Load negative terminal
    source -- GND_COMMON
 
-  Load positive terminal -- +3V_FILAMENT (spark/pulse)
-                  or +5V_BUS      (beam/peltier/pump)
+  Load positive terminal -- +5V_BUS (beam/peltier domain)
+  Optional pump load positive terminal -- +5V_BUS
 
 
- Filament Channels (J601 -> R601-R605 -> J603):
+ Spark Filament Channels (J601 -> R601-R604 -> J603):
+ Harness ID: H-SPARK
 
-   +3V_FILAMENT -> J602 power input
+  RP2040_BAT domain -> spark supply source (direct GPIO channels)
    J601 PWM bus -> R601 10Ω -> Spark Filament 1 load
    J601 PWM bus -> R602 10Ω -> Spark Filament 2 load
    J601 PWM bus -> R603 10Ω -> Spark Filament 3 load
    J601 PWM bus -> R604 10Ω -> Spark Filament 4 load
-   J601 PWM bus -> R605 10Ω -> Pulse Filament load
 
 
- Beam RGB Channels (J701 -> R701-R703 -> J702):
+ Prop-Maker LED Outputs (3-9W LED):
+ Harness IDs: H-BEAM-CTL, H-BEAM-PWR
 
-  +5V_BUS -> J701 power input (for high-power RGB LED)
-   J701 PWM inputs (R/G/B from RP2040 GP12/13/14)
-   -> R701 10Ω -> Beam Red   output (J702 pin 1)
-   -> R702 10Ω -> Beam Green output (J702 pin 2)
-   -> R703 10Ω -> Beam Blue  output (J702 pin 3)
-   J702 pin 4 -> GND_COMMON
+  +5V_BUS powers the Prop-Maker LED output stage
+  RP2040 GP12/13/14 provide control for LED1/LED2/LED3 channels
+  LED load returns to GND_COMMON
+
+  Peltier load is sourced from the Prop-Maker 5V supply domain.
+
+
+ Pump Channel (optional):
+ Harness ID: H-PUMP-OPT
+
+  GP8 can be wired to a pump MOSFET gate, but firmware actions are currently disabled.
 
 
  Power Domain Summary:
    Rail              Source               Protected By   Consumers
-   +5V_BUS           Direct from 5V bat   F801 (3A)      RP2040 (with internal LDO), M0 (with internal LDO),
-                                                         NeoPixel strip, beam RGB, peltier, servo, pump
-   +3V_FILAMENT      3V buck from 5V      F802 (2A)      Spark/pulse filament MOSFET drains (Q1-Q5)
+   +5V_BUS           Direct from 5V bat   F801 (3A)      Servo FeatherWing + servos, Prop-Maker load stage, peltier, optional pump
+   RP2040_BAT        LP503562 cell #1     Feather onboard controller supply, direct spark filament branch (Spark 1-4)
+   CHG_NEO           Adafruit 259 (U812)  Charger IC     Charges LP503562 cell #2 for +3V7_NEO
+   +3V7_NEO          LP503562 cell #2     Inline fuse rec NeoPixel strip only (Adafruit 4865 SK6812, 166 px)
+
+
+ Wire Gauge Guidance (high-current runs):
+   +5V_MAIN and +5V_BUS trunk wiring: use 18 AWG minimum.
+   High-current branch feeds and returns (+3V7_NEO to NeoPixel strip, RP2040_BAT spark branch, +5V_BUS to servo wing/Prop-Maker/peltier): use 20 AWG minimum.
+   Keep GND return wiring for each high-current branch at the same gauge as its positive feed.
+   Signal/control lines (GPIO, I2C, serial, switch leads): 24-26 AWG is acceptable.
+   If a branch run is long or heating is observed, step one gauge larger and re-validate thermal rise under peak load.
+   Use a local inline fuse at each LP503562 battery positive lead near the cell.
 
 
  Quick Net Summary:
-   M0 D2     <- SW1 -> GND   (toggle ON/OFF)
-   M0 D3     <- SW2 -> GND   (previous sequence, 1->3 wrap)
-   M0 D4     <- SW3 -> GND   (next sequence, 3->1 wrap)
-   M0 D13    -> NeoPixel strip data (30 pixels, WS2812B, single strand)
-   M0 TX     -> RP2040 RX    (40ms EffectCommand frames)
-   RP2040 GP5-GP11  -> MOSFET gates for filament channels (Q1-Q5)
-   RP2040 GP12-GP14 -> MOSFET gates for beam RGB channels (Q6-Q8)
-   RP2040 GP15      -> MOSFET/relay gate for peltier (Q9)
-   RP2040 GP8       -> MOSFET gate for pump control (Q10)
-   RP2040 GP7       -> FP-S14B servo signal
+   Harness map:
+   H-PWR-5V    -> +5V input trunk and +5V_BUS load backbone
+   H-BAT-RP    -> J811 RP2040 BAT battery run
+   H-BAT-NEO   -> J812 NeoPixel battery and U812 charger pair
+   H-CORE      -> NeoPixel data/power/ground run
+   H-SW        -> switch inputs to controller
+   H-SPARK     -> spark PWM channels and returns
+   H-SERVO-CTL -> I2C + servo signal lines
+   H-SERVO-PWR -> ServoWing and servo power/ground branches
+   H-BEAM-CTL  -> RP2040 GP12/13/14 control lines
+   H-BEAM-PWR  -> +5V_BUS beam/peltier load-side feed
+   H-PUMP-OPT  -> optional pump control/load branch
+
+   RP2040 GP2   <- SW1 -> GND   (toggle ON/OFF)
+   RP2040 GP3   <- SW2 -> GND   (previous sequence, 1->3 wrap)
+   RP2040 GP4   <- SW3 -> GND   (next sequence, 3->1 wrap)
+   RP2040 GP11  -> NeoPixel strip data (166 pixels, SK6812, Adafruit 4865, single strand)
+   J811         -> RP2040 Feather BAT input (main 3.7V controller/spark battery)
+   U812         -> dedicated external charger for J812 LP503562 battery (+3V7_NEO)
+   +3V7_NEO     -> NeoPixel strip +V (dedicated LP503562 cell)
+   +5V_BUS      -> Prop-Maker load supply and peltier source domain
+   RP2040 GP5/GP6/GP9/GP10 -> direct spark filament outputs (R601-R604)
+   RP2040 GP12-GP14 -> Prop-Maker LED1/LED2/LED3 channel control
+   RP2040 SDA/SCL   -> Servo FeatherWing (PCA9685 @ 0x40)
+   Servo Wing CH0/1 -> Servo A / Servo B signal lines
+   RP2040 GP8       -> optional pump MOSFET gate (disabled in firmware)
    Hold SW1 + SW3 for 5s => reset to sequence 1

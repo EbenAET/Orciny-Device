@@ -1,175 +1,471 @@
-(kicad_sch (version 20211123) (generator eeschema)
-  (uuid 0f9af22f-fc3d-4ad8-8e44-19d1f8fa9426)
-  (paper "A4")
-  (title_block
-    (title "Power Domains")
-    (date "2026-03-31")
-    (rev "C")
-  )
-  (lib_symbols)
-
-  (hierarchical_label "+5V_BUS" (shape output) (at 120 146 0)
-    (effects (font (size 1.27 1.27)) (justify left))
-    (uuid 1818fddf-3122-4735-bcd8-f2e88593de8e)
-  )
-  (hierarchical_label "+3V_FILAMENT" (shape output) (at 120 152 0)
-    (effects (font (size 1.27 1.27)) (justify left))
-    (uuid 38f95f85-6ec5-4378-b2f2-cf7cbde8300f)
-  )
-  (hierarchical_label "GND_COMMON" (shape output) (at 120 158 0)
-    (effects (font (size 1.27 1.27)) (justify left))
-    (uuid 7a6df8f2-b579-452e-b4e3-f24afc36c865)
-  )
-
-  (symbol (lib_id "Connector_Generic:Conn_01x02") (at 62 152 0) (unit 1)
-    (in_bom yes) (on_board yes)
-    (uuid aa90f2b9-a98e-4d20-b67e-2b90f7868cc7)
-    (property "Reference" "J801" (id 0) (at 62 147 0))
-    (property "Value" "Main_5V_In" (id 1) (at 64.54 152 90))
-    (property "Footprint" "Adafruit_Eagle:DCJACK_2MM_PTH" (id 2) (at 62 152 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (id 3) (at 62 152 0))
-    (pin "1" (uuid d2575e6a-cc4c-40ab-9701-3bef23de7749))
-    (pin "2" (uuid 1326d385-cf13-41a0-b953-ba26fca14f9f))
-  )
-
-  (symbol (lib_id "Connector_Generic:Conn_01x03") (at 90 152 0) (unit 1)
-    (in_bom yes) (on_board yes)
-    (uuid 72029b2f-7ef0-4522-9237-4f66125c3afd)
-    (property "Reference" "J802" (id 0) (at 90 146 0))
-    (property "Value" "Power_Distribution" (id 1) (at 92.54 152 90))
-    (property "Footprint" "Adafruit_Eagle:1X03" (id 2) (at 90 152 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (id 3) (at 90 152 0))
-    (pin "1" (uuid dc01b8a2-0f0d-437d-ae42-4e3f2d035a9d))
-    (pin "2" (uuid 58f6432a-f603-41e6-abca-6164f5dd74df))
-    (pin "3" (uuid e7f0b4d3-40bb-4be4-93f5-e8c52d0ca6b9))
-  )
-
-  (symbol (lib_id "Device:Fuse") (at 74 149.46 0) (unit 1)
-    (in_bom yes) (on_board yes)
-    (uuid 03c2f827-baf7-4f09-9f67-39ddb07f8129)
-    (property "Reference" "F801" (id 0) (at 74 146.92 0))
-    (property "Value" "Fuse_5V_Bus" (id 1) (at 74 152 0))
-    (property "Footprint" "Fuse:Fuse_1206_3216Metric" (id 2) (at 74 149.46 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (id 3) (at 74 149.46 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 8dc8f7a6-0882-42bc-a853-edeb18ab194c))
-    (pin "2" (uuid c17a667d-20f8-4a67-8514-f2d1aa7e6f27))
-  )
-  (symbol (lib_id "Device:Fuse") (at 74 152 0) (unit 1)
-    (in_bom yes) (on_board yes)
-    (uuid 9b25e1e7-ec6f-433b-92f5-4bffb93a2ea2)
-    (property "Reference" "F802" (id 0) (at 74 149.46 0))
-    (property "Value" "Fuse_3V_Filament" (id 1) (at 74 154.54 0))
-    (property "Footprint" "Fuse:Fuse_1206_3216Metric" (id 2) (at 74 152 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (id 3) (at 74 152 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid d06c5d32-e8c9-44bd-b268-d75f38ed97f4))
-    (pin "2" (uuid b508ac10-6f43-4d2d-97f0-4f568a89f5b1))
-  )
-  (label "+5V_IN" (at 56.92 150.73 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 0f5a81df-1d23-410e-a63c-0968af621f67)
-  )
-  (label "GND_COMMON" (at 56.92 153.27 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 3d28f6ff-d802-4795-9d78-67ce86a4adfd)
-  )
-  (label "+5V_BUS" (at 84.92 149.46 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid db14d82e-e788-4fd7-8781-794c43180af4)
-  )
-  (label "+3V_FILAMENT" (at 84.92 152 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 8e63017f-3e44-45af-8ece-cf2b7f70f627)
-  )
-  (label "GND_COMMON" (at 84.92 154.54 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 8b47eb0f-ed9f-4e9d-b04e-09fca6f5f3f7)
-  )
-
-  (wire (pts (xy 120 146) (xy 116 146))
-    (stroke (width 0) (type default))
-    (uuid 4c4d01c6-7d8d-41e2-b174-74b853699d96)
-  )
-  (wire (pts (xy 120 152) (xy 116 152))
-    (stroke (width 0) (type default))
-    (uuid 7c611f10-bab4-466f-8109-dce9f1520f0b)
-  )
-  (wire (pts (xy 120 158) (xy 116 158))
-    (stroke (width 0) (type default))
-    (uuid cf223ae5-ad56-4723-90cf-c5ec1f4f62f7)
-  )
-  (wire (pts (xy 56.92 150.73) (xy 62 150.73))
-    (stroke (width 0) (type default))
-    (uuid 80c3f50d-b93e-4f6d-b6fa-e801de4df9db)
-  )
-  (wire (pts (xy 56.92 153.27) (xy 62 153.27))
-    (stroke (width 0) (type default))
-    (uuid 8243dcf2-0b56-4169-bf9f-84df7afd7c08)
-  )
-  (wire (pts (xy 84.92 149.46) (xy 90 149.46))
-    (stroke (width 0) (type default))
-    (uuid a6c86d51-4d84-48ac-b3ba-509f9fce1e9b)
-  )
-  (wire (pts (xy 84.92 152) (xy 90 152))
-    (stroke (width 0) (type default))
-    (uuid b1324d46-cd2d-43eb-b4f8-f59cc4fde34c)
-  )
-  (wire (pts (xy 84.92 154.54) (xy 90 154.54))
-    (stroke (width 0) (type default))
-    (uuid fc5af154-bfb7-4041-bf63-06d84d80bb5b)
-  )
-  (wire (pts (xy 62 150.73) (xy 68 150.73))
-    (stroke (width 0) (type default))
-    (uuid 0cd4ef9e-5f4d-4d50-b13a-ddd8fbe20ca6)
-  )
-  (wire (pts (xy 68 149.46) (xy 68 152))
-    (stroke (width 0) (type default))
-    (uuid d9590dae-34db-4d79-a042-cf462d1f090e)
-  )
-  (wire (pts (xy 68 149.46) (xy 72.73 149.46))
-    (stroke (width 0) (type default))
-    (uuid f8884a58-a80f-4472-98ea-7f39d6a385e7)
-  )
-  (wire (pts (xy 68 152) (xy 72.73 152))
-    (stroke (width 0) (type default))
-    (uuid f5f8f467-8b30-4cfd-b92a-c1af5832b90d)
-  )
-  (wire (pts (xy 75.27 149.46) (xy 84.92 149.46))
-    (stroke (width 0) (type default))
-    (uuid 442f3501-152f-4bdf-9701-765ca30f8f95)
-  )
-  (wire (pts (xy 75.27 152) (xy 84.92 152))
-    (stroke (width 0) (type default))
-    (uuid 422fc9f0-16f3-4120-bd1f-e725f573e28e)
-  )
-
-  (sheet_instances
-    (path "/" (page "8"))
-  )
-
-  (symbol_instances
-    (path "/aa90f2b9-a98e-4d20-b67e-2b90f7868cc7"
-      (reference "J801") (unit 1) (value "Main_5V_In") (footprint "Adafruit_Eagle:DCJACK_2MM_PTH")
-    )
-    (path "/72029b2f-7ef0-4522-9237-4f66125c3afd"
-      (reference "J802") (unit 1) (value "Power_Distribution") (footprint "Adafruit_Eagle:1X03")
-    )
-    (path "/03c2f827-baf7-4f09-9f67-39ddb07f8129"
-      (reference "F801") (unit 1) (value "Fuse_5V_Bus") (footprint "")
-    )
-    (path "/9b25e1e7-ec6f-433b-92f5-4bffb93a2ea2"
-      (reference "F802") (unit 1) (value "Fuse_3V_Filament") (footprint "")
-    )
-  )
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "0f9af22f-fc3d-4ad8-8e44-19d1f8fa9426")
+	(paper "A4")
+	(title_block
+		(title "Power Domains")
+		(date "2026-03-31")
+		(rev "C")
+	)
+	(lib_symbols)
+	(wire
+		(pts
+			(xy 75.27 152) (xy 90 152)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "422fc9f0-16f3-4120-bd1f-e725f573e28e")
+	)
+	(wire
+		(pts
+			(xy 75.27 149.46) (xy 90 149.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "442f3501-152f-4bdf-9701-765ca30f8f95")
+	)
+	(wire
+		(pts
+			(xy 120 146) (xy 116 146)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4c4d01c6-7d8d-41e2-b174-74b853699d96")
+	)
+	(wire
+		(pts
+			(xy 120 152) (xy 116 152)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7c611f10-bab4-466f-8109-dce9f1520f0b")
+	)
+	(wire
+		(pts
+			(xy 56.92 150.73) (xy 68 150.73)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "80c3f50d-b93e-4f6d-b6fa-e801de4df9db")
+	)
+	(wire
+		(pts
+			(xy 56.92 153.27) (xy 62 153.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8243dcf2-0b56-4169-bf9f-84df7afd7c08")
+	)
+	(wire
+		(pts
+			(xy 120 158) (xy 116 158)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cf223ae5-ad56-4723-90cf-c5ec1f4f62f7")
+	)
+	(wire
+		(pts
+			(xy 68 149.46) (xy 68 152)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d9590dae-34db-4d79-a042-cf462d1f090e")
+	)
+	(wire
+		(pts
+			(xy 68 152) (xy 72.73 152)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f5f8f467-8b30-4cfd-b92a-c1af5832b90d")
+	)
+	(wire
+		(pts
+			(xy 68 149.46) (xy 72.73 149.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f8884a58-a80f-4472-98ea-7f39d6a385e7")
+	)
+	(wire
+		(pts
+			(xy 84.92 154.54) (xy 90 154.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fc5af154-bfb7-4041-bf63-06d84d80bb5b")
+	)
+	(label "+5V_IN"
+		(at 56.92 150.73 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0f5a81df-1d23-410e-a63c-0968af621f67")
+	)
+	(label "GND_COMMON"
+		(at 56.92 153.27 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3d28f6ff-d802-4795-9d78-67ce86a4adfd")
+	)
+	(label "GND_COMMON"
+		(at 84.92 154.54 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8b47eb0f-ed9f-4e9d-b04e-09fca6f5f3f7")
+	)
+	(label "+3V_FILAMENT"
+		(at 84.92 152 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8e63017f-3e44-45af-8ece-cf2b7f70f627")
+	)
+	(label "+5V_BUS"
+		(at 84.92 149.46 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "db14d82e-e788-4fd7-8781-794c43180af4")
+	)
+	(hierarchical_label "+5V_BUS"
+		(shape output)
+		(at 120 146 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "1818fddf-3122-4735-bcd8-f2e88593de8e")
+	)
+	(hierarchical_label "+3V_FILAMENT"
+		(shape output)
+		(at 120 152 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "38f95f85-6ec5-4378-b2f2-cf7cbde8300f")
+	)
+	(hierarchical_label "GND_COMMON"
+		(shape output)
+		(at 120 158 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "7a6df8f2-b579-452e-b4e3-f24afc36c865")
+	)
+	(symbol
+		(lib_id "Device:Fuse")
+		(at 74 149.46 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "03c2f827-baf7-4f09-9f67-39ddb07f8129")
+		(property "Reference" "F?"
+			(at 74 146.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Fuse_5V_Bus"
+			(at 74 152 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Fuse:Fuse_1206_3216Metric"
+			(at 74 149.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 74 149.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 74 149.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "8dc8f7a6-0882-42bc-a853-edeb18ab194c")
+		)
+		(pin "2"
+			(uuid "c17a667d-20f8-4a67-8514-f2d1aa7e6f27")
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110/ec2c58ca-5d95-4f44-bcd2-aa6cc4c56f0f"
+					(reference "F?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x03")
+		(at 90 152 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "72029b2f-7ef0-4522-9237-4f66125c3afd")
+		(property "Reference" "J?"
+			(at 90 146 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Power_Distribution"
+			(at 92.54 152 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Adafruit_Eagle:1X03"
+			(at 90 152 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 90 152 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 90 152 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "dc01b8a2-0f0d-437d-ae42-4e3f2d035a9d")
+		)
+		(pin "2"
+			(uuid "58f6432a-f603-41e6-abca-6164f5dd74df")
+		)
+		(pin "3"
+			(uuid "e7f0b4d3-40bb-4be4-93f5-e8c52d0ca6b9")
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110/ec2c58ca-5d95-4f44-bcd2-aa6cc4c56f0f"
+					(reference "J?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:Fuse")
+		(at 74 152 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9b25e1e7-ec6f-433b-92f5-4bffb93a2ea2")
+		(property "Reference" "F?"
+			(at 74 149.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Fuse_3V_Filament"
+			(at 74 154.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Fuse:Fuse_1206_3216Metric"
+			(at 74 152 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 74 152 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 74 152 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "d06c5d32-e8c9-44bd-b268-d75f38ed97f4")
+		)
+		(pin "2"
+			(uuid "b508ac10-6f43-4d2d-97f0-4f568a89f5b1")
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110/ec2c58ca-5d95-4f44-bcd2-aa6cc4c56f0f"
+					(reference "F?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 62 152 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "aa90f2b9-a98e-4d20-b67e-2b90f7868cc7")
+		(property "Reference" "J?"
+			(at 62 147 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Main_5V_In"
+			(at 64.54 152 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Adafruit_Eagle:DCJACK_2MM_PTH"
+			(at 62 152 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 62 152 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 62 152 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "d2575e6a-cc4c-40ab-9701-3bef23de7749")
+		)
+		(pin "2"
+			(uuid "1326d385-cf13-41a0-b953-ba26fca14f9f")
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110/ec2c58ca-5d95-4f44-bcd2-aa6cc4c56f0f"
+					(reference "J?")
+					(unit 1)
+				)
+			)
+		)
+	)
 )

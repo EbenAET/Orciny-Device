@@ -1,0 +1,140 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "bfdec584-7582-4877-889f-0fbbd4c2f894")
+	(paper "A4")
+	(lib_symbols)
+	(sheet
+		(at 16.51 78.74)
+		(size 45.72 36.83)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "1b5a3cf6-8e74-420b-ae38-1c4a9ddb30f4")
+		(property "Sheetname" "Power Supply"
+			(at 16.51 78.0284 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Power.kicad_sch"
+			(at 16.51 116.1546 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "orciny wiring RevB"
+				(path "/bfdec584-7582-4877-889f-0fbbd4c2f894"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 74.93 22.86)
+		(size 63.5 45.72)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "2b72e514-ba22-409c-ab22-e55895e12f57")
+		(property "Sheetname" "Primary Control"
+			(at 74.93 22.1484 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "FeatherM0.kicad_sch"
+			(at 74.93 69.1646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "orciny wiring RevB"
+				(path "/bfdec584-7582-4877-889f-0fbbd4c2f894"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 76.2 135.89)
+		(size 62.23 43.18)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "79a67de4-4c15-45be-be2b-e39f654dc452")
+		(property "Sheetname" "FX Executor"
+			(at 76.2 135.1784 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Feather2040.kicad_sch"
+			(at 76.2 179.6546 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "orciny wiring RevB"
+				(path "/bfdec584-7582-4877-889f-0fbbd4c2f894"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,599 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "df52b1f2-2c13-4aa0-9de5-1a6064fd8b49")
+	(paper "A4")
+	(title_block
+		(title "Prop-Maker LED Outputs")
+		(date "2026-04-08")
+		(rev "D")
+	)
+	(lib_symbols)
+	(text "Prop-Maker LED output stage\n3 control channels from RP2040\n4th pin on output connector carries +5V bus for the LED load"
+		(exclude_from_sim no)
+		(at 60 84 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
+		(uuid "54d83153-d0be-42bf-bc2d-18fcd48d45ca")
+	)
+	(wire
+		(pts
+			(xy 54.92 94.73) (xy 72.73 94.73)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "073b2b6e-4289-42d8-9f41-c8689d24ff7c")
+	)
+	(wire
+		(pts
+			(xy 75.27 92.19) (xy 88 92.19)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4ef65d5d-80ab-4360-a697-3d246f3ef4e8")
+	)
+	(wire
+		(pts
+			(xy 20 102) (xy 24 102)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "73431468-24bd-4179-ad45-647d1e6ab29a")
+	)
+	(wire
+		(pts
+			(xy 20 90) (xy 24 90)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9fc18c91-7fd4-44a9-bff1-89cdd5f4f2c2")
+	)
+	(wire
+		(pts
+			(xy 20 106) (xy 24 106)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "adfafb4c-0452-4336-b48d-9536f1f53a27")
+	)
+	(wire
+		(pts
+			(xy 54.92 92.19) (xy 72.73 92.19)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b03824a9-3076-46e5-b613-6ee03e3bc59c")
+	)
+	(wire
+		(pts
+			(xy 20 94) (xy 24 94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b8256f67-e0bf-4f26-a0c6-8dc6af31d24b")
+	)
+	(wire
+		(pts
+			(xy 54.92 97.27) (xy 72.73 97.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c15959d1-f613-4195-9c4d-f527634dad82")
+	)
+	(wire
+		(pts
+			(xy 82.92 99.81) (xy 88 99.81)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d4b20dcf-d2f9-4872-a573-b75aa91756a3")
+	)
+	(wire
+		(pts
+			(xy 54.92 99.81) (xy 60 99.81)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e4e91d34-3596-4f2c-b609-bcd8565ca954")
+	)
+	(wire
+		(pts
+			(xy 75.27 94.73) (xy 88 94.73)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f021ded4-fa02-4c88-ba08-b477f8db15b3")
+	)
+	(wire
+		(pts
+			(xy 75.27 97.27) (xy 88 97.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f3d05fc0-c773-4586-ac4a-98cdbcc80443")
+	)
+	(wire
+		(pts
+			(xy 20 98) (xy 24 98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f6096f1d-f0db-4ba3-aacd-b76deff3cb3f")
+	)
+	(label "PROP_LED2_PWM"
+		(at 54.92 94.73 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5e261a58-ea31-4548-b0a4-0d571533f04b")
+	)
+	(label "PROP_LED3_PWM"
+		(at 54.92 97.27 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "71d0877f-4c77-4907-a4e0-639f3ec2c952")
+	)
+	(label "+5V_BUS"
+		(at 82.92 99.81 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "997d74a1-830f-4425-844b-b21dce44bca2")
+	)
+	(label "PROP_LED1_PWM"
+		(at 54.92 92.19 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cf9f78f8-3574-4dc0-a73b-d6ccf7275a92")
+	)
+	(label "GND_COMMON"
+		(at 54.92 99.81 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "dc73d787-afca-4d53-83eb-45aab76f9976")
+	)
+	(hierarchical_label "PROP_LED3_PWM"
+		(shape input)
+		(at 20 98 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "3d332d62-80b7-4877-8d2e-4fdc4aefbdbe")
+	)
+	(hierarchical_label "PROP_LED1_PWM"
+		(shape input)
+		(at 20 90 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "7026fef1-59e1-442f-b111-3188be9084af")
+	)
+	(hierarchical_label "GND_COMMON"
+		(shape input)
+		(at 20 106 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "72042490-bef7-4ef3-beb8-d9f2506ae0bd")
+	)
+	(hierarchical_label "+5V_BUS"
+		(shape input)
+		(at 20 102 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "7663a14d-f064-462b-af59-0f185dc54826")
+	)
+	(hierarchical_label "PROP_LED2_PWM"
+		(shape input)
+		(at 20 94 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "911d4f59-d53e-4530-a6ca-7f474a54f876")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 74 92.19 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0459a7f8-2ca2-4539-b326-d3ceb5aab69f")
+		(property "Reference" "R?"
+			(at 74 89.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10R"
+			(at 74 94.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 74 92.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 74 92.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 74 92.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "23e0b4d9-2a28-4779-9f1a-785814cf59df")
+		)
+		(pin "2"
+			(uuid "bf2e2630-99b1-46af-9f7c-6844484f32f1")
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110/5d0cc18f-b7f8-4f7f-b50b-52a301d9f650"
+					(reference "R?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x04")
+		(at 88 96 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2c16f2f6-4287-4ab7-b6da-966f2ff65489")
+		(property "Reference" "J?"
+			(at 88 89 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "LED_3_9W_Out"
+			(at 90.54 96 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Adafruit_Eagle:1X04-3.5MM"
+			(at 88 96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 88 96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 88 96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "9e23ff84-2278-4ea8-a69b-c3c1570ca651")
+		)
+		(pin "2"
+			(uuid "d2968a24-6862-42e5-8660-d90cc48ef67a")
+		)
+		(pin "3"
+			(uuid "a76cb7cd-31ec-4c7d-adbf-fef8f7f4f56a")
+		)
+		(pin "4"
+			(uuid "10c8ddb6-2f87-479e-b80a-f6d674573f2f")
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110/5d0cc18f-b7f8-4f7f-b50b-52a301d9f650"
+					(reference "J?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 74 97.27 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "36d20e64-42bc-4b8c-b574-dd32f6ce2f85")
+		(property "Reference" "R?"
+			(at 74 94.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10R"
+			(at 74 99.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 74 97.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 74 97.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 74 97.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "728ecf14-a5f9-4b90-a7a9-c77d6f76a9ea")
+		)
+		(pin "2"
+			(uuid "0af75115-0d8d-4f3a-bffc-cd15db4245d8")
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110/5d0cc18f-b7f8-4f7f-b50b-52a301d9f650"
+					(reference "R?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 74 94.73 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9719f36e-d8f1-4feb-afcf-95f4de9033ce")
+		(property "Reference" "R?"
+			(at 74 92.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10R"
+			(at 74 97.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 74 94.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 74 94.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 74 94.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "cb4b6bde-ab4f-4f9f-ab36-f13f1f31feb2")
+		)
+		(pin "2"
+			(uuid "8fb4f8ad-c790-4f09-a018-8c4b7b68aeca")
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110/5d0cc18f-b7f8-4f7f-b50b-52a301d9f650"
+					(reference "R?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x04")
+		(at 60 96 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c6f95c19-e7b5-4e42-a3da-2cf6df70e274")
+		(property "Reference" "J?"
+			(at 60 89 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PropMaker_PWM_Inputs"
+			(at 62.54 96 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Adafruit_Eagle:1X04-BIG"
+			(at 60 96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 60 96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 60 96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "e2041f17-7223-4ad8-b688-8accc67f4778")
+		)
+		(pin "2"
+			(uuid "5c071cdb-c4d5-40fa-8ea1-fb9ad8fd8bea")
+		)
+		(pin "3"
+			(uuid "28c25268-a39c-4fd8-9c7c-10afe6b6f0c9")
+		)
+		(pin "4"
+			(uuid "f0e99248-f220-4d81-8b16-d1e93ca2e487")
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110/5d0cc18f-b7f8-4f7f-b50b-52a301d9f650"
+					(reference "J?")
+					(unit 1)
+				)
+			)
+		)
+	)
+)

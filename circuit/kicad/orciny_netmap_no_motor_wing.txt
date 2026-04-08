@@ -1,94 +1,95 @@
-ORCINY KICAD NET MAP - CURRENT REVISION
-=======================================
-Updated for single-strand NeoPixel + direct GPIO pump control
+ORCINY KICAD NET MAP - RP2040 ONLY
+==================================
+Current electrical reference for the RP2040-only hardware build.
 
-Controller-to-controller link
-- M0_SERIAL1_TX      -> RP2040_SERIAL1_RX
-- M0_GND             -> RP2040_GND
-
-Switch controls (momentary switches to GND, firmware uses INPUT_PULLUP)
-- SW1: M0_PIN2 -> switch -> GND  (toggle on/off)
-- SW2: M0_PIN3 -> switch -> GND  (previous sequence, 1->3 wrap)
-- SW3: M0_PIN4 -> switch -> GND  (next sequence, 3->1 wrap)
+Controller and UI
+- RP2040 is the only controller in this revision.
+- SW1: RP2040_GP2 -> switch -> GND (toggle output on/off)
+- SW2: RP2040_GP3 -> switch -> GND (previous sequence)
+- SW3: RP2040_GP4 -> switch -> GND (next sequence)
 - Hold SW1+SW3 for 5 seconds -> reset to sequence 1
 
-M0 NeoPixel output (single strand)
-- M0_PIN13 -> NeoPixel_Data (30-pixel WS2812B strip)
-- +5V_BUS -> NeoPixel_Power
+NeoPixel core
+- RP2040_GP11 -> NeoPixel_Data (Adafruit 4865, SK6812, 166 pixels)
+- +3V7_NEO -> NeoPixel_Power
 - GND_COMMON -> NeoPixel_Ground
 
-RP2040 effect outputs (all high-current paths require MOSFET/driver stages)
-- RP2040_PIN5  -> Q1_gate       -> SPARK1_drain
-- RP2040_PIN6  -> Q2_gate       -> SPARK2_drain
-- RP2040_PIN9  -> Q3_gate       -> SPARK3_drain
-- RP2040_PIN10 -> Q4_gate       -> SPARK4_drain
-- RP2040_PIN11 -> Q5_gate       -> PULSE_FILAMENT_drain
-- RP2040_PIN12 -> Q6_gate       -> BEAM_R_drain
-- RP2040_PIN13 -> Q7_gate       -> BEAM_G_drain
-- RP2040_PIN14 -> Q8_gate       -> BEAM_B_drain
-- RP2040_PIN15 -> Q9_gate       -> PELTIER_drain
-- RP2040_PIN8  -> Q10_gate      -> PUMP_drain (NEW: direct GPIO pump control)
-- RP2040_PIN7  -> SERVO_signal  -> FP-S14B claw servo
+RP2040 effect outputs
+- RP2040_GP5  -> R601 -> SPARK1_FILAMENT
+- RP2040_GP6  -> R602 -> SPARK2_FILAMENT
+- RP2040_GP9  -> R603 -> SPARK3_FILAMENT
+- RP2040_GP10 -> R604 -> SPARK4_FILAMENT
+- RP2040_GP12 -> PROPMAKER_LED1_CTRL
+- RP2040_GP13 -> PROPMAKER_LED2_CTRL
+- RP2040_GP14 -> PROPMAKER_LED3_CTRL
+- RP2040_I2C_SDA -> SERVO_WING_SDA
+- RP2040_I2C_SCL -> SERVO_WING_SCL
+- SERVO_WING_CH0 -> SERVO_A_SIGNAL
+- SERVO_WING_CH1 -> SERVO_B_SIGNAL
+- RP2040_GP8 -> PUMP_ENABLE_GATE_OPTIONAL (optional, firmware disabled)
 
 Power domains
 - +5V_IN (from 5V battery via main fuse)
-  +-> F801 (+5V_BUS direct)
-  +-> F802 (+3V_FILAMENT buck input)
+  +-> F801
+  +-> +5V_BUS (ServoWing + Prop-Maker/peltier + optional pump)
 
-- +5V_BUS -> RP2040 (internal LDO for 3.3V logic), M0 (internal LDO for 3.3V logic),
-            NeoPixel strip, beam RGB, peltier, servo, pump
-- +3V_FILAMENT -> Spark/pulse filament MOSFET drains (Q1-Q5)
+- RP2040_BAT_IN (from dedicated LP503562 battery #1 at J811)
+  +-> Feather RP2040 BAT input (Feather onboard charger path)
+  +-> RP2040_BAT domain (controller and spark branch)
 
-MOSFET all-gate configuration
-- Spark/Pulse MOSFETs (Q1-Q5):
-  - Gate resistor: 1K-10K (3.3V logic from RP2040 GPIO)
-  - Drain: Filament load negative
-  - Source: GND_COMMON
-  - Drain supply: +3V_FILAMENT
+- +3V7_NEO_IN (from dedicated LP503562 battery #2 at J812)
+  +-> +3V7_NEO (NeoPixel strip supply)
 
-- Beam RGB MOSFETs (Q6-Q8):
-  - Gate: RP2040 GPIO pin (3.3V output)
-  - Drain: RGB LED leg negative
-  - Source: GND_COMMON
-  - Drain supply: +5V_BUS
+- CHG_NEO_USB_5V -> U812 (Adafruit 259) -> LP503562 battery #2 (J812)
 
-- Peltier/Pump MOSFETs (Q9, Q10):
-  - Gate: RP2040 GPIO pin (3.3V output)
-  - Drain: Load negative
-  - Source: GND_COMMON
-  - Drain supply: +5V_BUS
+Load domain summary
+- +5V_BUS -> Servo FeatherWing, Prop-Maker LED stage, peltier source, optional pump
+- RP2040_BAT -> RP2040 logic and direct spark filament branch
+- +3V7_NEO -> NeoPixel strip only
 
-Current-limiting resistors
-- R601-R604, R605: 10Ω series on spark and pulse loads (3V domain)
-- R701-R703: 10Ω series on beam RGB color legs (5V domain)
+Spark branch
+- Spark channels are direct RP2040 GPIO outputs through 10 ohm series resistors.
+- R601-R604: one 10 ohm resistor per spark channel.
 
-Fuses and ratings
-- F801: 3A slow-blow (+5V_BUS main branch; all 5V loads peak ~2.5A)
-- F802: 2A slow-blow (+3V_FILAMENT buck output; spark/pulse peak ~1.5A)
+Prop-Maker and servo domains
+- Prop-Maker control inputs: GP12/GP13/GP14
+- Prop-Maker load supply domain: +5V_BUS
+- ServoWing control: I2C SDA/SCL from RP2040
+- ServoWing power: +5V_BUS and GND_COMMON
+
+Optional pump branch
+- Gate: RP2040_GP8
+- Drain: load negative
+- Source: GND_COMMON
+- Load positive: +5V_BUS
 
 Connector mapping
 - J801: 5V power input connector (JST XT60 or barrel jack)
-- J802: Power distribution hub (3-pin: +5V_BUS, +3V_FILAMENT, GND)
-- J601: 6-pin filament PWM bus (SPARK1-4, PULSE, GND inputs from RP2040)
-- J602: 2-pin JST filament 3V power
-- J603: 5-pin filament outputs (post-resistor to loads)
-- J701: 4-pin beam RGB PWM input (R/G/B, GND from RP2040)
-- J702: 4-position screw terminal beam RGB outputs (R/G/B/GND)
-- J703: 2-pin JST peltier load output (5V via Q9)
-- J401: 2-pin JST pump output (Q10 drain to pump terminals, 5V)
-- J402: 3-pin servo signal connector (signal + 5V_BUS + GND for FP-S14B)
+- J802: power distribution hub (+5V_BUS, RP2040_BAT, +3V7_NEO, GND)
+- J811: RP2040 main battery input (LP503562 #1)
+- J812: NeoPixel battery input (LP503562 #2)
+- U812: Adafruit 259 charger for J812 NeoPixel battery only
+- J601: spark PWM bus input (SPARK1-4 + GND from RP2040)
+- J603: spark load outputs (post-resistor)
+- J701: Prop-Maker control header (LED1/LED2/LED3 control + GND)
+- J702: 3-9W LED output connector
+- J703: peltier load output
+- J401: optional pump output
+- J402: Servo A connector (signal + +5V_BUS + GND)
+- J403: Servo B connector (signal + +5V_BUS + GND)
 
-Grounding Rules
+Grounding rules
 - [MANDATORY] Tie all grounds together:
   - RP2040 ground
-  - M0 ground
-  - All MOSFET sources to GND_COMMON
+  - LP503562 RP2040 battery negative
+  - LP503562 NeoPixel battery negative
+  - U812 charger ground
   - NeoPixel strip ground
-  - Pump/servo/peltier driver grounds
+  - Spark returns
+  - Servo/Prop-Maker/pump/peltier returns
   - Switch grounds
-  - 5V input negative (battery pack or barrel jack shell)
+  - 5V input negative
 
-Firmware Implementation Notes
-- RP2040 DeviceConfig.h: Pump control uses GPIO GP8 through Q10 MOSFET gate
-- Pump control: digitalWrite(kPumpControlPin, HIGH) to turn on; duration managed in sequence logic
-- No I2C dependency; M0->RP2040 serial link remains unchanged at 40ms periodic EffectCommand updates
+Rail isolation rules
+- Keep +5V_BUS, RP2040_BAT, and +3V7_NEO positive rails isolated from each other.
+- Keep U812 charger output isolated to the NeoPixel battery rail only.

@@ -1,29 +1,31 @@
 flowchart TD
   PS5[5V Battery]
-  PS3F[3V_FILAMENT Buck]
+  CNEO[Adafruit 259 Charger<br/>NeoPixel Battery]
+  BRP[PKCell LP503562 3.7V 1200mAh<br/>RP2040 Main Battery]
+  BNEO[PKCell LP503562 3.7V 1200mAh<br/>NeoPixel Supply]
   GND[Common Ground]
 
   RP[Feather RP2040]
   M0[Feather M0]
-  CORE[WS2812B Core Strip 30px]
+  CORE[Adafruit 4865 SK6812 Core Strip 166px\nM0 firmware 2A max current guard rail]
 
-  SW1[Switch 1 to GND\nM0 Pin 2: On/Off]
-  SW2[Switch 2 to GND\nM0 Pin 3: Previous]
-  SW3[Switch 3 to GND\nM0 Pin 4: Next]
+  SW1["Switch 1 to GND\nM0 Pin 2: On/Off"]
+  SW2["Switch 2 to GND\nM0 Pin 3: Previous"]
+  SW3["Switch 3 to GND\nM0 Pin 4: Next"]
 
-  SP1[Spark Filament 1\nRP2040 Pin 5 via MOSFET]
-  SP2[Spark Filament 2\nRP2040 Pin 6 via MOSFET]
-  SP3[Spark Filament 3\nRP2040 Pin 9 via MOSFET]
-  SP4[Spark Filament 4\nRP2040 Pin 10 via MOSFET]
-  PF[Pulse Filament\nRP2040 Pin 11 via MOSFET]
+  SP1["Spark Filament 1\nRP2040 Pin 5 direct PWM"]
+  SP2["Spark Filament 2\nRP2040 Pin 6 direct PWM"]
+  SP3["Spark Filament 3\nRP2040 Pin 9 direct PWM"]
+  SP4["Spark Filament 4\nRP2040 Pin 10 direct PWM"]
 
-  BR[Beam R\nRP2040 Pin 12 via MOSFET]
-  BG[Beam G\nRP2040 Pin 13 via MOSFET]
-  BB[Beam B\nRP2040 Pin 14 via MOSFET]
-  PEL[Peltier Enable\nRP2040 Pin 15 via MOSFET/Relay]
+  PM1["Prop-Maker LED1\nRP2040 Pin 12 control"]
+  PM2["Prop-Maker LED2\nRP2040 Pin 13 control"]
+  PM3["Prop-Maker LED3\nRP2040 Pin 14 control"]
 
-  PUMP[Peristaltic Pump\nRP2040 Pin 8 via MOSFET]
-  CLAW[FP-S14B Servo\nRP2040 Pin 7]
+  SWING["8ch Servo FeatherWing\nPCA9685 at I2C 0x40"]
+  SA["Servo A\nFeatherWing CH0"]
+  SB["Servo B\nFeatherWing CH1"]
+  PUMP["Peristaltic Pump (optional)\nRP2040 Pin 8 via MOSFET\nFW disabled"]
 
   M0 -- Serial1 TX --> RP
   M0 -- Pin 13 Data --> CORE
@@ -32,38 +34,45 @@ flowchart TD
   RP --> SP2
   RP --> SP3
   RP --> SP4
-  RP --> PF
-  RP --> BR
-  RP --> BG
-  RP --> BB
-  RP --> PEL
+  RP --> PM1
+  RP --> PM2
+  RP --> PM3
+  RP -- I2C SDA/SCL --> SWING
   RP --> PUMP
-  RP --> CLAW
+  SWING --> SA
+  SWING --> SB
 
   M0 --- SW1
   M0 --- SW2
   M0 --- SW3
 
-  PS5 --> RP
-  PS5 --> M0
-  PS5 --> CORE
-  PS3F --> SP1
-  PS3F --> SP2
-  PS3F --> SP3
-  PS3F --> SP4
-  PS3F --> PF
-  PS5 --> BR
-  PS5 --> BG
-  PS5 --> BB
-  PS5 --> PEL
+  PS5 --> CNEO
+  CNEO --> BNEO
+  BRP --> RP
+  BRP --> M0
+  BNEO --> CORE
+  BRP --> SP1
+  BRP --> SP2
+  BRP --> SP3
+  BRP --> SP4
+  PS5 --> PM1
+  PS5 --> PM2
+  PS5 --> PM3
   PS5 --> PUMP
-  PS5 --> CLAW
+  PS5 --> SWING
+  PS5 --> SA
+  PS5 --> SB
 
   GND --- RP
   GND --- M0
+  GND --- CNEO
+  GND --- BRP
+  GND --- BNEO
   GND --- CORE
   GND --- SW1
   GND --- SW2
   GND --- SW3
   GND --- PUMP
-  GND --- CLAW
+  GND --- SWING
+  GND --- SA
+  GND --- SB

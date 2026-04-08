@@ -39,6 +39,33 @@ The scaffold makes a few deliberate assumptions that you should verify against y
 
 This revision intentionally removes NeoPXL8, Motor FeatherWing, and Feather Doubler dependencies.
 
+## Box Sync Workflow
+
+- Use `tools/sync-box-local.ps1` to audit or sync the Box copy and the local git clone.
+- Default paths are the current repo root and `~/Box/Orciny Device`.
+- Run an audit first:
+
+```powershell
+.\tools\sync-box-local.ps1 -Mode Audit
+```
+
+- Copy newer or missing files from Box into the repo:
+
+```powershell
+.\tools\sync-box-local.ps1 -Mode BoxToRepo -PruneLegacyDuplicates
+```
+
+- Copy newer or missing files from the repo back into Box:
+
+```powershell
+.\tools\sync-box-local.ps1 -Mode RepoToBox -PruneLegacyDuplicates
+```
+
+- Add `-WhatIf` to preview file operations without changing anything.
+- Add `-DeleteDestinationOnly` only when you explicitly want the destination side pruned to match the source.
+- Add `-PruneLegacyDuplicates` to remove the old root-level duplicate library and backup folders and keep the canonical `circuit/kicad/...` layout intact.
+- The sync skips nested `.git` directories, the old root-level duplicate library and backup folders, plus `.DS_Store` and `Thumbs.db` files.
+
 ## How To Use
 
 1. Open `arduino/rp2040_fx_controller/rp2040_fx_controller.ino` in Arduino IDE and select the Feather RP2040 target.

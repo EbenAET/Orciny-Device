@@ -23,7 +23,6 @@ This project now includes official Adafruit CAD repositories under this folder:
 ## Concrete Assignments For This Project
 
 - RP2040 Feather controller: `Adafruit_Eagle:FEATHERWING`
-- M0 Feather controller: `Adafruit_Eagle:FEATHERWING`
 - SW1/SW2/SW3 momentary buttons: `Adafruit_Eagle:PUSHBUTTON_SMD_SJ`
 - 5V DC input jack: `Adafruit_Eagle:DCJACK_2MM_PTH`
 - Pump/Peltier 2-pin connector: `Adafruit_Eagle:JST-PH-2-THM`

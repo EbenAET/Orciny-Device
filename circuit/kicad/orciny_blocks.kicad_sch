@@ -1,362 +1,927 @@
-(kicad_sch (version 20211123) (generator eeschema)
-
-  (uuid 93f1db06-4f89-4f2a-95f2-28a7f9d25110)
-
-  (paper "A3")
-
-  (title_block
-    (title "Orciny Device - Block Schematic")
-    (date "2026-03-30")
-    (rev "B")
-    (company "EbenAET")
-  )
-
-  (lib_symbols)
-
-  (sheet (at 20.00 20.00) (size 70.00 50.00)
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (fill (color 0 0 0 0.0000))
-    (uuid 8aa1a9ce-2c22-44df-9d4a-d8ec8ad1d7a1)
-    (property "Sheet name" "RP2040 Main Controller" (id 0) (at 20.00 19.20 0)
-      (effects (font (size 1.50 1.50)) (justify left bottom))
-    )
-    (property "Sheet file" "sheet_rp2040.kicad_sch" (id 1) (at 20.00 70.80 0)
-      (effects (font (size 1.50 1.50)) (justify left top))
-    )
-    (pin "SW1_IN" input (at 20.00 30.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 3d6bd0bf-ff70-44f3-9307-090e3e9bfcd4)
-    )
-    (pin "SW2_IN" input (at 20.00 34.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 9956a777-2681-4d9a-9c55-3de6cb2d35cb)
-    )
-    (pin "SW3_IN" input (at 20.00 38.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid f0f79d64-16f2-40be-adf8-ee145512baec)
-    )
-    (pin "SERIAL_LINK" output (at 90.00 28.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid e7de112c-f77f-422f-beb2-d42f3301e8fe)
-    )
-    (pin "PUMP_EN" bidirectional (at 90.00 32.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid e156c02e-0d0f-4a79-b41b-1458ce26f2ac)
-    )
-    (pin "SERVO_SIG" bidirectional (at 90.00 36.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid f726ecf7-4dab-4ce6-a3ba-2c1834072d41)
-    )
-    (pin "SPARK1_PWM" output (at 90.00 42.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid ad9d3784-cd25-48b0-8ec9-cf14f07f66f6)
-    )
-    (pin "SPARK2_PWM" output (at 90.00 46.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 186f2617-90dc-477c-815d-6f95f17e78d1)
-    )
-    (pin "SPARK3_PWM" output (at 90.00 50.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid f3f6a81e-f1f6-471c-9b56-91f641adce81)
-    )
-    (pin "SPARK4_PWM" output (at 90.00 54.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 6a99a3de-ed42-42cd-a9cf-794556a2286a)
-    )
-    (pin "PULSE_PWM" output (at 90.00 58.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 7af17b2b-260f-4f02-b737-a39358a818f9)
-    )
-    (pin "BEAM_R_PWM" output (at 90.00 62.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 8eb4d3fc-fd2b-42ca-b44c-4186ef4d8d56)
-    )
-    (pin "BEAM_G_PWM" output (at 90.00 66.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid b0fdf2a4-81c8-4f0d-87be-a5e8b6ca8f5c)
-    )
-    (pin "BEAM_B_PWM" output (at 90.00 70.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 2955725e-9b95-45f7-835f-2e8bc4f0f5fc)
-    )
-    (pin "PELTIER_EN" output (at 90.00 74.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid cb73f261-0dc0-4e70-845f-8f05014974ce)
-    )
-    (pin "+5V_BUS" input (at 20.00 44.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 9c1e7087-6043-4345-87dc-3ea5de37188d)
-    )
-    (pin "GND_COMMON" input (at 20.00 48.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 65aabcc2-6fbf-41ea-917f-ac25364f3c88)
-    )
-  )
-
-  (sheet (at 100.00 20.00) (size 70.00 50.00)
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (fill (color 0 0 0 0.0000))
-    (uuid 6e214a4a-5c50-4d7c-aa1d-5ca43000f9e5)
-    (property "Sheet name" "Feather M0 + Core Strip" (id 0) (at 100.00 19.20 0)
-      (effects (font (size 1.50 1.50)) (justify left bottom))
-    )
-    (property "Sheet file" "sheet_m0_core_strip.kicad_sch" (id 1) (at 100.00 70.80 0)
-      (effects (font (size 1.50 1.50)) (justify left top))
-    )
-    (pin "SERIAL_LINK" input (at 100.00 28.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid c34fb3dd-62a6-40da-80a8-bdc745a9944c)
-    )
-    (pin "+5V_BUS" input (at 100.00 32.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 94f1538d-a8d9-48c7-9f29-88f4f2c39d3b)
-    )
-    (pin "GND_COMMON" input (at 100.00 36.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid d47e8565-c5cd-42e7-b12e-1f82242c2e69)
-    )
-    (pin "CORE_DATA" output (at 170.00 44.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid c2fa48f2-a74f-4282-a089-1a0d9db2a9d2)
-    )
-  )
-
-  (sheet (at 180.00 20.00) (size 70.00 50.00)
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (fill (color 0 0 0 0.0000))
-    (uuid 8f5137dc-d60d-476b-9592-b42f9a9baf13)
-    (property "Sheet name" "Pump + Claw Actuators" (id 0) (at 180.00 19.20 0)
-      (effects (font (size 1.50 1.50)) (justify left bottom))
-    )
-    (property "Sheet file" "sheet_pump_and_claw.kicad_sch" (id 1) (at 180.00 70.80 0)
-      (effects (font (size 1.50 1.50)) (justify left top))
-    )
-    (pin "PUMP_EN" input (at 180.00 28.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid d0e9fbad-b5d5-4d76-b5e9-56af4fe735f0)
-    )
-    (pin "SERVO_SIG" input (at 180.00 32.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 4fb2c5a9-c8bf-4dc1-94f8-78296060a16b)
-    )
-    (pin "+5V_BUS" input (at 180.00 36.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 0a62a3a6-a56d-45f4-83d9-c7883afcf143)
-    )
-    (pin "GND_COMMON" input (at 180.00 40.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid c18f25a4-f9e4-4a2e-bcb2-7e07bc1e2259)
-    )
-  )
-
-  (sheet (at 20.00 80.00) (size 70.00 45.00)
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (fill (color 0 0 0 0.0000))
-    (uuid bcdb3be2-e48d-44ab-a3bf-c8e0f8c54ac1)
-    (property "Sheet name" "Switch Inputs" (id 0) (at 20.00 79.20 0)
-      (effects (font (size 1.50 1.50)) (justify left bottom))
-    )
-    (property "Sheet file" "sheet_switches.kicad_sch" (id 1) (at 20.00 125.80 0)
-      (effects (font (size 1.50 1.50)) (justify left top))
-    )
-    (pin "SW1_IN" output (at 90.00 92.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 34d0a9c4-1219-439c-9562-74ee10ddad25)
-    )
-    (pin "SW2_IN" output (at 90.00 98.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 8d39cc9d-9f10-41a3-89c4-e006edfd153b)
-    )
-    (pin "SW3_IN" output (at 90.00 104.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 177413dd-cdd3-4691-a7cf-bc172698e44e)
-    )
-    (pin "GND_COMMON" input (at 20.00 116.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 9bb8f42c-c995-44e8-ac93-c76b2a6c84a8)
-    )
-  )
-
-  (sheet (at 100.00 80.00) (size 70.00 45.00)
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (fill (color 0 0 0 0.0000))
-    (uuid 9b7ea582-59ff-413d-90f4-c14f8dbf9363)
-    (property "Sheet name" "Spark + Pulse Filaments" (id 0) (at 100.00 79.20 0)
-      (effects (font (size 1.50 1.50)) (justify left bottom))
-    )
-    (property "Sheet file" "sheet_filaments.kicad_sch" (id 1) (at 100.00 125.80 0)
-      (effects (font (size 1.50 1.50)) (justify left top))
-    )
-    (pin "SPARK1_PWM" input (at 100.00 90.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid f905b989-4a3b-4a27-acd6-f037f0624af3)
-    )
-    (pin "SPARK2_PWM" input (at 100.00 94.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid af7e9119-568c-4126-aa17-c954bc220641)
-    )
-    (pin "SPARK3_PWM" input (at 100.00 98.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid c5905667-f8b8-40a3-aa4b-c486cb5517b3)
-    )
-    (pin "SPARK4_PWM" input (at 100.00 102.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid c4da0ee5-cbd9-4ab7-8f47-c5ae3cbcaf65)
-    )
-    (pin "PULSE_PWM" input (at 100.00 106.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 5ea590df-b548-4af8-8370-e472993f71fc)
-    )
-    (pin "+3V_FILAMENT" input (at 100.00 112.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 77ca87f4-8415-4f5e-a8eb-a7afad95f211)
-    )
-    (pin "GND_COMMON" input (at 100.00 116.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid c6350cd3-8dc4-4132-aec1-65a1594fbef3)
-    )
-  )
-
-  (sheet (at 180.00 80.00) (size 70.00 45.00)
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (fill (color 0 0 0 0.0000))
-    (uuid 5d0cc18f-b7f8-4f7f-b50b-52a301d9f650)
-    (property "Sheet name" "Beam RGB + Peltier" (id 0) (at 180.00 79.20 0)
-      (effects (font (size 1.50 1.50)) (justify left bottom))
-    )
-    (property "Sheet file" "sheet_beam_peltier.kicad_sch" (id 1) (at 180.00 125.80 0)
-      (effects (font (size 1.50 1.50)) (justify left top))
-    )
-    (pin "BEAM_R_PWM" input (at 180.00 90.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 26f54e4a-b245-4479-bbe7-cfdfd24bf876)
-    )
-    (pin "BEAM_G_PWM" input (at 180.00 94.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 49e7f031-9161-4ca5-8906-3d0f1fca9f77)
-    )
-    (pin "BEAM_B_PWM" input (at 180.00 98.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid b46f29ff-8ab8-4550-9879-3aa782332569)
-    )
-    (pin "PELTIER_EN" input (at 180.00 102.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 406f8763-8796-49f8-ad16-25da8f5f8938)
-    )
-    (pin "+5V_BUS" input (at 180.00 112.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 5e284d27-d561-4fe1-b43f-1cb6d75f782f)
-    )
-    (pin "GND_COMMON" input (at 180.00 116.00 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid efac8a48-c26b-4221-b56f-0209a7c920cc)
-    )
-  )
-
-  (sheet (at 20.00 135.00) (size 70.00 45.00)
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (fill (color 0 0 0 0.0000))
-    (uuid ec2c58ca-5d95-4f44-bcd2-aa6cc4c56f0f)
-    (property "Sheet name" "Power Domains" (id 0) (at 20.00 134.20 0)
-      (effects (font (size 1.50 1.50)) (justify left bottom))
-    )
-    (property "Sheet file" "sheet_power.kicad_sch" (id 1) (at 20.00 180.80 0)
-      (effects (font (size 1.50 1.50)) (justify left top))
-    )
-    (pin "+5V_BUS" output (at 90.00 146.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 362a95ff-18de-4e82-bcd3-cfa7d77e2f7d)
-    )
-    (pin "+3V_FILAMENT" output (at 90.00 152.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 9f652582-09cb-4c28-a204-70c1cadde6c5)
-    )
-    (pin "GND_COMMON" output (at 90.00 158.00 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 1ce0b4dc-7bb2-4c1a-8f70-0fceec9d8ba3)
-    )
-  )
-
-  (label "SW1_IN" (at 14.00 30.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid b84dc1a1-a9bb-47e7-92a2-c16f3850dd8d)
-  )
-  (label "SW2_IN" (at 14.00 34.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid d4d43730-0f28-4f07-a9b9-5d6433536f15)
-  )
-  (label "SW3_IN" (at 14.00 38.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 1115f178-c1b2-4f75-a643-8ac8a89206f0)
-  )
-  (label "SERIAL_LINK" (at 95.00 28.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid ff9dd6b3-5b38-4395-a6f5-4f3e3a998503)
-  )
-  (label "PUMP_EN" (at 95.00 32.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid b44b9d35-68af-4d74-9e85-6e3d81849ddd)
-  )
-  (label "SERVO_SIG" (at 95.00 36.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 2ff17f77-a979-44b6-9474-6f296f0467dc)
-  )
-  (label "SPARK1_PWM" (at 95.00 42.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid c13a02f1-d5a1-402e-b937-98a22d01452c)
-  )
-  (label "SPARK2_PWM" (at 95.00 46.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 5c0be6f8-4f7f-4569-bf87-4ca6f89bc17c)
-  )
-  (label "SPARK3_PWM" (at 95.00 50.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 9395f3dc-6848-4bfa-8be0-f47f7fd7f292)
-  )
-  (label "SPARK4_PWM" (at 95.00 54.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 1bf2b2b8-ee5b-4f52-bb4f-05a39c3ab628)
-  )
-  (label "PULSE_PWM" (at 95.00 58.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid ef9311b7-a44b-4b55-a9bb-f33e95f057d4)
-  )
-  (label "BEAM_R_PWM" (at 95.00 62.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid ea238cc5-0932-42b6-a0a6-3ff2552e2496)
-  )
-  (label "BEAM_G_PWM" (at 95.00 66.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 588d873c-e769-4307-95e8-e4844eb4b89c)
-  )
-  (label "BEAM_B_PWM" (at 95.00 70.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 6f258ad7-3f89-44db-8b61-1dfa74f3f7e2)
-  )
-  (label "PELTIER_EN" (at 95.00 74.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid f59df27e-836e-4c59-85f2-3b5f8f70fead)
-  )
-  (label "+5V_BUS" (at 95.00 146.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid f97026e3-e9f5-4379-a915-c60fcb6346ea)
-  )
-  (label "+3V_FILAMENT" (at 95.00 152.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid b04ef6dc-f2f8-4caf-9461-7500a423b311)
-  )
-  (label "GND_COMMON" (at 95.00 158.00 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 40df9747-948f-42c0-a194-e6202677f746)
-  )
-  (sheet_instances
-    (path "/" (page "1"))
-    (path "/8aa1a9ce-2c22-44df-9d4a-d8ec8ad1d7a1" (page "2"))
-    (path "/6e214a4a-5c50-4d7c-aa1d-5ca43000f9e5" (page "3"))
-    (path "/8f5137dc-d60d-476b-9592-b42f9a9baf13" (page "4"))
-    (path "/bcdb3be2-e48d-44ab-a3bf-c8e0f8c54ac1" (page "5"))
-    (path "/9b7ea582-59ff-413d-90f4-c14f8dbf9363" (page "6"))
-    (path "/5d0cc18f-b7f8-4f7f-b50b-52a301d9f650" (page "7"))
-    (path "/ec2c58ca-5d95-4f44-bcd2-aa6cc4c56f0f" (page "8"))
-  )
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "93f1db06-4f89-4f2a-95f2-28a7f9d25110")
+	(paper "A3")
+	(title_block
+		(title "Orciny Device - Block Schematic")
+		(date "2026-03-30")
+		(rev "B")
+		(company "EbenAET")
+	)
+	(lib_symbols)
+	(label "SW3_IN"
+		(at 14 38 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1115f178-c1b2-4f75-a643-8ac8a89206f0")
+	)
+	(label "SPARK4_PWM"
+		(at 95 54 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1bf2b2b8-ee5b-4f52-bb4f-05a39c3ab628")
+	)
+	(label "SERVO_SIG"
+		(at 95 36 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2ff17f77-a979-44b6-9474-6f296f0467dc")
+	)
+	(label "GND_COMMON"
+		(at 95 158 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "40df9747-948f-42c0-a194-e6202677f746")
+	)
+	(label "BEAM_G_PWM"
+		(at 95 66 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "588d873c-e769-4307-95e8-e4844eb4b89c")
+	)
+	(label "SPARK2_PWM"
+		(at 95 46 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5c0be6f8-4f7f-4569-bf87-4ca6f89bc17c")
+	)
+	(label "BEAM_B_PWM"
+		(at 95 70 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6f258ad7-3f89-44db-8b61-1dfa74f3f7e2")
+	)
+	(label "SPARK3_PWM"
+		(at 95 50 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9395f3dc-6848-4bfa-8be0-f47f7fd7f292")
+	)
+	(label "+3V_FILAMENT"
+		(at 95 152 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b04ef6dc-f2f8-4caf-9461-7500a423b311")
+	)
+	(label "PUMP_EN"
+		(at 95 32 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b44b9d35-68af-4d74-9e85-6e3d81849ddd")
+	)
+	(label "SW1_IN"
+		(at 14 30 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b84dc1a1-a9bb-47e7-92a2-c16f3850dd8d")
+	)
+	(label "SPARK1_PWM"
+		(at 95 42 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c13a02f1-d5a1-402e-b937-98a22d01452c")
+	)
+	(label "SW2_IN"
+		(at 14 34 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d4d43730-0f28-4f07-a9b9-5d6433536f15")
+	)
+	(label "BEAM_R_PWM"
+		(at 95 62 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ea238cc5-0932-42b6-a0a6-3ff2552e2496")
+	)
+	(label "PELTIER_EN"
+		(at 95 74 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f59df27e-836e-4c59-85f2-3b5f8f70fead")
+	)
+	(label "+5V_BUS"
+		(at 95 146 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f97026e3-e9f5-4379-a915-c60fcb6346ea")
+	)
+	(label "CORE_DATA"
+		(at 95 28 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ff9dd6b3-5b38-4395-a6f5-4f3e3a998503")
+	)
+	(sheet
+		(at 180 80)
+		(size 70 45)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "5d0cc18f-b7f8-4f7f-b50b-52a301d9f650")
+		(property "Sheetname" "Prop-Maker LED Outputs"
+			(at 180 79.2 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheet_propmaker_led_outputs.kicad_sch"
+			(at 180 125.8 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(pin "PROP_LED1_PWM" input
+			(at 180 90 180)
+			(uuid "26f54e4a-b245-4479-bbe7-cfdfd24bf876")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "PROP_LED2_PWM" input
+			(at 180 94 180)
+			(uuid "49e7f031-9161-4ca5-8906-3d0f1fca9f77")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "PROP_LED3_PWM" input
+			(at 180 98 180)
+			(uuid "b46f29ff-8ab8-4550-9879-3aa782332569")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "+5V_BUS" input
+			(at 180 102 180)
+			(uuid "5e284d27-d561-4fe1-b43f-1cb6d75f782f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "GND_COMMON" input
+			(at 180 106 180)
+			(uuid "efac8a48-c26b-4221-b56f-0209a7c920cc")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 100 20)
+		(size 70 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "6e214a4a-5c50-4d7c-aa1d-5ca43000f9e5")
+		(property "Sheetname" "Core NeoPixel Strip"
+			(at 100 19.2 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheet_core_neopixel_strip.kicad_sch"
+			(at 100 70.8 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(pin "CORE_DATA" input
+			(at 100 28 180)
+			(uuid "c34fb3dd-62a6-40da-80a8-bdc745a9944c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "+5V_BUS" input
+			(at 100 32 180)
+			(uuid "94f1538d-a8d9-48c7-9f29-88f4f2c39d3b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "GND_COMMON" input
+			(at 100 36 180)
+			(uuid "d47e8565-c5cd-42e7-b12e-1f82242c2e69")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "CORE_DATA" output
+			(at 170 44 0)
+			(uuid "c2fa48f2-a74f-4282-a089-1a0d9db2a9d2")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 20 20)
+		(size 70 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "8aa1a9ce-2c22-44df-9d4a-d8ec8ad1d7a1")
+		(property "Sheetname" "RP2040 FX Controller"
+			(at 20 19.2 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheet_rp2040_fx.kicad_sch"
+			(at 20 70.8 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(pin "SW1_IN" input
+			(at 20 30 180)
+			(uuid "3d6bd0bf-ff70-44f3-9307-090e3e9bfcd4")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SW2_IN" input
+			(at 20 34 180)
+			(uuid "9956a777-2681-4d9a-9c55-3de6cb2d35cb")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SW3_IN" input
+			(at 20 38 180)
+			(uuid "f0f79d64-16f2-40be-adf8-ee145512baec")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "CORE_DATA" output
+			(at 90 28 0)
+			(uuid "e7de112c-f77f-422f-beb2-d42f3301e8fe")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "PUMP_EN_OPTIONAL" bidirectional
+			(at 90 32 0)
+			(uuid "e156c02e-0d0f-4a79-b41b-1458ce26f2ac")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "I2C_SDA_SERVO_WING" bidirectional
+			(at 90 36 0)
+			(uuid "f726ecf7-4dab-4ce6-a3ba-2c1834072d41")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "I2C_SCL_SERVO_WING" bidirectional
+			(at 90 40 0)
+			(uuid "d6406bf8-b1fb-4a48-a64f-487c4131d2f0")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "SPARK1_PWM" output
+			(at 90 44 0)
+			(uuid "ad9d3784-cd25-48b0-8ec9-cf14f07f66f6")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "SPARK2_PWM" output
+			(at 90 48 0)
+			(uuid "186f2617-90dc-477c-815d-6f95f17e78d1")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "SPARK3_PWM" output
+			(at 90 52 0)
+			(uuid "f3f6a81e-f1f6-471c-9b56-91f641adce81")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "SPARK4_PWM" output
+			(at 90 56 0)
+			(uuid "6a99a3de-ed42-42cd-a9cf-794556a2286a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "PROP_LED1_PWM" output
+			(at 90 64 0)
+			(uuid "8eb4d3fc-fd2b-42ca-b44c-4186ef4d8d56")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "PROP_LED2_PWM" output
+			(at 90 68 0)
+			(uuid "b0fdf2a4-81c8-4f0d-87be-a5e8b6ca8f5c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "PROP_LED3_PWM" output
+			(at 90 70 0)
+			(uuid "2955725e-9b95-45f7-835f-2e8bc4f0f5fc")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "+5V_BUS" input
+			(at 20 44 180)
+			(uuid "9c1e7087-6043-4345-87dc-3ea5de37188d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "GND_COMMON" input
+			(at 20 48 180)
+			(uuid "65aabcc2-6fbf-41ea-917f-ac25364f3c88")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 180 20)
+		(size 70 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "8f5137dc-d60d-476b-9592-b42f9a9baf13")
+		(property "Sheetname" "Servo FeatherWing + Optional Pump"
+			(at 180 19.2 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheet_servo_wing_optional_pump.kicad_sch"
+			(at 180 70.8 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(pin "PUMP_EN_OPTIONAL" input
+			(at 180 28 180)
+			(uuid "d0e9fbad-b5d5-4d76-b5e9-56af4fe735f0")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "I2C_SDA_SERVO_WING" input
+			(at 180 32 180)
+			(uuid "4fb2c5a9-c8bf-4dc1-94f8-78296060a16b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "I2C_SCL_SERVO_WING" input
+			(at 180 36 180)
+			(uuid "4db44f40-b2b8-4f72-96f9-fdf2c266e86b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "+5V_BUS" input
+			(at 180 40 180)
+			(uuid "0a62a3a6-a56d-45f4-83d9-c7883afcf143")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "GND_COMMON" input
+			(at 180 44 180)
+			(uuid "c18f25a4-f9e4-4a2e-bcb2-7e07bc1e2259")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SERVO_A_SIG" output
+			(at 250 54 0)
+			(uuid "402f5108-4d3a-4490-a991-4d25a8fbe2e8")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "SERVO_B_SIG" output
+			(at 250 58 0)
+			(uuid "76d6690a-2d14-4a8c-8c17-f511e0b4c60b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 100 80)
+		(size 70 45)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "9b7ea582-59ff-413d-90f4-c14f8dbf9363")
+		(property "Sheetname" "Spark Filaments"
+			(at 100 79.2 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheet_filaments.kicad_sch"
+			(at 100 125.8 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(pin "SPARK1_PWM" input
+			(at 100 90 180)
+			(uuid "f905b989-4a3b-4a27-acd6-f037f0624af3")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SPARK2_PWM" input
+			(at 100 94 180)
+			(uuid "af7e9119-568c-4126-aa17-c954bc220641")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SPARK3_PWM" input
+			(at 100 98 180)
+			(uuid "c5905667-f8b8-40a3-aa4b-c486cb5517b3")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SPARK4_PWM" input
+			(at 100 102 180)
+			(uuid "c4da0ee5-cbd9-4ab7-8f47-c5ae3cbcaf65")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "+3V_FILAMENT" input
+			(at 100 112 180)
+			(uuid "77ca87f4-8415-4f5e-a8eb-a7afad95f211")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "GND_COMMON" input
+			(at 100 116 180)
+			(uuid "c6350cd3-8dc4-4132-aec1-65a1594fbef3")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 20 80)
+		(size 70 45)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "bcdb3be2-e48d-44ab-a3bf-c8e0f8c54ac1")
+		(property "Sheetname" "Switch Inputs"
+			(at 20 79.2 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheet_switches.kicad_sch"
+			(at 20 125.8 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(pin "SW1_IN" output
+			(at 90 92 0)
+			(uuid "34d0a9c4-1219-439c-9562-74ee10ddad25")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "SW2_IN" output
+			(at 90 98 0)
+			(uuid "8d39cc9d-9f10-41a3-89c4-e006edfd153b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "SW3_IN" output
+			(at 90 104 0)
+			(uuid "177413dd-cdd3-4691-a7cf-bc172698e44e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "GND_COMMON" input
+			(at 20 116 180)
+			(uuid "9bb8f42c-c995-44e8-ac93-c76b2a6c84a8")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 20 135)
+		(size 70 45)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "ec2c58ca-5d95-4f44-bcd2-aa6cc4c56f0f")
+		(property "Sheetname" "Power Domains"
+			(at 20 134.2 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheet_power.kicad_sch"
+			(at 20 180.8 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(pin "+5V_BUS" output
+			(at 90 146 0)
+			(uuid "362a95ff-18de-4e82-bcd3-cfa7d77e2f7d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "+3V_FILAMENT" output
+			(at 90 152 0)
+			(uuid "9f652582-09cb-4c28-a204-70c1cadde6c5")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "GND_COMMON" output
+			(at 90 158 0)
+			(uuid "1ce0b4dc-7bb2-4c1a-8f70-0fceec9d8ba3")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "orciny_blocks"
+				(path "/93f1db06-4f89-4f2a-95f2-28a7f9d25110"
+					(page "8")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
 )
