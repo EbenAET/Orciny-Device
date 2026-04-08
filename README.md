@@ -8,7 +8,7 @@ Arduino IDE scaffold for a two-controller multi-effect device built around:
 The framework splits responsibilities like this:
 
 - M0 sketch: primary scene control, switch and USB command handling, single-strand NeoPixel core rendering, and outbound effect commands over Serial1
-- RP2040 sketch: effect executor for sparks, pulse filament, direct GPIO pump control, beam RGB LED, peltier control, and FP-S14B servo claw
+- RP2040 sketch: effect executor for spark filaments, Prop-Maker LED channel control, and dual-servo claw motion through an 8-channel Servo FeatherWing (PCA9685)
 
 ## Folder Layout
 
@@ -21,19 +21,18 @@ The framework splits responsibilities like this:
 Install these in the Arduino IDE before compiling:
 
 - Adafruit NeoPixel
-- Servo
+- Adafruit PWM Servo Driver Library
 
 ## Wiring Assumptions
 
 The scaffold makes a few deliberate assumptions that you should verify against your hardware:
 
 - Main input is a 5V source split into a fused `+5V_BUS` rail and a fused `+3V_FILAMENT` buck-fed rail
-- RP2040 pin `GP8` drives the 5V peristaltic pump enable MOSFET gate
-- RP2040 servo output pin `GP7` drives the FP-S14B claw servo signal
+- RP2040 I2C connects to an 8-channel Servo FeatherWing (PCA9685 at `0x40`) that drives two servo outputs
+- RP2040 pin `GP8` can remain wired to pump-enable MOSFET gate, but pump actions are currently disabled in firmware
 - M0 uses three momentary switches wired to ground with internal pull-ups enabled
-- The 3-9W RGB LED channels are driven through external MOSFETs from three PWM pins on the RP2040, with 10 ohm series current-limiting resistors on each RGB leg
-- The peltier is switched through a separate MOSFET or relay from one RP2040 digital pin
-- Four spark LED filaments and one pulse LED filament are each driven through suitable transistor stages and 10 ohm series current-limiting resistors
+- The 3-9W LED channels are driven from the Prop-Maker FeatherWing MOSFET-controlled LED outputs, commanded by RP2040 PWM control lines
+- Four spark LED filaments are wired as direct RP2040 PWM outputs through 10 ohm series current-limiting resistors; no separate pulse filament channel is populated in this revision
 - M0 `TX` is connected to RP2040 `RX` for effect command updates, with shared ground
 - M0 pin `D13` drives one WS2812/NeoPixel data line for a 30-pixel strip
 
@@ -61,8 +60,8 @@ Turning the sequence off does not lose its position. Turning it back on resumes 
 ## Sequence Map
 
 - Sequence 1: sparks + ember-style core
-- Sequence 2: pulse pump/filament + beam + pulsing core
-- Sequence 3: full show with sparks, pulse, beam, claw, and animated core
+- Sequence 2: optional pump + beam + pulsing core
+- Sequence 3: full show with sparks, beam, claw, and animated core
 
 ## M0 Serial Commands
 
@@ -82,7 +81,7 @@ Send any of these lines from the M0 serial monitor:
 ## Notes
 
 - This is a framework, not a final tuned show controller. PWM levels, animation timing, motor speeds, and thermal limits all need bench validation.
-- The peltier and high-power RGB LED should have their own power design, thermal protection, and current handling outside the Feather GPIO domain.
+- High-power LED channels and servo power should have appropriate thermal/current design outside Feather logic domains.
 - Deterministic behavior depends on reliable M0->RP2040 FX command delivery; RP2040 now applies a timeout-safe shutdown when command frames go stale.
 
 ## KiCad Adafruit Footprints

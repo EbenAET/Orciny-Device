@@ -18,7 +18,7 @@ Primary Target Hardware
 1) Adafruit Feather RP2040
 2) Adafruit Feather M0
 3) 3x momentary switches
-4) MOSFET channels for filaments, beam RGB, peltier, and pump enable
+4) Direct spark filament outputs plus MOSFET channels for beam RGB, peltier, and pump enable
 5) DC pump
 6) FP-S14B claw servo
 7) 1 core NeoPixel strip (30 pixels)
@@ -67,7 +67,7 @@ Replacement Mapping (Generic -> Exact)
 3) Replace generic motor block with: pump MOSFET + pump connector block
 4) Replace generic LED output block with: single NeoPixel strip block
 5) Keep three discrete pushbuttons (one per control input)
-6) Keep one MOSFET channel per high-current output path
+6) Keep MOSFET channels for beam, peltier, and pump paths only; spark filaments are direct GPIO outputs
 
 Netlist To Verify After Replacement
 -----------------------------------
@@ -77,11 +77,10 @@ Switches (to ground, INPUT_PULLUP in firmware)
 - SW3 -> M0 pin 4 and GND
 
 RP2040 PWM / control outputs
-- pin 5  -> Spark filament 1 driver
-- pin 6  -> Spark filament 2 driver
-- pin 9  -> Spark filament 3 driver
-- pin 10 -> Spark filament 4 driver
-- pin 11 -> Pulse filament driver
+- pin 5  -> Spark filament 1 direct path via series resistor
+- pin 6  -> Spark filament 2 direct path via series resistor
+- pin 9  -> Spark filament 3 direct path via series resistor
+- pin 10 -> Spark filament 4 direct path via series resistor
 - pin 12 -> Beam R MOSFET gate
 - pin 13 -> Beam G MOSFET gate
 - pin 14 -> Beam B MOSFET gate
@@ -100,7 +99,7 @@ Core LED output
 
 Power rails
 - +5V_BUS -> RP2040, M0, NeoPixel strip, beam, peltier, pump, and servo power
-- +3V_FILAMENT -> spark and pulse filament power branch
+- +3V_FILAMENT -> optional dedicated spark filament power branch
 - GND  -> common return for all modules, switches, and drivers
 
 Board-View Completion Steps
@@ -115,7 +114,7 @@ Board-View Completion Steps
 Schematic-View Sanity Checks
 ----------------------------
 1) Confirm SW1/SW2/SW3 each only connect to one GPIO and GND.
-2) Confirm no direct high-current load is tied to MCU GPIO pin.
+2) Confirm only the four spark filament channels are direct GPIO loads; keep beam, peltier, and pump on switched output stages.
 3) Confirm RP2040 TX goes only to M0 RX for serial link.
 4) Confirm all grounds are tied together.
 5) Confirm +5V_BUS and +3V_FILAMENT domains are not shorted.

@@ -1,6 +1,6 @@
 ORCINY KICAD NET MAP - CURRENT REVISION
 =======================================
-Updated for single-strand NeoPixel + direct GPIO pump control
+Updated for single-strand NeoPixel + Servo FeatherWing + Prop-Maker outputs
 
 Controller-to-controller link
 - M0_SERIAL1_TX      -> RP2040_SERIAL1_RX
@@ -17,18 +17,19 @@ M0 NeoPixel output (single strand)
 - +5V_BUS -> NeoPixel_Power
 - GND_COMMON -> NeoPixel_Ground
 
-RP2040 effect outputs (all high-current paths require MOSFET/driver stages)
-- RP2040_PIN5  -> Q1_gate       -> SPARK1_drain
-- RP2040_PIN6  -> Q2_gate       -> SPARK2_drain
-- RP2040_PIN9  -> Q3_gate       -> SPARK3_drain
-- RP2040_PIN10 -> Q4_gate       -> SPARK4_drain
-- RP2040_PIN11 -> Q5_gate       -> PULSE_FILAMENT_drain
-- RP2040_PIN12 -> Q6_gate       -> BEAM_R_drain
-- RP2040_PIN13 -> Q7_gate       -> BEAM_G_drain
-- RP2040_PIN14 -> Q8_gate       -> BEAM_B_drain
-- RP2040_PIN15 -> Q9_gate       -> PELTIER_drain
-- RP2040_PIN8  -> Q10_gate      -> PUMP_drain (NEW: direct GPIO pump control)
-- RP2040_PIN7  -> SERVO_signal  -> FP-S14B claw servo
+RP2040 effect outputs
+- RP2040_PIN5  -> R601 -> SPARK1_FILAMENT
+- RP2040_PIN6  -> R602 -> SPARK2_FILAMENT
+- RP2040_PIN9  -> R603 -> SPARK3_FILAMENT
+- RP2040_PIN10 -> R604 -> SPARK4_FILAMENT
+- RP2040_PIN12 -> PROPMAKER_LED1_CTRL
+- RP2040_PIN13 -> PROPMAKER_LED2_CTRL
+- RP2040_PIN14 -> PROPMAKER_LED3_CTRL
+- RP2040_I2C_SDA -> SERVO_WING_SDA
+- RP2040_I2C_SCL -> SERVO_WING_SCL
+- SERVO_WING_CH0 -> SERVO_A_SIGNAL
+- SERVO_WING_CH1 -> SERVO_B_SIGNAL
+- RP2040_PIN8  -> PUMP_drain (optional, firmware disabled)
 
 Power domains
 - +5V_IN (from 5V battery via main fuse)
@@ -36,47 +37,51 @@ Power domains
   +-> F802 (+3V_FILAMENT buck input)
 
 - +5V_BUS -> RP2040 (internal LDO for 3.3V logic), M0 (internal LDO for 3.3V logic),
-            NeoPixel strip, beam RGB, peltier, servo, pump
-- +3V_FILAMENT -> Spark/pulse filament MOSFET drains (Q1-Q5)
+            NeoPixel strip, Prop-Maker LED stage, Servo FeatherWing, optional pump
+- +3V_FILAMENT -> Optional direct spark filament branch (Spark1-4)
 
-MOSFET all-gate configuration
-- Spark/Pulse MOSFETs (Q1-Q5):
-  - Gate resistor: 1K-10K (3.3V logic from RP2040 GPIO)
-  - Drain: Filament load negative
-  - Source: GND_COMMON
-  - Drain supply: +3V_FILAMENT
+Direct spark configuration
+- Spark outputs (R601-R604):
+  - Direct from RP2040 GPIO pins 5, 6, 9, and 10
+  - One 10 ohm series resistor per channel
+  - Validate the selected filament current against RP2040 GPIO limits
 
-- Beam RGB MOSFETs (Q6-Q8):
-  - Gate: RP2040 GPIO pin (3.3V output)
-  - Drain: RGB LED leg negative
-  - Source: GND_COMMON
-  - Drain supply: +5V_BUS
+- Prop-Maker LED outputs:
+  - Control: RP2040 pins 12/13/14
+  - Load side: 3-9W LED channels through the Prop-Maker FeatherWing output stage
+  - Power domain: +5V_BUS
 
-- Peltier/Pump MOSFETs (Q9, Q10):
-  - Gate: RP2040 GPIO pin (3.3V output)
+- Servo outputs:
+  - Control bus: RP2040 I2C SDA/SCL
+  - PWM generation: PCA9685 on Servo FeatherWing (address 0x40)
+  - Outputs: CH0 -> Servo A, CH1 -> Servo B
+  - Power domain: +5V_BUS
+
+- Optional pump MOSFET:
+  - Gate: RP2040 GPIO pin 8
   - Drain: Load negative
   - Source: GND_COMMON
   - Drain supply: +5V_BUS
 
 Current-limiting resistors
-- R601-R604, R605: 10Ω series on spark and pulse loads (3V domain)
-- R701-R703: 10Ω series on beam RGB color legs (5V domain)
+- R601-R604: 10Ω series on spark loads
+- R701-R703: 10Ω series on Prop-Maker LED channel paths if discrete output staging is retained
 
 Fuses and ratings
 - F801: 3A slow-blow (+5V_BUS main branch; all 5V loads peak ~2.5A)
-- F802: 2A slow-blow (+3V_FILAMENT buck output; spark/pulse peak ~1.5A)
+- F802: 2A slow-blow (+3V_FILAMENT buck output; optional spark branch, verify final current)
 
 Connector mapping
 - J801: 5V power input connector (JST XT60 or barrel jack)
 - J802: Power distribution hub (3-pin: +5V_BUS, +3V_FILAMENT, GND)
-- J601: 6-pin filament PWM bus (SPARK1-4, PULSE, GND inputs from RP2040)
+- J601: 5-pin filament PWM bus (SPARK1-4, GND inputs from RP2040)
 - J602: 2-pin JST filament 3V power
-- J603: 5-pin filament outputs (post-resistor to loads)
-- J701: 4-pin beam RGB PWM input (R/G/B, GND from RP2040)
-- J702: 4-position screw terminal beam RGB outputs (R/G/B/GND)
-- J703: 2-pin JST peltier load output (5V via Q9)
-- J401: 2-pin JST pump output (Q10 drain to pump terminals, 5V)
-- J402: 3-pin servo signal connector (signal + 5V_BUS + GND for FP-S14B)
+- J603: 4-pin filament outputs (post-resistor to loads)
+- J701: 4-pin Prop-Maker control header (LED1/LED2/LED3 control + GND)
+- J702: 4-position screw terminal for 3-9W LED output channels
+- J401: 2-pin JST optional pump output
+- J402: 3-pin Servo A connector (signal + 5V_BUS + GND)
+- J403: 3-pin Servo B connector (signal + 5V_BUS + GND)
 
 Grounding Rules
 - [MANDATORY] Tie all grounds together:
@@ -84,11 +89,11 @@ Grounding Rules
   - M0 ground
   - All MOSFET sources to GND_COMMON
   - NeoPixel strip ground
-  - Pump/servo/peltier driver grounds
+  - Pump/servo/LED driver grounds
   - Switch grounds
   - 5V input negative (battery pack or barrel jack shell)
 
 Firmware Implementation Notes
-- RP2040 DeviceConfig.h: Pump control uses GPIO GP8 through Q10 MOSFET gate
-- Pump control: digitalWrite(kPumpControlPin, HIGH) to turn on; duration managed in sequence logic
-- No I2C dependency; M0->RP2040 serial link remains unchanged at 40ms periodic EffectCommand updates
+- RP2040 DeviceConfig.h: pump control remains optional on GPIO GP8, but firmware actions are currently commented out
+- Servo control is now delegated to the PCA9685 on the Servo FeatherWing over I2C
+- M0->RP2040 serial link remains unchanged at 40ms periodic EffectCommand updates

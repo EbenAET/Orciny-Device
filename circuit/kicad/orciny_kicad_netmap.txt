@@ -22,18 +22,19 @@ Switch controls (momentary switches to GND, firmware uses INPUT_PULLUP)
 - SW3: M0_PIN4 -> switch -> GND  (next sequence, 3->1 wrap)
 - Hold SW1+SW3 for 5 seconds -> reset to sequence 1
 
-RP2040 effect outputs (all high-current paths require MOSFET/driver stages)
-- RP2040_PIN5  -> SPARK1_GATE
-- RP2040_PIN6  -> SPARK2_GATE
-- RP2040_PIN9  -> SPARK3_GATE
-- RP2040_PIN10 -> SPARK4_GATE
-- RP2040_PIN11 -> PULSE_FILAMENT_GATE
-- RP2040_PIN12 -> BEAM_R_GATE
-- RP2040_PIN13 -> BEAM_G_GATE
-- RP2040_PIN14 -> BEAM_B_GATE
-- RP2040_PIN15 -> PELTIER_ENABLE_GATE
-- RP2040_PIN8  -> PUMP_ENABLE_GATE
-- RP2040_PIN7  -> CLAW_SERVO_SIGNAL
+RP2040 effect outputs
+- RP2040_PIN5  -> SPARK1_FILAMENT
+- RP2040_PIN6  -> SPARK2_FILAMENT
+- RP2040_PIN9  -> SPARK3_FILAMENT
+- RP2040_PIN10 -> SPARK4_FILAMENT
+- RP2040_PIN12 -> PROP_LED1_PWM
+- RP2040_PIN13 -> PROP_LED2_PWM
+- RP2040_PIN14 -> PROP_LED3_PWM
+- RP2040_PIN8  -> PUMP_ENABLE_GATE_OPTIONAL
+- RP2040_I2C_SDA -> SERVO_WING_SDA
+- RP2040_I2C_SCL -> SERVO_WING_SCL
+- SERVO_WING_CH0 -> SERVO_A_SIGNAL
+- SERVO_WING_CH1 -> SERVO_B_SIGNAL
 
 M0 core output (single strand)
 - M0_PIN13 -> CORE_STRIP_DATA (30-pixel WS2812/NeoPixel strip)
@@ -46,16 +47,16 @@ Power domains
   +-> F802 (+3V_FILAMENT buck input)
 
 - +5V_BUS -> RP2040 (built-in LDO for 3.3V logic), M0 (built-in LDO for 3.3V logic),
-            NeoPixel strip power, beam RGB, peltier, servo, pump
-- +3V_FILAMENT -> Spark/pulse filament MOSFET drains (Q1-Q5)
+            NeoPixel strip power, Prop-Maker output stage, Servo FeatherWing, optional pump
+- +3V_FILAMENT -> Optional direct spark filament branch (Spark1-4)
 
 KiCad checklist
 1) Open orciny_device.kicad_pro in KiCad.
 2) In Schematic Editor, replace template Arduino symbols with your board symbols or generic headers.
 3) Add named net labels exactly as above.
-4) Add MOSFET symbols for each high-current channel and wire gate/source/drain appropriately.
-5) Add 10 ohm series resistors on SPARK1/2/3/4 and PULSE output legs.
-6) Add 10 ohm series resistors on BEAM_R, BEAM_G, and BEAM_B output legs.
+4) Route SPARK1/2/3/4 as direct RP2040 outputs with 10 ohm series resistors.
+5) Add MOSFET symbols for the remaining high-current switched channels and wire gate/source/drain appropriately.
+6) Add any required series/output-stage elements for the Prop-Maker LED channel implementation you keep.
 7) Add a main 5V fuse for +5V_BUS and a fused buck-fed branch for +3V_FILAMENT.
 8) Run ERC and resolve only intentional warnings.
 9) Save as a new revision if you want to preserve the starter state.
@@ -72,8 +73,8 @@ Switches
 
 Power and high-current staging
 - 5V input jack: Adafruit_Eagle:DCJACK_2MM_PTH
-- Pump / peltier / external load connectors (2-pin JST option): Adafruit_Eagle:JST-PH-2-THM
-- Stepper or beam/power screw terminal option (4-pin): Adafruit_Eagle:1X04-3.5MM
+- Optional pump / external 2-pin load connectors: Adafruit_Eagle:JST-PH-2-THM
+- 3-9W LED output screw terminal option (4-pin): Adafruit_Eagle:1X04-3.5MM
 - Through-hole TO-220 MOSFET stages: Adafruit_Eagle:TO220
 
 Header options for custom daughter wiring

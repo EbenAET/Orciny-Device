@@ -316,7 +316,6 @@ SceneProfile buildActiveProfile() {
       return profile;
 
     case SEQUENCE_2:
-      profile.effectCommand.pulseEnabled = true;
       profile.effectCommand.beamEnabled = true;
       profile.coreFrame.mode = orciny::CORE_MODE_PULSE;
       profile.coreFrame.brightness = 96;
@@ -329,7 +328,6 @@ SceneProfile buildActiveProfile() {
     case SEQUENCE_3:
       profile.effectCommand.sparksEnabled = true;
       profile.effectCommand.sparksIntensity = 255;
-      profile.effectCommand.pulseEnabled = true;
       profile.effectCommand.beamEnabled = true;
       profile.effectCommand.clawEnabled = true;
       profile.coreFrame.mode = orciny::CORE_MODE_SHOW;

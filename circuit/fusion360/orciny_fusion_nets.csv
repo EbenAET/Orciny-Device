@@ -1,0 +1,37 @@
+net_name,from,to,domain,required,notes
+SW1_TOGGLE,M0_PIN2,SW1,logic,yes,Switch to GND with INPUT_PULLUP
+SW2_PREV,M0_PIN3,SW2,logic,yes,Switch to GND with INPUT_PULLUP
+SW3_NEXT,M0_PIN4,SW3,logic,yes,Switch to GND with INPUT_PULLUP
+SERIAL_LINK_TX,M0_SERIAL1_TX,RP2040_SERIAL1_RX,logic,yes,Primary controller to FX executor link
+SERIAL_LINK_GND,M0_GND,RP2040_GND,ground,yes,Shared serial reference
+CORE_DATA,M0_PIN13,CORE_STRIP_DI,data,yes,WS2812 data line
+SPARK1_PWM,RP2040_PIN5,SPARK1_FILAMENT,control,yes,Direct spark filament channel 1 control
+SPARK2_PWM,RP2040_PIN6,SPARK2_FILAMENT,control,yes,Direct spark filament channel 2 control
+SPARK3_PWM,RP2040_PIN9,SPARK3_FILAMENT,control,yes,Direct spark filament channel 3 control
+SPARK4_PWM,RP2040_PIN10,SPARK4_FILAMENT,control,yes,Direct spark filament channel 4 control
+PROP_LED1_PWM,RP2040_PIN12,PROPMAKER_LED1_CTRL,control,yes,Prop-Maker LED1 control
+PROP_LED2_PWM,RP2040_PIN13,PROPMAKER_LED2_CTRL,control,yes,Prop-Maker LED2 control
+PROP_LED3_PWM,RP2040_PIN14,PROPMAKER_LED3_CTRL,control,yes,Prop-Maker LED3 control
+I2C_SDA_SERVO_WING,RP2040_I2C_SDA,SERVO_WING_SDA,logic,yes,PCA9685 data line
+I2C_SCL_SERVO_WING,RP2040_I2C_SCL,SERVO_WING_SCL,logic,yes,PCA9685 clock line
+SERVO_A_SIG,SERVO_WING_CH0,SERVO_A_SIGNAL,control,yes,Servo A PWM signal
+SERVO_B_SIG,SERVO_WING_CH1,SERVO_B_SIGNAL,control,yes,Servo B PWM signal
+PUMP_EN_OPTIONAL,RP2040_PIN8,PUMP_DRIVER_GATE,control,optional,Present in wiring but disabled in firmware
+PSU_5V_MAIN,PSU_5V_IN,F_MAIN,power,yes,Main fused input path
+PSU_5V_BUS,F_5V_BUS,RP2040_5V_IN,power,yes,Main 5V rail to RP2040
+PSU_5V_BUS,F_5V_BUS,M0_5V_IN,power,yes,Main 5V rail to M0
+PSU_5V_BUS,F_5V_BUS,CORE_STRIP_5V,power,yes,5V for WS2812 strip
+PSU_5V_BUS,F_5V_BUS,SERVO_WING_VPLUS,power,yes,Servo wing supply
+PSU_5V_BUS,F_5V_BUS,SERVO_A_5V,power,yes,Servo A supply
+PSU_5V_BUS,F_5V_BUS,SERVO_B_5V,power,yes,Servo B supply
+PSU_5V_BUS,F_5V_BUS,PROPMAKER_POWER,power,yes,Prop-Maker LED output stage supply
+PSU_5V_BUS,F_5V_BUS,DC_PUMP_SUPPLY,power,optional,Optional pump branch
+PSU_3V_FILAMENT,U_BUCK_3V_OUT,SPARK_FILAMENT_SUPPLY,power,yes,Optional 3V branch for spark channels
+GND_COMMON,GND_STAR,RP2040_GND,ground,yes,Common return
+GND_COMMON,GND_STAR,M0_GND,ground,yes,Common return
+GND_COMMON,GND_STAR,CORE_STRIP_GND,ground,yes,Common return
+GND_COMMON,GND_STAR,SERVO_WING_GND,ground,yes,Common return
+GND_COMMON,GND_STAR,SERVO_A_GND,ground,yes,Common return
+GND_COMMON,GND_STAR,SERVO_B_GND,ground,yes,Common return
+GND_COMMON,GND_STAR,PROPMAKER_GND,ground,yes,Common return
+GND_COMMON,GND_STAR,DC_PUMP_GND,ground,optional,Optional pump return

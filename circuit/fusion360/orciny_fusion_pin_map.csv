@@ -1,0 +1,19 @@
+controller,pin_or_bus,signal,target_block,required,notes
+M0,D2,SW1_TOGGLE,SW1,yes,On Off switch input with INPUT_PULLUP
+M0,D3,SW2_PREV,SW2,yes,Previous sequence input with INPUT_PULLUP
+M0,D4,SW3_NEXT,SW3,yes,Next sequence input with INPUT_PULLUP
+M0,D13,CORE_DATA,WS2812_CORE,yes,Single-strip data output
+M0,Serial1 TX,SERIAL_LINK_TX,RP2040 Serial1 RX,yes,Effect command stream
+M0,GND,SERIAL_LINK_GND,RP2040 GND,yes,Serial reference
+RP2040,GP5,SPARK1_PWM,SPARK1_FILAMENT,yes,Spark filament 1 direct output
+RP2040,GP6,SPARK2_PWM,SPARK2_FILAMENT,yes,Spark filament 2 direct output
+RP2040,GP9,SPARK3_PWM,SPARK3_FILAMENT,yes,Spark filament 3 direct output
+RP2040,GP10,SPARK4_PWM,SPARK4_FILAMENT,yes,Spark filament 4 direct output
+RP2040,GP12,PROP_LED1_PWM,PROPMAKER_LED1_CTRL,yes,3-9W LED channel 1 control
+RP2040,GP13,PROP_LED2_PWM,PROPMAKER_LED2_CTRL,yes,3-9W LED channel 2 control
+RP2040,GP14,PROP_LED3_PWM,PROPMAKER_LED3_CTRL,yes,3-9W LED channel 3 control
+RP2040,GP8,PUMP_EN_OPTIONAL,PUMP_DRIVER,optional,Wired optional and disabled in firmware
+RP2040,I2C SDA,I2C_SDA_SERVO_WING,SERVO_WING_SDA,yes,PCA9685 data line
+RP2040,I2C SCL,I2C_SCL_SERVO_WING,SERVO_WING_SCL,yes,PCA9685 clock line
+SERVO_WING,CH0,SERVO_A_SIG,SERVO_A,yes,Servo A PWM output
+SERVO_WING,CH1,SERVO_B_SIG,SERVO_B,yes,Servo B PWM output
