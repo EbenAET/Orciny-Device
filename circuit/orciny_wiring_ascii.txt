@@ -113,8 +113,9 @@ Power:
   Spark branch is supplied from RP2040_BAT in this revision.
 
 
- MOSFET Driver Stage (beam / optional pump paths):
- Harness IDs: H-BEAM-CTL, H-BEAM-PWR, H-PUMP-OPT
+ MOSFET Driver Stage (beam / peltier / optional pump paths):
+ Harness IDs: H-BEAM-PWR, H-PELTIER-PWR, H-PUMP-OPT
+ (GP12/13/14 beam control and GP15 peltier control route through FeatherWing stack headers; not separately harnessed)
 
    RP2040 GPIO pin
          |
@@ -138,7 +139,8 @@ Power:
 
 
  Prop-Maker LED Outputs (3-9W LED):
- Harness IDs: H-BEAM-CTL, H-BEAM-PWR
+ Harness ID: H-BEAM-PWR
+ (GP12/13/14 control signals enter Prop-Maker via stacked header; not a separate cable harness)
 
   +5V_BUS powers the Prop-Maker LED output stage
   RP2040 GP12/13/14 provide control for LED1/LED2/LED3 channels
@@ -178,10 +180,9 @@ Power:
    H-CORE      -> NeoPixel data/power/ground run
    H-SW        -> switch inputs to controller
    H-SPARK     -> spark PWM channels and returns
-   H-SERVO-CTL -> I2C + servo signal lines
-   H-SERVO-PWR -> ServoWing and servo power/ground branches
-   H-BEAM-CTL  -> RP2040 GP12/13/14 control lines
-   H-BEAM-PWR  -> +5V_BUS beam/peltier load-side feed
+  H-SERVO     -> ServoWing outputs and power/ground branches (I2C enters via stacked header)
+  H-BEAM-PWR  -> +5V_BUS beam load-side feed
+  H-PELTIER-PWR -> +5V_BUS peltier load-side feed
    H-PUMP-OPT  -> optional pump control/load branch
 
    RP2040 GP2   <- SW1 -> GND   (toggle ON/OFF)

@@ -10,7 +10,7 @@ Quick-reference index for harness identification during build and troubleshootin
 | 4 | H-SW | 4-pin JST | SW1/SW2/SW3, GND | RP2040 GP2/GP3/GP4, GND | Low-noise routing preferred |
 | 5 | H-SPARK | 5-pin DMX cable | RP2040 GP5/GP6/GP9/GP10, GND | Spark channels 1-4 (+ spare) | Pin map fixed end-to-end |
 | 6 | H-SERVO | 4-pin JST | ServoWing outputs/power | Servo A/B signal + power branches | ServoWing stacks on Feather |
-| 7 | H-BEAM-PWR | 4-pin JST | +5V_BUS, GND_COMMON | Beam load path | High-current beam-only branch |
+| 7 | H-BEAM-PWR | 4-pin JST | +5V_BUS, GND_COMMON | Beam load path | High-current; beam load only |
 | 8 | H-PELTIER-PWR | Deans Micro2R | +5V_BUS, GND_COMMON | Peltier load path | Separate high-current branch |
 | 9 | H-PUMP-OPT | Project-defined load/control connector | RP2040 GP8, +5V_BUS, GND_COMMON | Optional pump driver + load branch | Optional population |
 | 10 | H-BAT-RP | Feather battery JST | LP503562 #1 | Feather RP2040 BAT/GND | Direct battery harness; Feather onboard charger path |

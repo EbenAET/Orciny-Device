@@ -1,77 +1,89 @@
 flowchart TD
-  PS5[5V Battery]
-  CNEO[Adafruit 259 Charger<br/>NeoPixel Battery]
-  BRP[PKCell LP503562 3.7V 1200mAh<br/>RP2040 Main Battery]
-  BNEO[PKCell LP503562 3.7V 1200mAh<br/>NeoPixel Supply]
-  GND[Common Ground]
+  %% Rev F — RP2040-only single-controller design
+  %% NeoPixel data: RP2040 GP11 | Switches: GP2/GP3/GP4
+  %% See orciny_wiring_ascii.txt for detailed net and harness notes
 
-  RP[Feather RP2040]
-  M0[Feather M0]
-  CORE[Adafruit 4865 SK6812 Core Strip 166px\nM0 firmware 2A max current guard rail]
+  J801["J801\n5V Input (battery or supply)"]
+  F801["F801\n3A Slow-Blow Fuse"]
+  BRP["LP503562 #1\n3.7V 1200mAh\nRP2040 Battery J811"]
+  BNEO["LP503562 #2\n3.7V 1200mAh\nNeoPixel Battery J812"]
+  CNEO["U812 Adafruit 259\nNeoPixel Charger"]
+  GND[GND_COMMON]
 
-  SW1["Switch 1 to GND\nM0 Pin 2: On/Off"]
-  SW2["Switch 2 to GND\nM0 Pin 3: Previous"]
-  SW3["Switch 3 to GND\nM0 Pin 4: Next"]
+  RP["Feather RP2040\nPrimary Controller"]
+  CORE["SK6812 NeoPixel Strip\n166 pixels Adafruit 4865\nFW 2A max guard rail"]
+  PMFW["Prop-Maker FeatherWing\nLED MOSFET Outputs"]
+  SWING["8-ch Servo FeatherWing\nPCA9685 at I2C 0x40"]
 
-  SP1["Spark Filament 1\nRP2040 Pin 5 direct PWM"]
-  SP2["Spark Filament 2\nRP2040 Pin 6 direct PWM"]
-  SP3["Spark Filament 3\nRP2040 Pin 9 direct PWM"]
-  SP4["Spark Filament 4\nRP2040 Pin 10 direct PWM"]
+  SW1["SW1 GP2 On/Off\nto GND"]
+  SW2["SW2 GP3 Previous\nto GND"]
+  SW3["SW3 GP4 Next\nto GND"]
 
-  PM1["Prop-Maker LED1\nRP2040 Pin 12 control"]
-  PM2["Prop-Maker LED2\nRP2040 Pin 13 control"]
-  PM3["Prop-Maker LED3\nRP2040 Pin 14 control"]
+  SP1["Spark Filament 1\nGP5 + R601 10Ω"]
+  SP2["Spark Filament 2\nGP6 + R602 10Ω"]
+  SP3["Spark Filament 3\nGP9 + R603 10Ω"]
+  SP4["Spark Filament 4\nGP10 + R604 10Ω"]
 
-  SWING["8ch Servo FeatherWing\nPCA9685 at I2C 0x40"]
-  SA["Servo A\nFeatherWing CH0"]
-  SB["Servo B\nFeatherWing CH1"]
-  PUMP["Peristaltic Pump (optional)\nRP2040 Pin 8 via MOSFET\nFW disabled"]
+  LED1["Beam LED CH1\n3-9W RGB leg 1"]
+  LED2["Beam LED CH2\n3-9W RGB leg 2"]
+  LED3["Beam LED CH3\n3-9W RGB leg 3"]
 
-  M0 -- Serial1 TX --> RP
-  M0 -- Pin 13 Data --> CORE
+  PELTIER["Peltier Module\nQ9 GP15 MOSFET\n+5V_BUS load"]
+  PUMP["Pump optional\nQ10 GP8 MOSFET\n+5V_BUS FW disabled"]
 
-  RP --> SP1
-  RP --> SP2
-  RP --> SP3
-  RP --> SP4
-  RP --> PM1
-  RP --> PM2
-  RP --> PM3
-  RP -- I2C SDA/SCL --> SWING
-  RP --> PUMP
-  SWING --> SA
-  SWING --> SB
+  SA["Servo A\nServoWing CH0"]
+  SB["Servo B\nServoWing CH1"]
 
-  M0 --- SW1
-  M0 --- SW2
-  M0 --- SW3
+  J801 --> F801
+  F801 -->|"+5V_BUS"| SWING
+  F801 -->|"+5V_BUS"| PMFW
+  F801 -->|"+5V_BUS"| PELTIER
+  F801 -->|"+5V_BUS"| PUMP
 
-  PS5 --> CNEO
+  BRP -->|"RP2040_BAT"| RP
+  BRP -->|"RP2040_BAT"| SP1
+  BRP -->|"RP2040_BAT"| SP2
+  BRP -->|"RP2040_BAT"| SP3
+  BRP -->|"RP2040_BAT"| SP4
+
   CNEO --> BNEO
-  BRP --> RP
-  BRP --> M0
-  BNEO --> CORE
-  BRP --> SP1
-  BRP --> SP2
-  BRP --> SP3
-  BRP --> SP4
-  PS5 --> PM1
-  PS5 --> PM2
-  PS5 --> PM3
-  PS5 --> PUMP
-  PS5 --> SWING
-  PS5 --> SA
-  PS5 --> SB
+  BNEO -->|"+3V7_NEO"| CORE
+
+  RP -->|"GP11 data"| CORE
+  RP --- SW1
+  RP --- SW2
+  RP --- SW3
+  RP -->|"GP5 PWM"| SP1
+  RP -->|"GP6 PWM"| SP2
+  RP -->|"GP9 PWM"| SP3
+  RP -->|"GP10 PWM"| SP4
+  RP -->|"GP12/13/14"| PMFW
+  RP -->|"GP15"| PELTIER
+  RP -->|"GP8"| PUMP
+  RP -->|"I2C SDA/SCL"| SWING
+
+  PMFW -->|"LED1 MOSFET"| LED1
+  PMFW -->|"LED2 MOSFET"| LED2
+  PMFW -->|"LED3 MOSFET"| LED3
+  SWING -->|"CH0"| SA
+  SWING -->|"CH1"| SB
 
   GND --- RP
-  GND --- M0
-  GND --- CNEO
   GND --- BRP
   GND --- BNEO
+  GND --- CNEO
   GND --- CORE
   GND --- SW1
   GND --- SW2
   GND --- SW3
+  GND --- SP1
+  GND --- SP2
+  GND --- SP3
+  GND --- SP4
+  GND --- LED1
+  GND --- LED2
+  GND --- LED3
+  GND --- PELTIER
   GND --- PUMP
   GND --- SWING
   GND --- SA
