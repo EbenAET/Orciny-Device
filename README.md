@@ -27,14 +27,19 @@ Install these in the Arduino IDE before compiling:
 
 The scaffold makes a few deliberate assumptions that you should verify against your hardware:
 
-- Main input is a 5V source split into a fused `+5V_BUS` rail and a fused `+3V_FILAMENT` buck-fed rail
+- Main 5V input is split into a fused `+5V_BUS` rail and a fused `+3V_FILAMENT` buck-fed rail for controller/servo/spark domains
+- A dedicated PKCell LP503562 3.7V 1200mAh cell powers the NeoPixel strip rail (`+3V7_NEO`)
+- A second dedicated PKCell LP503562 3.7V 1200mAh cell powers the beam LED load rail (`+3V7_BEAM`)
+- One Adafruit Micro Lipo charger (`259`) is assigned to each LP503562 cell (one charger per battery)
 - RP2040 I2C connects to an 8-channel Servo FeatherWing (PCA9685 at `0x40`) that drives two servo outputs
 - RP2040 pin `GP8` can remain wired to pump-enable MOSFET gate, but pump actions are currently disabled in firmware
 - M0 uses three momentary switches wired to ground with internal pull-ups enabled
 - The 3-9W LED channels are driven from the Prop-Maker FeatherWing MOSFET-controlled LED outputs, commanded by RP2040 PWM control lines
 - Four spark LED filaments are wired as direct RP2040 PWM outputs through 10 ohm series current-limiting resistors; no separate pulse filament channel is populated in this revision
 - M0 `TX` is connected to RP2040 `RX` for effect command updates, with shared ground
-- M0 pin `D13` drives one WS2812/NeoPixel data line for a 30-pixel strip
+- M0 pin `D13` drives one NeoPixel data line for Adafruit product `4865` (SK6812, 166 pixels)
+- All power sources share `GND_COMMON`; keep positive rails isolated (`+5V_BUS`, `+3V7_NEO`, and `+3V7_BEAM` are not tied together)
+- Charger outputs should feed only their assigned battery/rail pair (`CHG_NEO <-> LP503562 #1 -> +3V7_NEO`, `CHG_BEAM <-> LP503562 #2 -> +3V7_BEAM`)
 
 This revision intentionally removes NeoPXL8, Motor FeatherWing, and Feather Doubler dependencies.
 
@@ -81,7 +86,9 @@ Send any of these lines from the M0 serial monitor:
 ## Notes
 
 - This is a framework, not a final tuned show controller. PWM levels, animation timing, motor speeds, and thermal limits all need bench validation.
+- M0 firmware includes a NeoPixel guard rail that caps strip output to a 2A maximum equivalent draw.
 - High-power LED channels and servo power should have appropriate thermal/current design outside Feather logic domains.
+- Use appropriately gauged wiring for power distribution: 18 AWG minimum on +5V_MAIN/+5V_BUS trunk and 20 AWG minimum on high-current branch runs/returns (including +3V7_NEO and +3V7_BEAM feeds/returns).
 - Deterministic behavior depends on reliable M0->RP2040 FX command delivery; RP2040 now applies a timeout-safe shutdown when command frames go stale.
 
 ## KiCad Adafruit Footprints

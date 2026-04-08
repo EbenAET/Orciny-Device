@@ -95,6 +95,10 @@ uint16_t pixelIndex(uint16_t pixel) {
   return pixel;
 }
 
+uint8_t limitedBrightness(uint8_t requested) {
+  return min<uint8_t>(requested, device_config::kMaxBrightnessForCurrentLimit);
+}
+
 uint8_t wave8(uint32_t now, uint16_t rate, uint16_t offset) {
   const uint32_t phase = ((now * rate) / 32U + offset) & 0x1FF;
   if (phase < 256) {
@@ -124,8 +128,9 @@ uint32_t colorWheel(uint8_t position) {
 }
 
 uint32_t colorForPixel(uint32_t now, uint16_t pixel) {
-  // For single-strand mode, use pixel position to create pseudo-strip variation
-  const uint8_t pseudoStrip = pixel / 8;  // Divide 30 pixels into 4 zones (~8 pixels each)
+  // For single-strand mode, use pixel position to create pseudo-strip variation.
+  const uint16_t zoneSize = max<uint16_t>(1, device_config::kTotalPixels / 4);
+  const uint8_t pseudoStrip = pixel / zoneSize;
   
   switch (currentFrame.mode) {
     case orciny::CORE_MODE_OFF:
@@ -139,22 +144,34 @@ uint32_t colorForPixel(uint32_t now, uint16_t pixel) {
 
     case orciny::CORE_MODE_PULSE: {
       const uint8_t pulse = wave8(now, currentFrame.speed, pseudoStrip * 32U);
-      const uint8_t rim = map(abs(static_cast<int>(pixel) - 15), 0, 15, 255, 80);
+      const uint16_t center = device_config::kTotalPixels / 2;
+      const uint16_t maxDistance = max<uint16_t>(1, center);
+      const uint16_t distanceFromCenter =
+          abs(static_cast<int>(pixel) - static_cast<int>(center));
+      const uint8_t rim =
+          map(min<uint16_t>(distanceFromCenter, maxDistance), 0, maxDistance, 255, 80);
       const uint8_t level = static_cast<uint16_t>(pulse) * rim / 255U;
       return scaledColor(currentFrame.red, currentFrame.green, currentFrame.blue, level);
     }
 
     case orciny::CORE_MODE_BEAM: {
-      const uint8_t front = (now / max<uint8_t>(1, 30 - (currentFrame.speed / 12))) % 30;
-      const uint8_t distance = abs(static_cast<int>(pixel) - static_cast<int>(front));
-      const uint8_t level = distance > 10 ? 24 : map(distance, 0, 10, currentFrame.brightness, 24);
+      const uint16_t front =
+          (now / max<uint8_t>(1, 30 - (currentFrame.speed / 12))) % device_config::kTotalPixels;
+      const uint16_t distance = abs(static_cast<int>(pixel) - static_cast<int>(front));
+      const uint16_t beamTail = max<uint16_t>(2, device_config::kTotalPixels / 3);
+      const uint8_t level =
+          distance > beamTail ? 24 : map(distance, 0, beamTail, currentFrame.brightness, 24);
       return scaledColor(currentFrame.red, currentFrame.green, currentFrame.blue, level);
     }
 
     case orciny::CORE_MODE_CLAW: {
-      const uint16_t chase = (now / max<uint8_t>(1, 36 - (currentFrame.speed / 10)) + pseudoStrip * 7U) % 30;
-      const uint8_t distance = abs(static_cast<int>(pixel) - static_cast<int>(chase));
-      const uint8_t level = distance > 5 ? 8 : map(distance, 0, 5, currentFrame.brightness, 8);
+      const uint16_t chase =
+          (now / max<uint8_t>(1, 36 - (currentFrame.speed / 10)) + pseudoStrip * 7U) %
+          device_config::kTotalPixels;
+      const uint16_t distance = abs(static_cast<int>(pixel) - static_cast<int>(chase));
+      const uint16_t clawTail = max<uint16_t>(1, device_config::kTotalPixels / 6);
+      const uint8_t level =
+          distance > clawTail ? 8 : map(distance, 0, clawTail, currentFrame.brightness, 8);
       return scaledColor(currentFrame.red, currentFrame.green, currentFrame.blue, level);
     }
 
@@ -169,7 +186,7 @@ uint32_t colorForPixel(uint32_t now, uint16_t pixel) {
 }
 
 void renderCore(uint32_t now) {
-  leds.setBrightness(currentFrame.brightness);
+  leds.setBrightness(limitedBrightness(currentFrame.brightness));
   for (uint16_t pixel = 0; pixel < device_config::kTotalPixels; ++pixel) {
     leds.setPixelColor(pixelIndex(pixel), colorForPixel(now, pixel));
   }
@@ -374,6 +391,8 @@ void setup() {
   delay(250);
   printHelp();
   printSequenceStatus();
+  Serial.print(F("NeoPixel guard rail: 2A max, brightness cap "));
+  Serial.println(device_config::kMaxBrightnessForCurrentLimit);
 }
 
 void loop() {

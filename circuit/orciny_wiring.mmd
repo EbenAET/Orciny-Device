@@ -1,11 +1,15 @@
 flowchart TD
   PS5[5V Battery]
+  CNEO[Adafruit 259 Charger<br/>NeoPixel Battery]
+  CBEAM[Adafruit 259 Charger<br/>Beam Battery]
+  BNEO[PKCell LP503562 3.7V 1200mAh<br/>NeoPixel Supply]
+  BBEAM[PKCell LP503562 3.7V 1200mAh<br/>Beam Supply]
   PS3F[3V Spark Filament Rail]
   GND[Common Ground]
 
   RP[Feather RP2040]
   M0[Feather M0]
-  CORE[WS2812B Core Strip 30px]
+  CORE[Adafruit 4865 SK6812 Core Strip 166px\nM0 firmware 2A max current guard rail]
 
   SW1["Switch 1 to GND\nM0 Pin 2: On/Off"]
   SW2["Switch 2 to GND\nM0 Pin 3: Previous"]
@@ -44,16 +48,20 @@ flowchart TD
   M0 --- SW2
   M0 --- SW3
 
+  PS5 --> CNEO
+  PS5 --> CBEAM
+  CNEO --> BNEO
+  CBEAM --> BBEAM
   PS5 --> RP
   PS5 --> M0
-  PS5 --> CORE
+  BNEO --> CORE
   PS3F --> SP1
   PS3F --> SP2
   PS3F --> SP3
   PS3F --> SP4
-  PS5 --> PM1
-  PS5 --> PM2
-  PS5 --> PM3
+  BBEAM --> PM1
+  BBEAM --> PM2
+  BBEAM --> PM3
   PS5 --> PUMP
   PS5 --> SWING
   PS5 --> SA
@@ -61,6 +69,10 @@ flowchart TD
 
   GND --- RP
   GND --- M0
+  GND --- CNEO
+  GND --- CBEAM
+  GND --- BNEO
+  GND --- BBEAM
   GND --- CORE
   GND --- SW1
   GND --- SW2
