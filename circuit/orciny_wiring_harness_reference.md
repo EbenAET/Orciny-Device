@@ -53,6 +53,7 @@ Design intent in this reference:
 - Notes: U812 output must remain dedicated to this battery/rail pair only.
 - Connector note: Use a 2-pin JST for charger power, and a separate 2-pin JST for the controller signal/ground run.
 - Capacity note: Running the strip from 3.7V still requires the harness to carry strip current; size connector and wire for at least the 2A strip budget used in project docs, with margin for any brightness or pixel-count increase.
+- Bulk capacitor note: Add a 500-1000 uF electrolytic capacitor across +3V7_NEO and GND at the strip power entry point.
 
 ### H-CORE - NeoPixel Strip Harness
 - Harness Label 3
@@ -62,6 +63,7 @@ Design intent in this reference:
 - Recommended wire: 24-26 AWG for data, 20 AWG for strip power/ground
 - Notes: Keep data conductor away from high-current switching runs where possible.
 - Capacity note: On a 3.7V rail there is less voltage-drop headroom than at 5V, so keep +V/GND path resistance low and maintain the same 2A minimum current capacity in this run.
+- Placement note: Mount the bulk capacitor physically close to the first pixel / strip power injection point.
 
 ### H-SW - Switch Input Harness
 - Harness Label 4
@@ -132,3 +134,4 @@ Use heat-shrink or tags at both ends:
 5. Verify H-SERVO polarity before connecting servos.
 6. Verify H-BEAM-PWR and H-PELTIER-PWR are not cross-connected.
 7. Verify U812 charger wiring only touches Neo battery rail.
+
