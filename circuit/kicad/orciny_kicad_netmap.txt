@@ -1,8 +1,8 @@
-ORCINY KICAD NET MAP (compatibility copy)
-=========================================
+ORCINY KICAD NET MAP (legacy reference)
+=======================================
 
-This file is retained as a compatibility copy.
-The current revision is documented in `orciny_netmap_no_motor_wing.txt`.
+This file is retained as a legacy reference.
+The actively maintained net map is `orciny_netmap_no_motor_wing.txt`.
 
 Project files
 - orciny_device.kicad_pro
@@ -37,18 +37,25 @@ RP2040 effect outputs
 - SERVO_WING_CH1 -> SERVO_B_SIGNAL
 
 M0 core output (single strand)
-- M0_PIN13 -> CORE_STRIP_DATA (30-pixel WS2812/NeoPixel strip)
-- +5V_BUS -> CORE_STRIP_5V
+- M0_PIN13 -> CORE_STRIP_DATA (166-pixel SK6812 NeoPixel strip, Adafruit 4865)
+- +3V7_NEO -> CORE_STRIP_POWER
 - GND_COMMON -> CORE_STRIP_GND
 
 Power domains
 - +5V_IN (from battery via main fuse)
   +-> F801 (+5V_BUS direct, no buck needed)
-  +-> F802 (+3V_FILAMENT buck input)
 
-- +5V_BUS -> RP2040 (built-in LDO for 3.3V logic), M0 (built-in LDO for 3.3V logic),
-            NeoPixel strip power, Prop-Maker output stage, Servo FeatherWing, optional pump
-- +3V_FILAMENT -> Optional direct spark filament branch (Spark1-4)
+- RP2040_BAT_IN (from dedicated PKCell LP503562 battery #1)
+  +-> Feather RP2040 BAT input (built-in Feather charging path)
+
+- +3V7_NEO_IN (from dedicated PKCell LP503562 battery #2)
+  +-> +3V7_NEO (NeoPixel strip rail)
+
+- CHG_NEO_USB_5V -> U812 (Adafruit 259) -> LP503562 NeoPixel battery (#2)
+
+- +5V_BUS -> Servo FeatherWing, Prop-Maker beam/peltier load domain, optional pump
+- RP2040_BAT -> RP2040 controller and spark branch supply
+- +3V7_NEO -> NeoPixel strip power
 
 KiCad checklist
 1) Open orciny_device.kicad_pro in KiCad.
