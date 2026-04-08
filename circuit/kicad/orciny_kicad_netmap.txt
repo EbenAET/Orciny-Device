@@ -44,22 +44,18 @@ M0 core output (single strand)
 Power domains
 - +5V_IN (from battery via main fuse)
   +-> F801 (+5V_BUS direct, no buck needed)
-  +-> F802 (+3V_FILAMENT buck input)
 
-- +3V7_NEO_IN (from dedicated PKCell LP503562 battery #1)
+- RP2040_BAT_IN (from dedicated PKCell LP503562 battery #1)
+  +-> Feather RP2040 BAT input (built-in Feather charging path)
+
+- +3V7_NEO_IN (from dedicated PKCell LP503562 battery #2)
   +-> +3V7_NEO (NeoPixel strip rail)
 
-- +3V7_BEAM_IN (from dedicated PKCell LP503562 battery #2)
-  +-> +3V7_BEAM (beam LED load rail)
+- CHG_NEO_USB_5V -> U812 (Adafruit 259) -> LP503562 NeoPixel battery (#2)
 
-- CHG_NEO_USB_5V -> U811 (Adafruit 259) -> LP503562 battery #1
-- CHG_BEAM_USB_5V -> U812 (Adafruit 259) -> LP503562 battery #2
-
-- +5V_BUS -> RP2040 (built-in LDO for 3.3V logic), M0 (built-in LDO for 3.3V logic),
-            Servo FeatherWing, optional pump
-- +3V_FILAMENT -> Optional direct spark filament branch (Spark1-4)
+- +5V_BUS -> Servo FeatherWing, Prop-Maker beam/peltier load domain, optional pump
+- RP2040_BAT -> RP2040 controller and spark branch supply
 - +3V7_NEO -> NeoPixel strip power
-- +3V7_BEAM -> Prop-Maker beam load power
 
 KiCad checklist
 1) Open orciny_device.kicad_pro in KiCad.

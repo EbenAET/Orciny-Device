@@ -1,19 +1,15 @@
 # Orciny Device Firmware Framework
 
-Arduino IDE scaffold for a two-controller multi-effect device built around:
+Arduino IDE scaffold for a single-controller multi-effect device built around:
 
 - Feather RP2040
-- Feather M0 Basic Proto
 
-The framework splits responsibilities like this:
-
-- M0 sketch: primary scene control, switch and USB command handling, single-strand NeoPixel core rendering, and outbound effect commands over Serial1
-- RP2040 sketch: effect executor for spark filaments, Prop-Maker LED channel control, and dual-servo claw motion through an 8-channel Servo FeatherWing (PCA9685)
+The RP2040 handles scene control, switch and USB command handling, NeoPixel core rendering, spark filament outputs, Prop-Maker LED control, and dual-servo claw motion through an 8-channel Servo FeatherWing (PCA9685).
 
 ## Folder Layout
 
-- `arduino/rp2040_fx_controller`: main effects controller sketch for the Feather RP2040
-- `arduino/m0_core_controller`: single-strand NeoPixel core controller sketch for the Feather M0
+- `arduino/rp2040_fx_controller`: primary controller sketch for RP2040 scene, core, and FX control
+- `arduino/m0_core_controller`: legacy split-controller reference sketch (not used in RP2040-only wiring)
 - `arduino/libraries/OrcinyCommon`: shared protocol and data structures
 
 ## Arduino Libraries
@@ -27,33 +23,32 @@ Install these in the Arduino IDE before compiling:
 
 The scaffold makes a few deliberate assumptions that you should verify against your hardware:
 
-- Main 5V input is split into a fused `+5V_BUS` rail and a fused `+3V_FILAMENT` buck-fed rail for controller/servo/spark domains
-- A dedicated PKCell LP503562 3.7V 1200mAh cell powers the NeoPixel strip rail (`+3V7_NEO`)
-- A second dedicated PKCell LP503562 3.7V 1200mAh cell powers the beam LED load rail (`+3V7_BEAM`)
-- One Adafruit Micro Lipo charger (`259`) is assigned to each LP503562 cell (one charger per battery)
+- Main 5V input feeds only the Servo FeatherWing and Prop-Maker/peltier load domains (`+5V_BUS`)
+- One PKCell LP503562 3.7V 1200mAh cell is connected directly to Feather RP2040 BAT input (Feather built-in charging path)
+- A second PKCell LP503562 3.7V 1200mAh cell powers the NeoPixel strip rail (`+3V7_NEO`)
+- One external Adafruit Micro Lipo charger (`259`) is used for the dedicated NeoPixel LP503562 cell
+- RP2040 battery rail supplies controller logic and direct spark filament branch
 - RP2040 I2C connects to an 8-channel Servo FeatherWing (PCA9685 at `0x40`) that drives two servo outputs
 - RP2040 pin `GP8` can remain wired to pump-enable MOSFET gate, but pump actions are currently disabled in firmware
-- M0 uses three momentary switches wired to ground with internal pull-ups enabled
+- RP2040 uses three momentary switches wired to ground with internal pull-ups enabled
 - The 3-9W LED channels are driven from the Prop-Maker FeatherWing MOSFET-controlled LED outputs, commanded by RP2040 PWM control lines
-- Four spark LED filaments are wired as direct RP2040 PWM outputs through 10 ohm series current-limiting resistors; no separate pulse filament channel is populated in this revision
-- M0 `TX` is connected to RP2040 `RX` for effect command updates, with shared ground
-- M0 pin `D13` drives one NeoPixel data line for Adafruit product `4865` (SK6812, 166 pixels)
-- All power sources share `GND_COMMON`; keep positive rails isolated (`+5V_BUS`, `+3V7_NEO`, and `+3V7_BEAM` are not tied together)
-- Charger outputs should feed only their assigned battery/rail pair (`CHG_NEO <-> LP503562 #1 -> +3V7_NEO`, `CHG_BEAM <-> LP503562 #2 -> +3V7_BEAM`)
+- Four spark LED filaments are wired as direct RP2040 PWM outputs through 10 ohm series current-limiting resistors and are supplied from the main RP2040 3.7V battery domain
+- RP2040 pin `GP11` drives one NeoPixel data line for Adafruit product `4865` (SK6812, 166 pixels)
+- All power sources share `GND_COMMON`; keep positive rails isolated (`+5V_BUS`, `RP2040_BAT`, and `+3V7_NEO` are not tied together)
+- The external Adafruit 259 charger should feed only the dedicated NeoPixel battery/rail pair (`CHG_NEO <-> LP503562 -> +3V7_NEO`)
 
 This revision intentionally removes NeoPXL8, Motor FeatherWing, and Feather Doubler dependencies.
 
 ## How To Use
 
 1. Open `arduino/rp2040_fx_controller/rp2040_fx_controller.ino` in Arduino IDE and select the Feather RP2040 target.
-2. Open `arduino/m0_core_controller/m0_core_controller.ino` in another Arduino IDE window and select the Feather M0 target.
-3. Adjust both `DeviceConfig.h` files to match your actual wiring and strip lengths.
-4. Upload the M0 sketch first, then the RP2040 sketch.
-5. Open the M0 USB serial monitor at `115200` baud for operator commands and status.
+2. Adjust RP2040 `DeviceConfig.h` settings to match your actual wiring and strip length.
+3. Upload the RP2040 sketch.
+4. Open the RP2040 USB serial monitor at `115200` baud for operator commands and status.
 
 ## Switch Inputs
 
-The M0 sketch expects three momentary switches connected from GPIO to GND and uses `INPUT_PULLUP`.
+The RP2040 sketch expects three momentary switches connected from GPIO to GND and uses `INPUT_PULLUP`.
 
 - Switch 1 on pin `2`: toggle the current sequence on or off
 - Switch 2 on pin `3`: move to the previous sequence, wrapping `1 -> 3`
@@ -68,9 +63,9 @@ Turning the sequence off does not lose its position. Turning it back on resumes 
 - Sequence 2: optional pump + beam + pulsing core
 - Sequence 3: full show with sparks, beam, claw, and animated core
 
-## M0 Serial Commands
+## Serial Commands
 
-Send any of these lines from the M0 serial monitor:
+Send any of these lines from the RP2040 serial monitor:
 
 - `help`
 - `on`
@@ -86,10 +81,10 @@ Send any of these lines from the M0 serial monitor:
 ## Notes
 
 - This is a framework, not a final tuned show controller. PWM levels, animation timing, motor speeds, and thermal limits all need bench validation.
-- M0 firmware includes a NeoPixel guard rail that caps strip output to a 2A maximum equivalent draw.
+- Firmware includes a NeoPixel guard rail that caps strip output to a 2A maximum equivalent draw.
 - High-power LED channels and servo power should have appropriate thermal/current design outside Feather logic domains.
 - Use appropriately gauged wiring for power distribution: 18 AWG minimum on +5V_MAIN/+5V_BUS trunk and 20 AWG minimum on high-current branch runs/returns (including +3V7_NEO and +3V7_BEAM feeds/returns).
-- Deterministic behavior depends on reliable M0->RP2040 FX command delivery; RP2040 now applies a timeout-safe shutdown when command frames go stale.
+- Deterministic behavior depends on stable power domains and common-ground integrity across controller, strips, and load stages.
 
 ## KiCad Adafruit Footprints
 

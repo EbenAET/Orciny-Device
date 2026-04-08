@@ -1,10 +1,8 @@
 flowchart TD
   PS5[5V Battery]
   CNEO[Adafruit 259 Charger<br/>NeoPixel Battery]
-  CBEAM[Adafruit 259 Charger<br/>Beam Battery]
+  BRP[PKCell LP503562 3.7V 1200mAh<br/>RP2040 Main Battery]
   BNEO[PKCell LP503562 3.7V 1200mAh<br/>NeoPixel Supply]
-  BBEAM[PKCell LP503562 3.7V 1200mAh<br/>Beam Supply]
-  PS3F[3V Spark Filament Rail]
   GND[Common Ground]
 
   RP[Feather RP2040]
@@ -49,19 +47,17 @@ flowchart TD
   M0 --- SW3
 
   PS5 --> CNEO
-  PS5 --> CBEAM
   CNEO --> BNEO
-  CBEAM --> BBEAM
-  PS5 --> RP
-  PS5 --> M0
+  BRP --> RP
+  BRP --> M0
   BNEO --> CORE
-  PS3F --> SP1
-  PS3F --> SP2
-  PS3F --> SP3
-  PS3F --> SP4
-  BBEAM --> PM1
-  BBEAM --> PM2
-  BBEAM --> PM3
+  BRP --> SP1
+  BRP --> SP2
+  BRP --> SP3
+  BRP --> SP4
+  PS5 --> PM1
+  PS5 --> PM2
+  PS5 --> PM3
   PS5 --> PUMP
   PS5 --> SWING
   PS5 --> SA
@@ -70,9 +66,8 @@ flowchart TD
   GND --- RP
   GND --- M0
   GND --- CNEO
-  GND --- CBEAM
+  GND --- BRP
   GND --- BNEO
-  GND --- BBEAM
   GND --- CORE
   GND --- SW1
   GND --- SW2
