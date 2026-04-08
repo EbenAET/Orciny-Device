@@ -57,7 +57,7 @@ Rules:
 - keep high-current 5V and 3V rail stubs short before they branch out
 - define the main star-ground anchor in this zone
 
-### Zone B: High-Current Filament Drivers
+### Zone B: Spark Filament Outputs
 
 Preferred location:
 
@@ -65,15 +65,15 @@ Preferred location:
 
 Place here:
 
-- spark and pulse MOSFET stages
+- four spark filament output channels
 - filament output headers/connectors
 - 10 ohm series filament resistors
 
 Rules:
 
-- group all spark and pulse outputs together
+- group all spark outputs together
 - keep the `PSU_3V_FILAMENT` path wide and local to this region
-- keep MOSFET drain/load routing away from MCU and I2C traces
+- keep spark output routing away from MCU serial and I2C traces
 
 ### Zone C: RP2040 FX Controller Region
 
@@ -86,7 +86,7 @@ Place here:
 - Feather RP2040 module footprint
 - serial link header/routing from M0
 - I2C breakout to servo function
-- PWM control fanout for sparks, pulse, and Prop-Maker LED control
+- PWM control fanout for spark outputs and Prop-Maker LED control
 
 Rules:
 
@@ -157,7 +157,6 @@ This keeps:
 4. spark 2
 5. spark 3
 6. spark 4
-7. pulse filament
 
 ### Right edge, top to bottom
 
@@ -185,7 +184,7 @@ Priority 1:
 
 Priority 2:
 
-- spark/pulse PWM control to driver gates
+- spark PWM control to direct output channels
 - Prop-Maker control lines
 - servo PWM outputs from PCA9685 or wing channels
 

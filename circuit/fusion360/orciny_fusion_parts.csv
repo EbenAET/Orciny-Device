@@ -1,22 +1,21 @@
 refdes,block,part_name,role,qty,interface,notes
 U_M0,mcu,Adafruit Feather M0,Primary scene controller,1,GPIO+UART,Uses D2 D3 D4 D13 and Serial1 TX
-U_RP2040,mcu,Adafruit Feather RP2040,FX executor controller,1,GPIO+UART+I2C,Uses GP5 GP6 GP8 GP9 GP10 GP11 GP12 GP13 GP14 and Serial1 RX
+U_RP2040,mcu,Adafruit Feather RP2040,FX executor controller,1,GPIO+UART+I2C,Uses GP5 GP6 GP8 GP9 GP10 GP12 GP13 GP14 and Serial1 RX
 U_SERVO_WING,wing,Adafruit 8-Channel Servo FeatherWing (PCA9685),Dual-servo PWM driver,1,I2C addr 0x40,Channel 0 servo A and channel 1 servo B
 U_PROP_WING,wing,Adafruit Prop-Maker FeatherWing,High-power MOSFET LED output stage,1,PWM control lines,LED1 LED2 LED3 channels from RP2040 GP12 GP13 GP14
 J_SW1,input,2-pin momentary switch,On Off switch,1,Digital input,M0 D2 to switch then to GND
 J_SW2,input,2-pin momentary switch,Previous sequence switch,1,Digital input,M0 D3 to switch then to GND
 J_SW3,input,2-pin momentary switch,Next sequence switch,1,Digital input,M0 D4 to switch then to GND
 J_CORE,led,3-pin WS2812 connector,Core strip interface,1,Data+Power,M0 D13 data plus 5V and GND
-J_SPARK1,load,Spark filament channel 1 load,High-current load,1,PWM via gate driver,Driven by RP2040 GP5 path
-J_SPARK2,load,Spark filament channel 2 load,High-current load,1,PWM via gate driver,Driven by RP2040 GP6 path
-J_SPARK3,load,Spark filament channel 3 load,High-current load,1,PWM via gate driver,Driven by RP2040 GP9 path
-J_SPARK4,load,Spark filament channel 4 load,High-current load,1,PWM via gate driver,Driven by RP2040 GP10 path
-J_PULSE,load,Pulse filament load,High-current load,1,PWM via gate driver,Driven by RP2040 GP11 path
+J_SPARK1,load,Spark filament channel 1 load,Direct-output load,1,Direct PWM path,Driven by RP2040 GP5 through series resistor
+J_SPARK2,load,Spark filament channel 2 load,Direct-output load,1,Direct PWM path,Driven by RP2040 GP6 through series resistor
+J_SPARK3,load,Spark filament channel 3 load,Direct-output load,1,Direct PWM path,Driven by RP2040 GP9 through series resistor
+J_SPARK4,load,Spark filament channel 4 load,Direct-output load,1,Direct PWM path,Driven by RP2040 GP10 through series resistor
 J_LED_3_9W,load,3-channel high-power LED connector,3-9W LED output,1,Three controlled channels,Connect to Prop-Maker LED1 LED2 LED3 outputs
 J_SERVO_A,actuator,3-pin servo header,Servo A output,1,PWM+5V+GND,Signal from ServoWing CH0
 J_SERVO_B,actuator,3-pin servo header,Servo B output,1,PWM+5V+GND,Signal from ServoWing CH1
 J_PUMP,opt,2-pin pump connector,Optional pump load,1,Switched 5V path,Control path exists but disabled in firmware
 F_MAIN,power,Main fuse,Input protection,1,Power path,From PSU_5V_IN to PSU_5V_MAIN
 F_5V_BUS,power,5V rail fuse,5V branch protection,1,Power path,From PSU_5V_MAIN to PSU_5V_BUS
-F_3V_FIL,power,Filament rail fuse,3V filament branch protection,1,Power path,From PSU_5V_MAIN to buck input
-U_BUCK_3V,power,3V buck converter,Filament rail source,1,Power conversion,Creates PSU_3V_FILAMENT rail
+F_3V_FIL,power,Filament rail fuse,3V filament branch protection,1,Power path,From PSU_5V_MAIN to buck input for optional spark branch
+U_BUCK_3V,power,3V buck converter,Optional spark filament rail source,1,Power conversion,Creates PSU_3V_FILAMENT rail when a dedicated spark supply is used

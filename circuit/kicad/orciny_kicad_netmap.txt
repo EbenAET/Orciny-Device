@@ -22,12 +22,11 @@ Switch controls (momentary switches to GND, firmware uses INPUT_PULLUP)
 - SW3: M0_PIN4 -> switch -> GND  (next sequence, 3->1 wrap)
 - Hold SW1+SW3 for 5 seconds -> reset to sequence 1
 
-RP2040 effect outputs (all high-current paths require MOSFET/driver stages)
-- RP2040_PIN5  -> SPARK1_GATE
-- RP2040_PIN6  -> SPARK2_GATE
-- RP2040_PIN9  -> SPARK3_GATE
-- RP2040_PIN10 -> SPARK4_GATE
-- RP2040_PIN11 -> PULSE_FILAMENT_GATE
+RP2040 effect outputs
+- RP2040_PIN5  -> SPARK1_FILAMENT
+- RP2040_PIN6  -> SPARK2_FILAMENT
+- RP2040_PIN9  -> SPARK3_FILAMENT
+- RP2040_PIN10 -> SPARK4_FILAMENT
 - RP2040_PIN12 -> PROP_LED1_PWM
 - RP2040_PIN13 -> PROP_LED2_PWM
 - RP2040_PIN14 -> PROP_LED3_PWM
@@ -49,14 +48,14 @@ Power domains
 
 - +5V_BUS -> RP2040 (built-in LDO for 3.3V logic), M0 (built-in LDO for 3.3V logic),
             NeoPixel strip power, Prop-Maker output stage, Servo FeatherWing, optional pump
-- +3V_FILAMENT -> Spark/pulse filament MOSFET drains (Q1-Q5)
+- +3V_FILAMENT -> Optional direct spark filament branch (Spark1-4)
 
 KiCad checklist
 1) Open orciny_device.kicad_pro in KiCad.
 2) In Schematic Editor, replace template Arduino symbols with your board symbols or generic headers.
 3) Add named net labels exactly as above.
-4) Add MOSFET symbols for each high-current channel and wire gate/source/drain appropriately.
-5) Add 10 ohm series resistors on SPARK1/2/3/4 and PULSE output legs.
+4) Route SPARK1/2/3/4 as direct RP2040 outputs with 10 ohm series resistors.
+5) Add MOSFET symbols for the remaining high-current switched channels and wire gate/source/drain appropriately.
 6) Add any required series/output-stage elements for the Prop-Maker LED channel implementation you keep.
 7) Add a main 5V fuse for +5V_BUS and a fused buck-fed branch for +3V_FILAMENT.
 8) Run ERC and resolve only intentional warnings.

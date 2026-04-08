@@ -19,7 +19,6 @@ enum SequenceId : uint8_t {
 struct SceneProfile {
   bool sparksEnabled;
   uint8_t sparksIntensity;
-  bool pulseEnabled;
   bool beamEnabled;
   bool clawEnabled;
   CoreFrame coreFrame;
@@ -117,53 +116,6 @@ class SparkChannel {
   bool active_ = false;
   uint32_t nextEventMs_ = 0;
   uint32_t flashUntilMs_ = 0;
-};
-
-class PulseEffect {
- public:
-  void begin(uint8_t filamentPin) {
-    filamentPin_ = filamentPin;
-    pinMode(filamentPin_, OUTPUT);
-    // pinMode(device_config::kPumpControlPin, OUTPUT);
-    // digitalWrite(device_config::kPumpControlPin, LOW);
-    analogWrite(filamentPin_, 0);
-  }
-
-  void update(uint32_t now, bool enabled) {
-    if (!enabled) {
-      stop();
-      return;
-    }
-
-    const uint16_t phase = now % 1600;
-    uint8_t wave = 0;
-    if (phase < 800) {
-      wave = map(phase, 0, 800, 40, 255);
-    } else {
-      wave = map(phase, 800, 1600, 255, 40);
-    }
-
-    analogWrite(filamentPin_, wave);
-    // Pump may be removed in the updated hardware, keep action disabled.
-    // digitalWrite(device_config::kPumpControlPin, wave >= 96 ? HIGH : LOW);
-    active_ = true;
-  }
-
-  void stop() {
-    if (!active_) {
-      analogWrite(filamentPin_, 0);
-      // digitalWrite(device_config::kPumpControlPin, LOW);
-      return;
-    }
-
-    analogWrite(filamentPin_, 0);
-    // digitalWrite(device_config::kPumpControlPin, LOW);
-    active_ = false;
-  }
-
- private:
-  uint8_t filamentPin_ = 0;
-  bool active_ = false;
 };
 
 class BeamEffect {
@@ -298,7 +250,6 @@ class ClawEffect {
 };
 
 SparkChannel sparks[device_config::kSparkCount];
-PulseEffect pulseEffect;
 BeamEffect beamEffect;
 ClawEffect clawEffect;
 Adafruit_PWMServoDriver servoDriver(device_config::kServoDriverI2cAddress);
@@ -353,7 +304,6 @@ SceneProfile buildActiveProfile() {
       return profile;
 
     case SEQUENCE_2:
-      profile.pulseEnabled = true;
       profile.beamEnabled = true;
       profile.coreFrame.mode = orciny::CORE_MODE_PULSE;
       profile.coreFrame.brightness = 96;
@@ -366,7 +316,6 @@ SceneProfile buildActiveProfile() {
     case SEQUENCE_3:
       profile.sparksEnabled = true;
       profile.sparksIntensity = 255;
-      profile.pulseEnabled = true;
       profile.beamEnabled = true;
       profile.clawEnabled = true;
       profile.coreFrame.mode = orciny::CORE_MODE_SHOW;
@@ -389,7 +338,7 @@ EffectCommand profileToEffectCommand(const SceneProfile &profile) {
   command.outputEnabled = outputEnabled;
   command.sparksEnabled = profile.sparksEnabled;
   command.sparksIntensity = profile.sparksIntensity;
-  command.pulseEnabled = profile.pulseEnabled;
+  command.pulseEnabled = false;
   command.beamEnabled = profile.beamEnabled;
   command.clawEnabled = profile.clawEnabled;
   return command;
@@ -535,14 +484,12 @@ void updateEffects(uint32_t now) {
   const EffectCommand command = resolveEffectCommand(now);
 
   const bool sparksEnabled = command.outputEnabled && command.sparksEnabled;
-  const bool pulseEnabled = command.outputEnabled && command.pulseEnabled;
   const bool beamEnabled = command.outputEnabled && command.beamEnabled;
   const bool clawEnabled = command.outputEnabled && command.clawEnabled;
 
   for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {
     sparks[i].update(now, sparksEnabled, command.sparksIntensity);
   }
-  pulseEffect.update(now, pulseEnabled);
   beamEffect.update(now, beamEnabled);
   clawEffect.update(now, clawEnabled);
 }
@@ -559,7 +506,6 @@ void setup() {
     sparks[i].begin(device_config::kSparkPins[i]);
   }
 
-  pulseEffect.begin(device_config::kPulseFilamentPin);
   beamEffect.begin(device_config::kPropMakerLed1Pin,
                    device_config::kPropMakerLed2Pin,
                    device_config::kPropMakerLed3Pin);

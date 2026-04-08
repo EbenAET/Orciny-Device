@@ -17,12 +17,11 @@ M0 NeoPixel output (single strand)
 - +5V_BUS -> NeoPixel_Power
 - GND_COMMON -> NeoPixel_Ground
 
-RP2040 effect outputs (all high-current paths require MOSFET/driver stages)
-- RP2040_PIN5  -> Q1_gate       -> SPARK1_drain
-- RP2040_PIN6  -> Q2_gate       -> SPARK2_drain
-- RP2040_PIN9  -> Q3_gate       -> SPARK3_drain
-- RP2040_PIN10 -> Q4_gate       -> SPARK4_drain
-- RP2040_PIN11 -> Q5_gate       -> PULSE_FILAMENT_drain
+RP2040 effect outputs
+- RP2040_PIN5  -> R601 -> SPARK1_FILAMENT
+- RP2040_PIN6  -> R602 -> SPARK2_FILAMENT
+- RP2040_PIN9  -> R603 -> SPARK3_FILAMENT
+- RP2040_PIN10 -> R604 -> SPARK4_FILAMENT
 - RP2040_PIN12 -> PROPMAKER_LED1_CTRL
 - RP2040_PIN13 -> PROPMAKER_LED2_CTRL
 - RP2040_PIN14 -> PROPMAKER_LED3_CTRL
@@ -39,14 +38,13 @@ Power domains
 
 - +5V_BUS -> RP2040 (internal LDO for 3.3V logic), M0 (internal LDO for 3.3V logic),
             NeoPixel strip, Prop-Maker LED stage, Servo FeatherWing, optional pump
-- +3V_FILAMENT -> Spark/pulse filament MOSFET drains (Q1-Q5)
+- +3V_FILAMENT -> Optional direct spark filament branch (Spark1-4)
 
-MOSFET all-gate configuration
-- Spark/Pulse MOSFETs (Q1-Q5):
-  - Gate resistor: 1K-10K (3.3V logic from RP2040 GPIO)
-  - Drain: Filament load negative
-  - Source: GND_COMMON
-  - Drain supply: +3V_FILAMENT
+Direct spark configuration
+- Spark outputs (R601-R604):
+  - Direct from RP2040 GPIO pins 5, 6, 9, and 10
+  - One 10 ohm series resistor per channel
+  - Validate the selected filament current against RP2040 GPIO limits
 
 - Prop-Maker LED outputs:
   - Control: RP2040 pins 12/13/14
@@ -66,19 +64,19 @@ MOSFET all-gate configuration
   - Drain supply: +5V_BUS
 
 Current-limiting resistors
-- R601-R604, R605: 10Ω series on spark and pulse loads (3V domain)
+- R601-R604: 10Ω series on spark loads
 - R701-R703: 10Ω series on Prop-Maker LED channel paths if discrete output staging is retained
 
 Fuses and ratings
 - F801: 3A slow-blow (+5V_BUS main branch; all 5V loads peak ~2.5A)
-- F802: 2A slow-blow (+3V_FILAMENT buck output; spark/pulse peak ~1.5A)
+- F802: 2A slow-blow (+3V_FILAMENT buck output; optional spark branch, verify final current)
 
 Connector mapping
 - J801: 5V power input connector (JST XT60 or barrel jack)
 - J802: Power distribution hub (3-pin: +5V_BUS, +3V_FILAMENT, GND)
-- J601: 6-pin filament PWM bus (SPARK1-4, PULSE, GND inputs from RP2040)
+- J601: 5-pin filament PWM bus (SPARK1-4, GND inputs from RP2040)
 - J602: 2-pin JST filament 3V power
-- J603: 5-pin filament outputs (post-resistor to loads)
+- J603: 4-pin filament outputs (post-resistor to loads)
 - J701: 4-pin Prop-Maker control header (LED1/LED2/LED3 control + GND)
 - J702: 4-position screw terminal for 3-9W LED output channels
 - J401: 2-pin JST optional pump output

@@ -13,7 +13,6 @@ static constexpr uint8_t kServoDriverI2cAddress = 0x40;
 
 static constexpr uint8_t kSparkCount = 4;
 static constexpr uint8_t kSparkPins[kSparkCount] = {5, 6, 9, 10};
-static constexpr uint8_t kPulseFilamentPin = 11;
 // static constexpr uint8_t kPumpControlPin = 8;
 
 static constexpr uint8_t kPowerSwitchPin = 2;

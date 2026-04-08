@@ -40,7 +40,7 @@ This folder contains a first-pass import/build package for creating the Orciny e
 
 - `POWER_HIGH`: `PSU_5V_BUS`, `PSU_3V_FILAMENT`, high-current load returns
 - `POWER_LOW`: MCU and control power branches
-- `CONTROL_PWM`: spark/pulse/Prop-Maker control lines, servo signals
+- `CONTROL_PWM`: spark direct-output lines, Prop-Maker control lines, servo signals
 - `LOGIC`: switches, UART, I2C
 
 ## Notes

@@ -5,11 +5,10 @@ SW3_NEXT,M0_PIN4,SW3,Logic,Switch to GND with INPUT_PULLUP
 SW1_GND,SW1,GND,Ground,Shared return
 SW2_GND,SW2,GND,Ground,Shared return
 SW3_GND,SW3,GND,Ground,Shared return
-SPARK1_PWM,RP2040_PIN5,SPARK1_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
-SPARK2_PWM,RP2040_PIN6,SPARK2_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
-SPARK3_PWM,RP2040_PIN9,SPARK3_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
-SPARK4_PWM,RP2040_PIN10,SPARK4_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
-PULSE_PWM,RP2040_PIN11,PULSE_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
+SPARK1_PWM,RP2040_PIN5,SPARK1_FILAMENT,Control,Direct spark path with 10 ohm series resistor
+SPARK2_PWM,RP2040_PIN6,SPARK2_FILAMENT,Control,Direct spark path with 10 ohm series resistor
+SPARK3_PWM,RP2040_PIN9,SPARK3_FILAMENT,Control,Direct spark path with 10 ohm series resistor
+SPARK4_PWM,RP2040_PIN10,SPARK4_FILAMENT,Control,Direct spark path with 10 ohm series resistor
 PROP_LED1_PWM,RP2040_PIN12,PROPMAKER_LED1_CTRL,Control,Prop-Maker LED1 control (MOSFET output stage)
 PROP_LED2_PWM,RP2040_PIN13,PROPMAKER_LED2_CTRL,Control,Prop-Maker LED2 control (MOSFET output stage)
 PROP_LED3_PWM,RP2040_PIN14,PROPMAKER_LED3_CTRL,Control,Prop-Maker LED3 control (MOSFET output stage)
@@ -32,13 +31,12 @@ RP2040_5V,PSU_5V_BUS,RP2040_5V_IN,Power,Main 5V bus input
 M0_5V,PSU_5V_BUS,M0_5V_IN,Power,Main 5V bus input
 PUMP_5V_OPTIONAL,PSU_5V_BUS,DC_PUMP_SUPPLY,Power,Optional 5V pump branch
 PUMP_GND_OPTIONAL,GND,DC_PUMP_GND,Ground,Optional pump return
-FILAMENT_3V,PSU_3V_FILAMENT,FILAMENT_DRIVER_SUPPLY,Power,3V branch for spark and pulse channels
+FILAMENT_3V,PSU_3V_FILAMENT,SPARK_FILAMENT_SUPPLY,Power,Optional 3V branch for spark filament channels
 GND_RP2040,GND,RP2040_GND,Ground,Star ground preferred
 GND_M0,GND,M0_GND,Ground,Star ground preferred
 FUSE_MAIN,PSU_5V_IN,PSU_5V_MAIN,Power,Main fuse before bus split
 FUSE_5V_BUS,PSU_5V_MAIN,PSU_5V_BUS,Power,Main 5V bus branch protection
 FUSE_3V_FIL,PSU_5V_MAIN,BUCK_3V_FIL_IN,Power,Branch protection for filament buck
 GND_BEAM_DRV,GND,BEAM_DRIVER_GND,Ground,Shared driver return
-GND_SPARK_DRV,GND,SPARK_DRIVERS_GND,Ground,Shared driver return
-GND_PULSE_DRV,GND,PULSE_DRIVER_GND,Ground,Shared driver return
+GND_SPARK_RETURN,GND,SPARK_FILAMENT_GND,Ground,Shared return for spark filament branch
 GND_PROPMAKER,GND,PROPMAKER_GND,Ground,Shared return for Prop-Maker LED output stage

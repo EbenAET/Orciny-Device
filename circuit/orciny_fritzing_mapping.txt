@@ -8,7 +8,7 @@ Why starter and not final exact layout:
   Stock Fritzing installs often do not include exact parts for:
   - Adafruit Feather RP2040
   - Adafruit Feather M0
-  - Exact MOSFET/power modules used in your build
+  - Exact power modules used in your build
   So this starter is a valid openable project base. Replace generic blocks with exact parts if available.
 
 Target wiring to implement in the Fritzing project:
@@ -22,13 +22,12 @@ Target wiring to implement in the Fritzing project:
   SW2 -> M0 pin 3 and GND
   SW3 -> M0 pin 4 and GND
 
-3) Spark / pulse filaments (via MOSFET drivers, 3V line)
-  RP2040 pin 5  -> Spark 1 driver gate
-  RP2040 pin 6  -> Spark 2 driver gate
-  RP2040 pin 9  -> Spark 3 driver gate
-  RP2040 pin 10 -> Spark 4 driver gate
-  RP2040 pin 11 -> Pulse filament driver gate
-  (All drain supplies: +3V_FILAMENT)
+3) Spark filaments (direct RP2040 PWM path, 3V branch optional)
+  RP2040 pin 5  -> Spark 1 filament path through series resistor
+  RP2040 pin 6  -> Spark 2 filament path through series resistor
+  RP2040 pin 9  -> Spark 3 filament path through series resistor
+  RP2040 pin 10 -> Spark 4 filament path through series resistor
+  (+3V_FILAMENT can be retained as a dedicated spark branch if the selected filaments require it)
 
 4) Prop-Maker LED outputs (3-9W LED channels)
   RP2040 pin 12 -> Prop-Maker LED1 control
@@ -52,10 +51,11 @@ Target wiring to implement in the Fritzing project:
 8) Power rails
   +5V_BUS       -> main 5V input (fused); powers RP2040 (with internal LDO), M0 (with internal LDO),
                     NeoPixel strip, Prop-Maker LED channels, Servo FeatherWing, optional pump
-  +3V_FILAMENT  -> spark/pulse filament MOSFETs power stage (Q1-Q5)
+  +3V_FILAMENT  -> optional dedicated spark filament branch
   GND           -> common ground for all supplies, controllers, loads, and switch returns
 
 Safety checks
   - Use flyback diodes where required by pump driver design.
-  - Do not drive filaments, high-power LED channels, or motors directly from MCU pins.
+  - Do not drive the 3-9W LED channels or motors directly from MCU pins.
+  - Spark filaments are the only direct GPIO-driven load path in this revision; validate current draw against the selected RP2040 limits.
   - Confirm current capacity and thermal design before powering full load.

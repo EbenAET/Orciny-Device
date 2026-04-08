@@ -5,11 +5,11 @@ Rev E  (single-strand NeoPixel; Servo FeatherWing + Prop-Maker LED outputs)
 Power:
   5V battery (J801)  -> main fused input -> +5V_MAIN trunk
   +5V_MAIN trunk     -+-> F801 (direct) -------- +5V_BUS rail (RP2040, M0 power; NeoPixel power; load supply)
-                      +-> F802 -> +3V_FILAMENT buck -> +3V_FILAMENT rail (filaments Q1-Q5 drains only)
+                      +-> F802 -> +3V_FILAMENT buck -> +3V_FILAMENT rail (direct spark filament branch, if used)
 
   +5V_BUS rail       -> RP2040 (internal LDO -> 3.3V logic), M0 (internal LDO -> 3.3V logic),
                         NeoPixel strip power, Prop-Maker LED load supply, Servo FeatherWing/load supply
-  +3V_FILAMENT rail  -> Spark/pulse filament MOSFET drains (Q1-Q5)
+  +3V_FILAMENT rail  -> Spark filament branch supply (four direct-drive channels)
   GND_COMMON         -> COMMON to every board, switch, driver, and load
 
 
@@ -56,11 +56,10 @@ Power:
  │                      FEATHER RP2040                             │
  │                    FX Executor Node                             │
  │                                                                 │
- │  GP5  PWM ---> Q1 gate ---> [R601 10Ω] ---> Spark Filament 1   │
- │  GP6  PWM ---> Q2 gate ---> [R602 10Ω] ---> Spark Filament 2   │
- │  GP9  PWM ---> Q3 gate ---> [R603 10Ω] ---> Spark Filament 3   │
- │  GP10 PWM ---> Q4 gate ---> [R604 10Ω] ---> Spark Filament 4   │
- │  GP11 PWM ---> Q5 gate ---> [R605 10Ω] ---> Pulse Filament     │
+ │  GP5  PWM ---> [R601 10Ω] ---> Spark Filament 1                │
+ │  GP6  PWM ---> [R602 10Ω] ---> Spark Filament 2                │
+ │  GP9  PWM ---> [R603 10Ω] ---> Spark Filament 3                │
+ │  GP10 PWM ---> [R604 10Ω] ---> Spark Filament 4                │
  │                                                                 │
  │  GP12 PWM ---> Prop-Maker LED1 MOSFET out ---> 3-9W LED CH1    │
  │  GP13 PWM ---> Prop-Maker LED2 MOSFET out ---> 3-9W LED CH2    │
@@ -109,7 +108,18 @@ Power:
    Hold SW1 + SW3 together for 5s -> reset to sequence 1
 
 
- MOSFET Driver Stage (each high-current channel):
+ Direct Spark Filament Stage:
+
+   RP2040 GPIO pin
+         |
+   [10 ohm series resistor]
+         |
+   Spark filament channel
+
+  Use the dedicated `+3V_FILAMENT` branch only if the selected spark filament hardware requires an external supply.
+
+
+ MOSFET Driver Stage (beam / optional pump paths):
 
    RP2040 GPIO pin
          |
@@ -118,18 +128,16 @@ Power:
    drain -- Load negative terminal
    source -- GND_COMMON
 
-  Load positive terminal -- +3V_FILAMENT (spark/pulse)
-                  or +5V_BUS      (Prop-Maker LED / optional pump)
+  Load positive terminal -- +5V_BUS
 
 
- Filament Channels (J601 -> R601-R605 -> J603):
+ Spark Filament Channels (J601 -> R601-R604 -> J603):
 
-   +3V_FILAMENT -> J602 power input
+   +3V_FILAMENT -> J602 spark supply input (optional dedicated branch)
    J601 PWM bus -> R601 10Ω -> Spark Filament 1 load
    J601 PWM bus -> R602 10Ω -> Spark Filament 2 load
    J601 PWM bus -> R603 10Ω -> Spark Filament 3 load
    J601 PWM bus -> R604 10Ω -> Spark Filament 4 load
-   J601 PWM bus -> R605 10Ω -> Pulse Filament load
 
 
  Prop-Maker LED Outputs (3-9W LED):
@@ -149,7 +157,7 @@ Power:
    +5V_BUS           Direct from 5V bat   F801 (3A)      RP2040 (with internal LDO), M0 (with internal LDO),
                                                          NeoPixel strip, Prop-Maker LED channels,
                                                          Servo FeatherWing + two servos
-   +3V_FILAMENT      3V buck from 5V      F802 (2A)      Spark/pulse filament MOSFET drains (Q1-Q5)
+   +3V_FILAMENT      3V buck from 5V      F802 (2A)      Direct spark filament branch (Spark 1-4), if populated
 
 
  Quick Net Summary:
@@ -158,9 +166,9 @@ Power:
    M0 D4     <- SW3 -> GND   (next sequence, 3->1 wrap)
    M0 D13    -> NeoPixel strip data (30 pixels, WS2812B, single strand)
    M0 TX     -> RP2040 RX    (40ms EffectCommand frames)
-   RP2040 GP5-GP11  -> MOSFET gates for filament channels (Q1-Q5)
-    RP2040 GP12-GP14 -> Prop-Maker LED1/LED2/LED3 channel control
-    RP2040 SDA/SCL   -> Servo FeatherWing (PCA9685 @ 0x40)
-    Servo Wing CH0/1 -> Servo A / Servo B signal lines
-    RP2040 GP8       -> optional pump MOSFET gate (disabled in firmware)
+  RP2040 GP5/GP6/GP9/GP10 -> direct spark filament outputs (R601-R604)
+  RP2040 GP12-GP14 -> Prop-Maker LED1/LED2/LED3 channel control
+  RP2040 SDA/SCL   -> Servo FeatherWing (PCA9685 @ 0x40)
+  Servo Wing CH0/1 -> Servo A / Servo B signal lines
+  RP2040 GP8       -> optional pump MOSFET gate (disabled in firmware)
    Hold SW1 + SW3 for 5s => reset to sequence 1

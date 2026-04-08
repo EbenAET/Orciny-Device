@@ -12,7 +12,7 @@ The bundled library at `circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr` conta
 - `DCBARREL` deviceset with `PTH` device and `DCJACK_2MM_PTH` package
 - `JST_2PIN` deviceset with `-THM` device and `JST-PH-2-THM` package
 - `JST_3PIN` deviceset with `JSTPH3` package
-- `PINHD-1X3`, `PINHD-1X6`, and `PINHD-2X4` devicesets for generic headers
+- `PINHD-1X3`, `PINHD-1X5`, and `PINHD-2X4` devicesets for generic headers
 
 ## Known gaps in the bundled library
 

@@ -1,30 +1,29 @@
 flowchart TD
   PS5[5V Battery]
-  PS3F[3V_FILAMENT Buck]
+  PS3F[3V Spark Filament Rail]
   GND[Common Ground]
 
   RP[Feather RP2040]
   M0[Feather M0]
   CORE[WS2812B Core Strip 30px]
 
-  SW1[Switch 1 to GND\nM0 Pin 2: On/Off]
-  SW2[Switch 2 to GND\nM0 Pin 3: Previous]
-  SW3[Switch 3 to GND\nM0 Pin 4: Next]
+  SW1["Switch 1 to GND\nM0 Pin 2: On/Off"]
+  SW2["Switch 2 to GND\nM0 Pin 3: Previous"]
+  SW3["Switch 3 to GND\nM0 Pin 4: Next"]
 
-  SP1[Spark Filament 1\nRP2040 Pin 5 via MOSFET]
-  SP2[Spark Filament 2\nRP2040 Pin 6 via MOSFET]
-  SP3[Spark Filament 3\nRP2040 Pin 9 via MOSFET]
-  SP4[Spark Filament 4\nRP2040 Pin 10 via MOSFET]
-  PF[Pulse Filament\nRP2040 Pin 11 via MOSFET]
+  SP1["Spark Filament 1\nRP2040 Pin 5 direct PWM"]
+  SP2["Spark Filament 2\nRP2040 Pin 6 direct PWM"]
+  SP3["Spark Filament 3\nRP2040 Pin 9 direct PWM"]
+  SP4["Spark Filament 4\nRP2040 Pin 10 direct PWM"]
 
-  PM1[Prop-Maker LED1\nRP2040 Pin 12 control]
-  PM2[Prop-Maker LED2\nRP2040 Pin 13 control]
-  PM3[Prop-Maker LED3\nRP2040 Pin 14 control]
+  PM1["Prop-Maker LED1\nRP2040 Pin 12 control"]
+  PM2["Prop-Maker LED2\nRP2040 Pin 13 control"]
+  PM3["Prop-Maker LED3\nRP2040 Pin 14 control"]
 
-  SWING[8ch Servo FeatherWing\nPCA9685 at I2C 0x40]
-  SA[Servo A\nFeatherWing CH0]
-  SB[Servo B\nFeatherWing CH1]
-  PUMP[Peristaltic Pump (optional)\nRP2040 Pin 8 via MOSFET\nFW disabled]
+  SWING["8ch Servo FeatherWing\nPCA9685 at I2C 0x40"]
+  SA["Servo A\nFeatherWing CH0"]
+  SB["Servo B\nFeatherWing CH1"]
+  PUMP["Peristaltic Pump (optional)\nRP2040 Pin 8 via MOSFET\nFW disabled"]
 
   M0 -- Serial1 TX --> RP
   M0 -- Pin 13 Data --> CORE
@@ -33,7 +32,6 @@ flowchart TD
   RP --> SP2
   RP --> SP3
   RP --> SP4
-  RP --> PF
   RP --> PM1
   RP --> PM2
   RP --> PM3
@@ -53,7 +51,6 @@ flowchart TD
   PS3F --> SP2
   PS3F --> SP3
   PS3F --> SP4
-  PS3F --> PF
   PS5 --> PM1
   PS5 --> PM2
   PS5 --> PM3

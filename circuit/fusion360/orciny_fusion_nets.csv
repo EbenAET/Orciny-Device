@@ -5,11 +5,10 @@ SW3_NEXT,M0_PIN4,SW3,logic,yes,Switch to GND with INPUT_PULLUP
 SERIAL_LINK_TX,M0_SERIAL1_TX,RP2040_SERIAL1_RX,logic,yes,Primary controller to FX executor link
 SERIAL_LINK_GND,M0_GND,RP2040_GND,ground,yes,Shared serial reference
 CORE_DATA,M0_PIN13,CORE_STRIP_DI,data,yes,WS2812 data line
-SPARK1_PWM,RP2040_PIN5,SPARK1_DRIVER_GATE,control,yes,Filament channel 1 control
-SPARK2_PWM,RP2040_PIN6,SPARK2_DRIVER_GATE,control,yes,Filament channel 2 control
-SPARK3_PWM,RP2040_PIN9,SPARK3_DRIVER_GATE,control,yes,Filament channel 3 control
-SPARK4_PWM,RP2040_PIN10,SPARK4_DRIVER_GATE,control,yes,Filament channel 4 control
-PULSE_PWM,RP2040_PIN11,PULSE_DRIVER_GATE,control,yes,Pulse filament control
+SPARK1_PWM,RP2040_PIN5,SPARK1_FILAMENT,control,yes,Direct spark filament channel 1 control
+SPARK2_PWM,RP2040_PIN6,SPARK2_FILAMENT,control,yes,Direct spark filament channel 2 control
+SPARK3_PWM,RP2040_PIN9,SPARK3_FILAMENT,control,yes,Direct spark filament channel 3 control
+SPARK4_PWM,RP2040_PIN10,SPARK4_FILAMENT,control,yes,Direct spark filament channel 4 control
 PROP_LED1_PWM,RP2040_PIN12,PROPMAKER_LED1_CTRL,control,yes,Prop-Maker LED1 control
 PROP_LED2_PWM,RP2040_PIN13,PROPMAKER_LED2_CTRL,control,yes,Prop-Maker LED2 control
 PROP_LED3_PWM,RP2040_PIN14,PROPMAKER_LED3_CTRL,control,yes,Prop-Maker LED3 control
@@ -27,7 +26,7 @@ PSU_5V_BUS,F_5V_BUS,SERVO_A_5V,power,yes,Servo A supply
 PSU_5V_BUS,F_5V_BUS,SERVO_B_5V,power,yes,Servo B supply
 PSU_5V_BUS,F_5V_BUS,PROPMAKER_POWER,power,yes,Prop-Maker LED output stage supply
 PSU_5V_BUS,F_5V_BUS,DC_PUMP_SUPPLY,power,optional,Optional pump branch
-PSU_3V_FILAMENT,U_BUCK_3V_OUT,FILAMENT_DRIVER_SUPPLY,power,yes,3V branch for spark and pulse channels
+PSU_3V_FILAMENT,U_BUCK_3V_OUT,SPARK_FILAMENT_SUPPLY,power,yes,Optional 3V branch for spark channels
 GND_COMMON,GND_STAR,RP2040_GND,ground,yes,Common return
 GND_COMMON,GND_STAR,M0_GND,ground,yes,Common return
 GND_COMMON,GND_STAR,CORE_STRIP_GND,ground,yes,Common return

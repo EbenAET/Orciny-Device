@@ -8,7 +8,7 @@ Arduino IDE scaffold for a two-controller multi-effect device built around:
 The framework splits responsibilities like this:
 
 - M0 sketch: primary scene control, switch and USB command handling, single-strand NeoPixel core rendering, and outbound effect commands over Serial1
-- RP2040 sketch: effect executor for sparks, pulse filament, Prop-Maker LED channel control, and dual-servo claw motion through an 8-channel Servo FeatherWing (PCA9685)
+- RP2040 sketch: effect executor for spark filaments, Prop-Maker LED channel control, and dual-servo claw motion through an 8-channel Servo FeatherWing (PCA9685)
 
 ## Folder Layout
 
@@ -32,7 +32,7 @@ The scaffold makes a few deliberate assumptions that you should verify against y
 - RP2040 pin `GP8` can remain wired to pump-enable MOSFET gate, but pump actions are currently disabled in firmware
 - M0 uses three momentary switches wired to ground with internal pull-ups enabled
 - The 3-9W LED channels are driven from the Prop-Maker FeatherWing MOSFET-controlled LED outputs, commanded by RP2040 PWM control lines
-- Four spark LED filaments and one pulse LED filament are each driven through suitable transistor stages and 10 ohm series current-limiting resistors
+- Four spark LED filaments are wired as direct RP2040 PWM outputs through 10 ohm series current-limiting resistors; no separate pulse filament channel is populated in this revision
 - M0 `TX` is connected to RP2040 `RX` for effect command updates, with shared ground
 - M0 pin `D13` drives one WS2812/NeoPixel data line for a 30-pixel strip
 
@@ -60,8 +60,8 @@ Turning the sequence off does not lose its position. Turning it back on resumes 
 ## Sequence Map
 
 - Sequence 1: sparks + ember-style core
-- Sequence 2: pulse pump/filament + beam + pulsing core
-- Sequence 3: full show with sparks, pulse, beam, claw, and animated core
+- Sequence 2: optional pump + beam + pulsing core
+- Sequence 3: full show with sparks, beam, claw, and animated core
 
 ## M0 Serial Commands
 
