@@ -1,0 +1,4 @@
+{
+    "arduino.useArduinoCli": true,
+    "arduino.disableIntelliSenseAutoGen": true
+}
