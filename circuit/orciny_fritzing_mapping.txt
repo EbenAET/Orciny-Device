@@ -30,27 +30,32 @@ Target wiring to implement in the Fritzing project:
   RP2040 pin 11 -> Pulse filament driver gate
   (All drain supplies: +3V_FILAMENT)
 
-4) Beam and peltier control (via MOSFET/relay, 5V line)
-  RP2040 pin 12 -> Beam R gate
-  RP2040 pin 13 -> Beam G gate
-  RP2040 pin 14 -> Beam B gate
-  RP2040 pin 15 -> Peltier enable gate/relay input
-  (All drain supplies: +5V_BUS)
+4) Prop-Maker LED outputs (3-9W LED channels)
+  RP2040 pin 12 -> Prop-Maker LED1 control
+  RP2040 pin 13 -> Prop-Maker LED2 control
+  RP2040 pin 14 -> Prop-Maker LED3 control
+  (LED output stage supply: +5V_BUS)
 
-5) Pump and servo outputs
-  RP2040 pin 8  -> Pump MOSFET gate -> 5V peristaltic pump (via +5V_BUS)
-  RP2040 pin 7  -> FP-S14B servo signal (via +5V_BUS power)
+5) Servo FeatherWing (PCA9685, 8-channel)
+  RP2040 I2C SDA/SCL -> Servo FeatherWing SDA/SCL (address 0x40)
+  Servo FeatherWing CH0 -> Servo A signal
+  Servo FeatherWing CH1 -> Servo B signal
+  Servo wing V+ and servos powered from +5V_BUS, common GND
 
-6) M0 core output
+6) Pump output (optional)
+  RP2040 pin 8 -> Pump MOSFET gate -> 5V peristaltic pump (optional)
+  Note: pump actions are disabled in current firmware.
+
+7) M0 core output
   M0 pin 13 -> NeoPixel data (single strip, 30 pixels)
 
-7) Power rails
+8) Power rails
   +5V_BUS       -> main 5V input (fused); powers RP2040 (with internal LDO), M0 (with internal LDO),
-                    NeoPixel strip, beam RGB, peltier, servo, pump
+                    NeoPixel strip, Prop-Maker LED channels, Servo FeatherWing, optional pump
   +3V_FILAMENT  -> spark/pulse filament MOSFETs power stage (Q1-Q5)
   GND           -> common ground for all supplies, controllers, loads, and switch returns
 
 Safety checks
   - Use flyback diodes where required by pump driver design.
-  - Do not drive filaments, peltier, or high-power LED channels directly from MCU pins.
+  - Do not drive filaments, high-power LED channels, or motors directly from MCU pins.
   - Confirm current capacity and thermal design before powering full load.

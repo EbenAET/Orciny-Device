@@ -1,4 +1,5 @@
-#include <Servo.h>
+#include <Adafruit_PWMServoDriver.h>
+#include <Wire.h>
 
 #include <OrcinyCommon.h>
 
@@ -120,12 +121,11 @@ class SparkChannel {
 
 class PulseEffect {
  public:
-  void begin(uint8_t pumpPin, uint8_t filamentPin) {
-    pumpPin_ = pumpPin;
+  void begin(uint8_t filamentPin) {
     filamentPin_ = filamentPin;
-    pinMode(pumpPin_, OUTPUT);
     pinMode(filamentPin_, OUTPUT);
-    digitalWrite(pumpPin_, LOW);
+    // pinMode(device_config::kPumpControlPin, OUTPUT);
+    // digitalWrite(device_config::kPumpControlPin, LOW);
     analogWrite(filamentPin_, 0);
   }
 
@@ -144,39 +144,37 @@ class PulseEffect {
     }
 
     analogWrite(filamentPin_, wave);
-    digitalWrite(pumpPin_, wave >= 96 ? HIGH : LOW);
+    // Pump may be removed in the updated hardware, keep action disabled.
+    // digitalWrite(device_config::kPumpControlPin, wave >= 96 ? HIGH : LOW);
     active_ = true;
   }
 
   void stop() {
     if (!active_) {
       analogWrite(filamentPin_, 0);
-      digitalWrite(pumpPin_, LOW);
+      // digitalWrite(device_config::kPumpControlPin, LOW);
       return;
     }
 
     analogWrite(filamentPin_, 0);
-    digitalWrite(pumpPin_, LOW);
+    // digitalWrite(device_config::kPumpControlPin, LOW);
     active_ = false;
   }
 
  private:
-  uint8_t pumpPin_ = 0;
   uint8_t filamentPin_ = 0;
   bool active_ = false;
 };
 
 class BeamEffect {
  public:
-  void begin(uint8_t redPin, uint8_t greenPin, uint8_t bluePin, uint8_t peltierPin) {
-    redPin_ = redPin;
-    greenPin_ = greenPin;
-    bluePin_ = bluePin;
-    peltierPin_ = peltierPin;
+  void begin(uint8_t led1Pin, uint8_t led2Pin, uint8_t led3Pin) {
+    redPin_ = led1Pin;
+    greenPin_ = led2Pin;
+    bluePin_ = led3Pin;
     pinMode(redPin_, OUTPUT);
     pinMode(greenPin_, OUTPUT);
     pinMode(bluePin_, OUTPUT);
-    pinMode(peltierPin_, OUTPUT);
     stop();
   }
 
@@ -192,7 +190,6 @@ class BeamEffect {
     analogWrite(redPin_, swell / 5);
     analogWrite(greenPin_, swell);
     analogWrite(bluePin_, min<uint16_t>(255, swell + 30));
-    digitalWrite(peltierPin_, HIGH);
     active_ = true;
   }
 
@@ -200,7 +197,6 @@ class BeamEffect {
     analogWrite(redPin_, 0);
     analogWrite(greenPin_, 0);
     analogWrite(bluePin_, 0);
-    digitalWrite(peltierPin_, LOW);
     active_ = false;
   }
 
@@ -208,20 +204,28 @@ class BeamEffect {
   uint8_t redPin_ = 0;
   uint8_t greenPin_ = 0;
   uint8_t bluePin_ = 0;
-  uint8_t peltierPin_ = 0;
   bool active_ = false;
 };
 
 class ClawEffect {
  public:
-  void begin(uint8_t servoPin, uint8_t minAngle, uint8_t maxAngle) {
-    servoPin_ = servoPin;
-    minAngle_ = min(minAngle, maxAngle);
-    maxAngle_ = max(minAngle, maxAngle);
-    angle_ = minAngle_;
+  void begin(Adafruit_PWMServoDriver &driver,
+             uint8_t servoChannelA,
+             uint8_t servoChannelB,
+             uint8_t minAngleA,
+             uint8_t maxAngleA,
+             uint8_t minAngleB,
+             uint8_t maxAngleB) {
+    driver_ = &driver;
+    servoChannelA_ = servoChannelA;
+    servoChannelB_ = servoChannelB;
+    minAngleA_ = min(minAngleA, maxAngleA);
+    maxAngleA_ = max(minAngleA, maxAngleA);
+    minAngleB_ = min(minAngleB, maxAngleB);
+    maxAngleB_ = max(minAngleB, maxAngleB);
+    angle_ = minAngleA_;
     direction_ = 1;
-    servo_.attach(servoPin_);
-    servo_.write(angle_);
+    writeServos(static_cast<uint8_t>(angle_));
   }
 
   void update(uint32_t now, bool enabled) {
@@ -235,15 +239,15 @@ class ClawEffect {
     }
 
     angle_ += direction_;
-    if (angle_ >= maxAngle_) {
-      angle_ = maxAngle_;
+    if (angle_ >= maxAngleA_) {
+      angle_ = maxAngleA_;
       direction_ = -1;
-    } else if (angle_ <= minAngle_) {
-      angle_ = minAngle_;
+    } else if (angle_ <= minAngleA_) {
+      angle_ = minAngleA_;
       direction_ = 1;
     }
 
-    servo_.write(static_cast<uint8_t>(angle_));
+    writeServos(static_cast<uint8_t>(angle_));
     nextStepMs_ = now + device_config::kClawStepIntervalMs;
     active_ = true;
   }
@@ -252,16 +256,42 @@ class ClawEffect {
     if (!active_) {
       return;
     }
-    servo_.write(minAngle_);
+    writeServos(minAngleA_);
     active_ = false;
   }
 
  private:
-  Servo servo_;
-  uint8_t servoPin_ = 0;
+  uint16_t angleToPulse(uint8_t angle) const {
+    return map(angle,
+               0,
+               180,
+               device_config::kServoMinPulse,
+               device_config::kServoMaxPulse);
+  }
+
+  uint8_t mapAngleForB(uint8_t angleA) const {
+    return map(angleA, minAngleA_, maxAngleA_, maxAngleB_, minAngleB_);
+  }
+
+  void writeServos(uint8_t angleA) {
+    if (driver_ == nullptr) {
+      return;
+    }
+
+    const uint8_t clampedA = constrain(angleA, minAngleA_, maxAngleA_);
+    const uint8_t angleB = constrain(mapAngleForB(clampedA), minAngleB_, maxAngleB_);
+    driver_->setPWM(servoChannelA_, 0, angleToPulse(clampedA));
+    driver_->setPWM(servoChannelB_, 0, angleToPulse(angleB));
+  }
+
+  Adafruit_PWMServoDriver *driver_ = nullptr;
+  uint8_t servoChannelA_ = 0;
+  uint8_t servoChannelB_ = 1;
   int16_t angle_ = 0;
-  uint8_t minAngle_ = 0;
-  uint8_t maxAngle_ = 180;
+  uint8_t minAngleA_ = 0;
+  uint8_t maxAngleA_ = 180;
+  uint8_t minAngleB_ = 0;
+  uint8_t maxAngleB_ = 180;
   int8_t direction_ = 1;
   bool active_ = false;
   uint32_t nextStepMs_ = 0;
@@ -271,6 +301,7 @@ SparkChannel sparks[device_config::kSparkCount];
 PulseEffect pulseEffect;
 BeamEffect beamEffect;
 ClawEffect clawEffect;
+Adafruit_PWMServoDriver servoDriver(device_config::kServoDriverI2cAddress);
 
 MomentarySwitch powerSwitch;
 MomentarySwitch previousSwitch;
@@ -519,21 +550,26 @@ void updateEffects(uint32_t now) {
 void setup() {
   Serial.begin(device_config::kUsbBaudRate);
   Serial1.begin(device_config::kCoreLinkBaudRate);
+  Wire.begin();
+  servoDriver.begin();
+  servoDriver.setPWMFreq(50);
   randomSeed(analogRead(A0));
 
   for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {
     sparks[i].begin(device_config::kSparkPins[i]);
   }
 
-  pulseEffect.begin(device_config::kPumpControlPin,
-                    device_config::kPulseFilamentPin);
-  beamEffect.begin(device_config::kBeamRedPin,
-                   device_config::kBeamGreenPin,
-                   device_config::kBeamBluePin,
-                   device_config::kPeltierEnablePin);
-  clawEffect.begin(device_config::kClawServoPin,
-                   device_config::kClawMinAngle,
-                   device_config::kClawMaxAngle);
+  pulseEffect.begin(device_config::kPulseFilamentPin);
+  beamEffect.begin(device_config::kPropMakerLed1Pin,
+                   device_config::kPropMakerLed2Pin,
+                   device_config::kPropMakerLed3Pin);
+  clawEffect.begin(servoDriver,
+                   device_config::kServoChannelA,
+                   device_config::kServoChannelB,
+                   device_config::kServoAMinAngle,
+                   device_config::kServoAMaxAngle,
+                   device_config::kServoBMinAngle,
+                   device_config::kServoBMaxAngle);
   currentEffectCommand = orciny::defaultEffectCommand();
 }
 

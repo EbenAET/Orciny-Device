@@ -10,24 +10,28 @@ SPARK2_PWM,RP2040_PIN6,SPARK2_DRIVER_GATE,Control,Use gate resistor and 10 ohm s
 SPARK3_PWM,RP2040_PIN9,SPARK3_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
 SPARK4_PWM,RP2040_PIN10,SPARK4_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
 PULSE_PWM,RP2040_PIN11,PULSE_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
-BEAM_R_PWM,RP2040_PIN12,BEAM_R_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
-BEAM_G_PWM,RP2040_PIN13,BEAM_G_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
-BEAM_B_PWM,RP2040_PIN14,BEAM_B_DRIVER_GATE,Control,Use gate resistor and 10 ohm series LED resistor
-PELTIER_EN,RP2040_PIN15,PELTIER_DRIVER_IN,Control,MOSFET or relay input
+PROP_LED1_PWM,RP2040_PIN12,PROPMAKER_LED1_CTRL,Control,Prop-Maker LED1 control (MOSFET output stage)
+PROP_LED2_PWM,RP2040_PIN13,PROPMAKER_LED2_CTRL,Control,Prop-Maker LED2 control (MOSFET output stage)
+PROP_LED3_PWM,RP2040_PIN14,PROPMAKER_LED3_CTRL,Control,Prop-Maker LED3 control (MOSFET output stage)
 SERIAL_LINK_TX,M0_SERIAL1_TX,RP2040_SERIAL1_RX,Logic,Primary-controller-to-executor link
 SERIAL_LINK_GND,M0_GND,RP2040_GND,Ground,Required reference for serial
-PUMP_EN,RP2040_PIN8,PUMP_DRIVER_GATE,Control,Direct GPIO pump control via MOSFET gate
-SERVO_SIG,RP2040_PIN7,FP_S14B_SIGNAL,Control,Servo control output
-SERVO_5V,PSU_5V_BUS,FP_S14B_5V,Power,Shared 5V bus for actuator power
-SERVO_GND,GND,FP_S14B_GND,Ground,Common return with controller
+PUMP_EN_OPTIONAL,RP2040_PIN8,PUMP_DRIVER_GATE,Control,Optional pump control path; currently disabled in firmware
+I2C_SDA_SERVO_WING,RP2040_I2C_SDA,SERVO_WING_SDA,Logic,PCA9685 control bus
+I2C_SCL_SERVO_WING,RP2040_I2C_SCL,SERVO_WING_SCL,Logic,PCA9685 control bus
+SERVO_A_SIG,SERVO_WING_CH0,SERVO_A_SIGNAL,Control,Servo A signal from FeatherWing channel 0
+SERVO_B_SIG,SERVO_WING_CH1,SERVO_B_SIGNAL,Control,Servo B signal from FeatherWing channel 1
+SERVO_WING_5V,PSU_5V_BUS,SERVO_WING_VPLUS,Power,Servo power input for FeatherWing
+SERVO_A_5V,PSU_5V_BUS,SERVO_A_5V,Power,Servo A actuator power
+SERVO_B_5V,PSU_5V_BUS,SERVO_B_5V,Power,Servo B actuator power
+SERVO_A_GND,GND,SERVO_A_GND,Ground,Common return with controller
+SERVO_B_GND,GND,SERVO_B_GND,Ground,Common return with controller
 CORE_DATA,M0_PIN13,CORE_STRIP_DI,Data,Single WS2812 data line
 CORE_5V,PSU_5V_BUS,CORE_STRIP_5V,Power,Single-strip power input
 CORE_GND,GND,CORE_STRIP_GND,Ground,Common return
 RP2040_5V,PSU_5V_BUS,RP2040_5V_IN,Power,Main 5V bus input
 M0_5V,PSU_5V_BUS,M0_5V_IN,Power,Main 5V bus input
-PUMP_5V,PSU_5V_BUS,DC_PUMP_SUPPLY,Power,5V peristaltic pump branch
-PUMP_GND,GND,DC_PUMP_GND,Ground,Common return for pump
-PELTIER_5V,PSU_5V_BUS,PELTIER_SUPPLY,Power,High current switched path
+PUMP_5V_OPTIONAL,PSU_5V_BUS,DC_PUMP_SUPPLY,Power,Optional 5V pump branch
+PUMP_GND_OPTIONAL,GND,DC_PUMP_GND,Ground,Optional pump return
 FILAMENT_3V,PSU_3V_FILAMENT,FILAMENT_DRIVER_SUPPLY,Power,3V branch for spark and pulse channels
 GND_RP2040,GND,RP2040_GND,Ground,Star ground preferred
 GND_M0,GND,M0_GND,Ground,Star ground preferred
@@ -37,4 +41,4 @@ FUSE_3V_FIL,PSU_5V_MAIN,BUCK_3V_FIL_IN,Power,Branch protection for filament buck
 GND_BEAM_DRV,GND,BEAM_DRIVER_GND,Ground,Shared driver return
 GND_SPARK_DRV,GND,SPARK_DRIVERS_GND,Ground,Shared driver return
 GND_PULSE_DRV,GND,PULSE_DRIVER_GND,Ground,Shared driver return
-GND_PELTIER_DRV,GND,PELTIER_DRIVER_GND,Ground,Shared driver return
+GND_PROPMAKER,GND,PROPMAKER_GND,Ground,Shared return for Prop-Maker LED output stage

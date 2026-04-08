@@ -17,13 +17,14 @@ flowchart TD
   SP4[Spark Filament 4\nRP2040 Pin 10 via MOSFET]
   PF[Pulse Filament\nRP2040 Pin 11 via MOSFET]
 
-  BR[Beam R\nRP2040 Pin 12 via MOSFET]
-  BG[Beam G\nRP2040 Pin 13 via MOSFET]
-  BB[Beam B\nRP2040 Pin 14 via MOSFET]
-  PEL[Peltier Enable\nRP2040 Pin 15 via MOSFET/Relay]
+  PM1[Prop-Maker LED1\nRP2040 Pin 12 control]
+  PM2[Prop-Maker LED2\nRP2040 Pin 13 control]
+  PM3[Prop-Maker LED3\nRP2040 Pin 14 control]
 
-  PUMP[Peristaltic Pump\nRP2040 Pin 8 via MOSFET]
-  CLAW[FP-S14B Servo\nRP2040 Pin 7]
+  SWING[8ch Servo FeatherWing\nPCA9685 at I2C 0x40]
+  SA[Servo A\nFeatherWing CH0]
+  SB[Servo B\nFeatherWing CH1]
+  PUMP[Peristaltic Pump (optional)\nRP2040 Pin 8 via MOSFET\nFW disabled]
 
   M0 -- Serial1 TX --> RP
   M0 -- Pin 13 Data --> CORE
@@ -33,12 +34,13 @@ flowchart TD
   RP --> SP3
   RP --> SP4
   RP --> PF
-  RP --> BR
-  RP --> BG
-  RP --> BB
-  RP --> PEL
+  RP --> PM1
+  RP --> PM2
+  RP --> PM3
+  RP -- I2C SDA/SCL --> SWING
   RP --> PUMP
-  RP --> CLAW
+  SWING --> SA
+  SWING --> SB
 
   M0 --- SW1
   M0 --- SW2
@@ -52,12 +54,13 @@ flowchart TD
   PS3F --> SP3
   PS3F --> SP4
   PS3F --> PF
-  PS5 --> BR
-  PS5 --> BG
-  PS5 --> BB
-  PS5 --> PEL
+  PS5 --> PM1
+  PS5 --> PM2
+  PS5 --> PM3
   PS5 --> PUMP
-  PS5 --> CLAW
+  PS5 --> SWING
+  PS5 --> SA
+  PS5 --> SB
 
   GND --- RP
   GND --- M0
@@ -66,4 +69,6 @@ flowchart TD
   GND --- SW2
   GND --- SW3
   GND --- PUMP
-  GND --- CLAW
+  GND --- SWING
+  GND --- SA
+  GND --- SB
