@@ -1,0 +1,26 @@
+design_ref,design_part,library_file,library_deviceset,library_device,library_package,mapping_status,notes
+U_M0,Adafruit Feather M0,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,FEATHERWING,_NODIM,FEATHERWING_DIM,footprint-proxy-only,No exact Feather M0 deviceset found in bundled library; use Feather footprint proxy for board/module placement in Fusion
+U_RP2040,Adafruit Feather RP2040,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,FEATHERWING,_NODIM,FEATHERWING_DIM,footprint-proxy-only,No exact Feather RP2040 deviceset found in bundled library; use Feather footprint proxy for board/module placement in Fusion
+U_SERVO_WING_MODULE,Adafruit 8-Channel Servo FeatherWing,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,FEATHERWING,_NODIM,FEATHERWING_DIM,footprint-proxy-only,Board-level FeatherWing mechanical/electrical footprint proxy
+U_SERVO_WING_IC,PCA9685 controller on Servo FeatherWing,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,PCA9685,,TSSOP28,exact-ic,Use if converting FeatherWing functionality into a custom integrated PCB rather than a stacked module
+U_PROP_WING,Adafruit Prop-Maker FeatherWing,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,FEATHERWING,_NODIM,FEATHERWING_DIM,footprint-proxy-only,No exact Prop-Maker FeatherWing deviceset found in bundled library; use FeatherWing footprint proxy and add external connectors/nets for LED outputs
+SW1,Momentary switch 1,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,SWITCH_PUSHBUTTON,SOFTTOUCHSMD_SJ,PUSHBUTTON_SMD_SJ,exact-device,Use for on-board pushbutton implementation
+SW2,Momentary switch 2,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,SWITCH_PUSHBUTTON,SOFTTOUCHSMD_SJ,PUSHBUTTON_SMD_SJ,exact-device,Use for on-board pushbutton implementation
+SW3,Momentary switch 3,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,SWITCH_PUSHBUTTON,SOFTTOUCHSMD_SJ,PUSHBUTTON_SMD_SJ,exact-device,Use for on-board pushbutton implementation
+J_PWR_IN,5V barrel input,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,DCBARREL,PTH,DCJACK_2MM_PTH,exact-device,Optional if using barrel jack instead of alternate battery/input connector
+J_PUMP,Optional pump connector,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,JST_2PIN,-THM,JST-PH-2-THM,exact-device,Optional pump branch; keep DNP if pump omitted
+J_FILAMENT_PWR,Filament power connector,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,JST_2PIN,-THM,JST-PH-2-THM,exact-device,Use for 3V filament branch input/output as needed
+J_SERVO_A,Servo A header,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,JST_3PIN,,JSTPH3,exact-device,Three-pin servo connector for CH0 output
+J_SERVO_B,Servo B header,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,JST_3PIN,,JSTPH3,exact-device,Three-pin servo connector for CH1 output
+J_CORE,NeoPixel/core 3-pin connector,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,PINHD-1X3,,1X03,exact-device,Use if a simple 3-pin header is preferred for core strip connection
+J_FILAMENT_BUS,Filament PWM bus,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,PINHD-1X6,,1X06,exact-device,Spark1-4 plus pulse plus GND/control breakout
+J_LED_3_9W,3-9W LED output connector,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,PINHD-2X4,,2X4,package-substitute,Bundled library exposes deviceset PINHD-2X4 with suitable generic header option for LED/control breakout
+J_LED_SCREW,3-9W LED screw terminal option,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,,"-3.5MM",1X04-3.5MM,package-supported,Package exists in library; use with a generic 4-pin connector symbol if Fusion cannot resolve a matching deviceset
+Q_SPARK1,High-current MOSFET channel 1,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,,,TO220,package-only,Use generic symbol plus Adafruit TO220 package for discrete MOSFET stage
+Q_SPARK2,High-current MOSFET channel 2,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,,,TO220,package-only,Use generic symbol plus Adafruit TO220 package for discrete MOSFET stage
+Q_SPARK3,High-current MOSFET channel 3,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,,,TO220,package-only,Use generic symbol plus Adafruit TO220 package for discrete MOSFET stage
+Q_SPARK4,High-current MOSFET channel 4,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,,,TO220,package-only,Use generic symbol plus Adafruit TO220 package for discrete MOSFET stage
+Q_PULSE,High-current MOSFET pulse channel,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,,,TO220,package-only,Use generic symbol plus Adafruit TO220 package for discrete MOSFET stage
+Q_LED1,High-current LED channel 1,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,,,TO220,package-only,Only needed if implementing external discrete stage instead of complete Prop-Maker module
+Q_LED2,High-current LED channel 2,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,,,TO220,package-only,Only needed if implementing external discrete stage instead of complete Prop-Maker module
+Q_LED3,High-current LED channel 3,circuit/kicad/Adafruit-Eagle-Library/adafruit.lbr,,,TO220,package-only,Only needed if implementing external discrete stage instead of complete Prop-Maker module

@@ -7,12 +7,15 @@ This folder contains a first-pass import/build package for creating the Orciny e
 - `orciny_fusion_parts.csv`: part blocks and expected functional components
 - `orciny_fusion_nets.csv`: named nets and required connectivity
 - `orciny_fusion_pin_map.csv`: controller pin assignments for wiring validation
+- `orciny_fusion_adafruit_library_map.csv`: concrete mapping from Orciny design parts to bundled Adafruit EAGLE library entries and fallbacks
+- `orciny_fusion_library_notes.md`: notes on exact matches, footprint proxies, and package-only substitutions
 
 ## What this gives you
 
 - A complete connectivity spec aligned with current firmware and wiring docs
 - A clean checklist source for building a Fusion schematic
 - A PCB-forward set of net names you can preserve through layout
+- A first-pass symbol/footprint mapping against the bundled Adafruit EAGLE library used by the project
 
 ## Build in Fusion 360 Electronics
 
