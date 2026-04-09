@@ -118,6 +118,10 @@ Power:
  Harness IDs: H-BEAM-PWR, H-PELTIER-PWR, H-PUMP-OPT
  (GP11/12/13 beam control, GP10 PWR enable, and GP15 peltier control route through FeatherWing stack headers; not separately harnessed)
 
+  Firmware thermal behavior:
+    GP15 drives Q9 for peltier control.
+    Peltier turns ON while beam is enabled and remains ON briefly after beam turns OFF for heat dissipation.
+
    RP2040 GPIO pin
          |
      (gate)  N-channel MOSFET (logic-level, Vgs(th) < 2.5V)
@@ -198,6 +202,7 @@ Power:
   RP2040 GP5/GP6/GP9/GP14 -> direct spark filament outputs (R601-R604)
   RP2040 GP10      -> Prop-Maker PWR enable (held HIGH)
   RP2040 GP11-GP13 -> Prop-Maker LED1/LED2/LED3 channel control
+  RP2040 GP15      -> peltier MOSFET gate (auto beam-follow + cooldown hold)
    RP2040 SDA/SCL   -> Servo FeatherWing (PCA9685 @ 0x40)
    Servo Wing CH0/1 -> Servo A / Servo B signal lines
    RP2040 GP8       -> optional pump MOSFET gate (disabled in firmware)

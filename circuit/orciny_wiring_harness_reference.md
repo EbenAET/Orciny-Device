@@ -102,6 +102,7 @@ Design intent in this reference:
 - Harness Label 7
 - Stack note: Prop-Maker FeatherWing stacks directly on the Feather RP2040; no separate controller-to-wing harness is required.
 - Control note: RP2040 GP10 (D10) is reserved for Prop-Maker PWR enable and must be held HIGH.
+- Thermal note: firmware asserts RP2040 GP15 peltier control while beam is active and keeps peltier on for a short post-beam cooldown hold.
 - +5V_BUS -> Prop-Maker load domain and beam load source path
 - GND_COMMON return from beam load stage
 - Recommended wire: 20 AWG minimum
@@ -112,10 +113,11 @@ Design intent in this reference:
 ### H-PELTIER-PWR - Peltier Load Harness
 - Harness Label 8
 - Stack note: Prop-Maker FeatherWing stacks directly on the Feather RP2040; no separate controller-to-wing harness is required.
+- Control: RP2040 GP15 -> Q9 peltier MOSFET gate.
 - +5V_BUS -> peltier load source path
 - GND_COMMON return from peltier load stage
 - Recommended wire: 20 AWG minimum
-- Notes: Keep this as a separate high-current branch for thermal control load wiring.
+- Notes: Keep this as a separate high-current branch for thermal control load wiring. Firmware behavior is auto-managed: peltier ON with beam, then held ON briefly after beam turns OFF for heat dissipation.
 - Peltier uses Deans Micro2R connector
 - Pin 1 (red) is power, pin 2 (black) is common
 

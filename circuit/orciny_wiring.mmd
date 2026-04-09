@@ -29,7 +29,7 @@ flowchart TD
   LED2["Beam LED CH2\n3-9W RGB leg 2"]
   LED3["Beam LED CH3\n3-9W RGB leg 3"]
 
-  PELTIER["Peltier Module\nQ9 GP15 MOSFET\n+5V_BUS load"]
+  PELTIER["Peltier Module\nQ9 GP15 MOSFET\nAuto: beam-follow + cooldown hold"]
   PUMP["Pump optional\nQ10 GP8 MOSFET\n+5V_BUS FW disabled"]
 
   SA["Servo A\nServoWing CH0"]
@@ -60,7 +60,7 @@ flowchart TD
   RP -->|"GP14 PWM"| SP4
   RP -->|"GP11/12/13"| PMFW
   RP -->|"GP10 HIGH"| PMFWPWR
-  RP -->|"GP15"| PELTIER
+  RP -->|"GP15 auto ctl"| PELTIER
   RP -->|"GP8"| PUMP
   RP -->|"I2C SDA/SCL"| SWING
 
