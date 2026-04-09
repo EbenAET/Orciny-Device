@@ -12,7 +12,9 @@ static constexpr uint32_t kResetHoldMs = 5000;
 static constexpr uint8_t kServoDriverI2cAddress = 0x40;
 
 static constexpr uint8_t kSparkCount = 4;
-static constexpr uint8_t kSparkPins[kSparkCount] = {5, 6, 9, 14};
+// Feather RP2040 breakout-safe spark pins:
+// SP1=GP7 (D5), SP2=GP6 (D4), SP3=GP9 (D9), SP4=GP24 (D24)
+static constexpr uint8_t kSparkPins[kSparkCount] = {7, 6, 9, 24};
 // GP8 is currently assigned to peltier control in this revision.
 // static constexpr uint8_t kPumpControlPin = 8;
 

@@ -20,10 +20,10 @@ flowchart TD
   SW2["SW2 A2(GP28) Previous\nto GND"]
   SW3["SW3 A3(GP29) Next\nto GND"]
 
-  SP1["Spark Filament 1\nGP5 + R601 10Ω"]
+  SP1["Spark Filament 1\nGP7 + R601 10Ω"]
   SP2["Spark Filament 2\nGP6 + R602 10Ω"]
   SP3["Spark Filament 3\nGP9 + R603 10Ω"]
-  SP4["Spark Filament 4\nGP14 + R604 10Ω"]
+  SP4["Spark Filament 4\nGP24 + R604 10Ω"]
 
   LED1["Beam LED CH1\n3-9W RGB leg 1"]
   LED2["Beam LED CH2\n3-9W RGB leg 2"]
@@ -54,10 +54,10 @@ flowchart TD
   RP --- SW1
   RP --- SW2
   RP --- SW3
-  RP -->|"GP5 PWM"| SP1
+  RP -->|"GP7 PWM"| SP1
   RP -->|"GP6 PWM"| SP2
   RP -->|"GP9 PWM"| SP3
-  RP -->|"GP14 PWM"| SP4
+  RP -->|"GP24 PWM"| SP4
   RP -->|"GP11/12/13"| PMFW
   RP -->|"GP10 HIGH"| PMFWPWR
   RP -->|"GP8 auto ctl"| PELTIER

@@ -80,7 +80,7 @@ Design intent in this reference:
 
 ### H-SPARK - Spark Output Harness
 - Harness Label 5
-- Channels: RP2040 GP5/GP6/GP9/GP14 (through series resistors) -> Spark 1-4
+- Channels: RP2040 GP7/GP6/GP9/GP24 (through series resistors) -> Spark 1-4
 - Supply domain: RP2040_BAT
 - Return: GND_COMMON
 - Recommended wire: 22-24 AWG signal legs, 20 AWG shared feed/return where applicable
@@ -140,7 +140,7 @@ Use heat-shrink or tags at both ends:
 1. Verify no short between +5V_BUS, RP2040_BAT, and +3V7_NEO.
 2. Verify all grounds share continuity to GND_COMMON.
 3. Verify H-CORE data continuity from RP2040 GP4 to strip DI.
-4. Verify H-SPARK channel mapping (GP5/6/9/14 to Spark 1/2/3/4).
+4. Verify H-SPARK channel mapping (GP7/6/9/24 to Spark 1/2/3/4).
 5. Verify H-SERVO polarity before connecting servos.
 6. Verify H-BEAM-PWR and H-PELTIER-PWR are not cross-connected.
 7. Verify U812 charger wiring only touches Neo battery rail.

@@ -14,7 +14,7 @@ SW2,1,Momentary Push Button 6mm,Previous sequence; M0 D3 to GND,Through-hole,Ada
 SW3,1,Momentary Push Button 6mm,Next sequence; M0 D4 to GND,Through-hole,Adafruit,1119,Hold SW1+SW3 5s to reset to seq 1
 Q6,1,N-Channel Logic-Level MOSFET,BEAM_R gate driver GP12,TO-220,Adafruit,355,Same as Q1
 Q7,1,N-Channel Logic-Level MOSFET,BEAM_G gate driver GP13,TO-220,Adafruit,355,Same as Q1
-Q8,1,N-Channel Logic-Level MOSFET,BEAM_B gate driver GP14,TO-220,Adafruit,355,Same as Q1
+Q8,1,N-Channel Logic-Level MOSFET,BEAM_B gate driver GP13,TO-220,Adafruit,355,Same as Q1
 Q9,1,N-Channel Logic-Level MOSFET,Peltier enable gate GP8; verify current rating,TO-220,McMaster-Carr,Search: N-channel logic-level MOSFET TO-220 10A+,Rate to the selected 5V peltier module peak current with thermal margin
 Q10,1,N-Channel Logic-Level MOSFET,Pump enable gate GPIO unassigned in this revision; 1-2A rating min,TO-220,Adafruit,355,Optional 5V peristaltic pump path; assign a free GPIO if pump control is later enabled
 J801,1,5V Power Connector,5V battery input receptacle (JST XT60 or barrel jack),Connector,Adafruit,373,Mates with 5V rechargeable battery pack or bench supply
@@ -22,7 +22,7 @@ J802,1,4-Pin 0.1in Header,Power distribution hub connector,0.1in pitch THT,Adafr
 J811,1,2-Pin JST PH Connector,RP2040 main battery input,JST PH 2mm THT,Adafruit,261,PKCell LP503562 3.7V 1200mAh cell connected directly to Feather RP2040 BAT input (built-in Feather charging)
 J812,1,2-Pin JST PH Connector,NeoPixel battery input,JST PH 2mm THT,Adafruit,261,Dedicated PKCell LP503562 3.7V 1200mAh cell to +3V7_NEO rail
 U812,1,Adafruit Micro Lipo Charger,Single-cell LiPo charger (USB input),Breakout,Adafruit,259,Assigned to LP503562 NeoPixel battery only (CHG_NEO)
-J601,1,5-Pin 0.1in Header,Filament PWM bus input (SPARK1-4 + GND),0.1in pitch THT,Adafruit,392,From RP2040 GP5/6/9/14 + GND
+J601,1,5-Pin 0.1in Header,Filament PWM bus input (SPARK1-4 + GND),0.1in pitch THT,Adafruit,392,From RP2040 GP7/6/9/24 + GND
 J603,1,4-Pin 0.1in Header,Filament load channel outputs (SPARK1-4),0.1in pitch THT,Adafruit,392,Post-resistor outputs to spark LED filament loads
 J701,1,4-Pin 0.1in Header,Beam RGB PWM input bus (R/G/B + GND),0.1in pitch THT,Adafruit,392,From RP2040 GP11/12/13 + GND
 J702,1,4-Position 3.5mm Screw Terminal,Beam RGB LED load output,3.5mm screw terminal,Adafruit,677,Post-resistor outputs to high-power RGB LED
