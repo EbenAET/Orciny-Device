@@ -36,17 +36,17 @@ Power:
  │                      FEATHER RP2040                             │
  │                    Primary Scene + FX Node                      │
  │                                                                 │
- │  GP2/GP3/GP4  <------------------------- SW1/SW2/SW3            │
- │  GP11 (NeoPixel data) -----------------> NeoPixel strip DI      │
+ │  A1/A2/A3     <------------------------- SW1/SW2/SW3            │
+ │  GP4  (NeoPixel data) -----------------> NeoPixel strip DI      │
  │                                                                 │
  │  GP5  PWM ---> [R601 10Ω] ---> Spark Filament 1                │
  │  GP6  PWM ---> [R602 10Ω] ---> Spark Filament 2                │
  │  GP9  PWM ---> [R603 10Ω] ---> Spark Filament 3                │
- │  GP10 PWM ---> [R604 10Ω] ---> Spark Filament 4                │
+ │  GP14 PWM ---> [R604 10Ω] ---> Spark Filament 4                │
  │                                                                 │
- │  GP12 PWM ---> Prop-Maker LED1 MOSFET out ---> 3-9W LED CH1    │
- │  GP13 PWM ---> Prop-Maker LED2 MOSFET out ---> 3-9W LED CH2    │
- │  GP14 PWM ---> Prop-Maker LED3 MOSFET out ---> 3-9W LED CH3    │
+ │  GP11 PWM ---> Prop-Maker LED1 MOSFET out ---> 3-9W LED CH1    │
+ │  GP12 PWM ---> Prop-Maker LED2 MOSFET out ---> 3-9W LED CH2    │
+ │  GP13 PWM ---> Prop-Maker LED3 MOSFET out ---> 3-9W LED CH3    │
  │                                                                 │
  │  I2C SDA/SCL ---------------------------> Servo FeatherWing     │
  │                                           (PCA9685 @ 0x40)      │
@@ -59,7 +59,7 @@ Power:
  ┌──────────────────────────────┐
  │  SK6812 NeoPixel Strip       │
  │  166 pixels (single strand)  │
- │  Data <-- RP2040 GP11        │
+ │  Data <-- RP2040 GP4         │
  │  +V   <-- +3V7_NEO           │
  │  GND  --> GND_COMMON         │
  └──────────────────────────────┘
@@ -84,7 +84,8 @@ Power:
  │  LED1/LED2/LED3 are MOSFET-switched outputs │
  │  for the high-power 3-9W LED channels.      │
  │                                              │
- │  Input control from RP2040 GP12/13/14       │
+ │  Input control from RP2040 GP11/12/13       │
+ │  PWR enable from RP2040 GP10 (held HIGH)    │
  │  Power from +5V_BUS, return to GND_COMMON   │
  └──────────────────────────────────────────────┘
 
@@ -96,7 +97,7 @@ Power:
  │ On/Off │        │  Prev  │        │  Next  │
  └───┬────┘        └───┬────┘        └───┬────┘
      |                 |                 |
- RP2040 GP2         RP2040 GP3         RP2040 GP4
+ RP2040 A1(GP27)    RP2040 A2(GP28)    RP2040 A3(GP29)
    GND               GND               GND
    Hold SW1 + SW3 together for 5s -> reset to sequence 1
 
@@ -115,7 +116,7 @@ Power:
 
  MOSFET Driver Stage (beam / peltier / optional pump paths):
  Harness IDs: H-BEAM-PWR, H-PELTIER-PWR, H-PUMP-OPT
- (GP12/13/14 beam control and GP15 peltier control route through FeatherWing stack headers; not separately harnessed)
+ (GP11/12/13 beam control, GP10 PWR enable, and GP15 peltier control route through FeatherWing stack headers; not separately harnessed)
 
    RP2040 GPIO pin
          |
@@ -140,10 +141,11 @@ Power:
 
  Prop-Maker LED Outputs (3-9W LED):
  Harness ID: H-BEAM-PWR
- (GP12/13/14 control signals enter Prop-Maker via stacked header; not a separate cable harness)
+ (GP11/12/13 control signals and GP10 PWR enable enter Prop-Maker via stacked header; not a separate cable harness)
 
   +5V_BUS powers the Prop-Maker LED output stage
-  RP2040 GP12/13/14 provide control for LED1/LED2/LED3 channels
+  RP2040 GP11/12/13 provide control for LED1/LED2/LED3 channels
+  RP2040 GP10 must be held HIGH to enable Prop-Maker LED outputs
   LED load returns to GND_COMMON
 
   Peltier load is sourced from the Prop-Maker 5V supply domain.
@@ -185,16 +187,17 @@ Power:
   H-PELTIER-PWR -> +5V_BUS peltier load-side feed
    H-PUMP-OPT  -> optional pump control/load branch
 
-   RP2040 GP2   <- SW1 -> GND   (toggle ON/OFF)
-   RP2040 GP3   <- SW2 -> GND   (previous sequence, 1->3 wrap)
-   RP2040 GP4   <- SW3 -> GND   (next sequence, 3->1 wrap)
-   RP2040 GP11  -> NeoPixel strip data (166 pixels, SK6812, Adafruit 4865, single strand)
+   RP2040 A1(GP27) <- SW1 -> GND   (toggle ON/OFF)
+   RP2040 A2(GP28) <- SW2 -> GND   (previous sequence, 1->3 wrap)
+   RP2040 A3(GP29) <- SW3 -> GND   (next sequence, 3->1 wrap)
+  RP2040 GP4   -> NeoPixel strip data (166 pixels, SK6812, Adafruit 4865, single strand)
    J811         -> RP2040 Feather BAT input (main 3.7V controller/spark battery)
    U812         -> dedicated external charger for J812 LP503562 battery (+3V7_NEO)
    +3V7_NEO     -> NeoPixel strip +V (dedicated LP503562 cell)
    +5V_BUS      -> Prop-Maker load supply and peltier source domain
-   RP2040 GP5/GP6/GP9/GP10 -> direct spark filament outputs (R601-R604)
-   RP2040 GP12-GP14 -> Prop-Maker LED1/LED2/LED3 channel control
+  RP2040 GP5/GP6/GP9/GP14 -> direct spark filament outputs (R601-R604)
+  RP2040 GP10      -> Prop-Maker PWR enable (held HIGH)
+  RP2040 GP11-GP13 -> Prop-Maker LED1/LED2/LED3 channel control
    RP2040 SDA/SCL   -> Servo FeatherWing (PCA9685 @ 0x40)
    Servo Wing CH0/1 -> Servo A / Servo B signal lines
    RP2040 GP8       -> optional pump MOSFET gate (disabled in firmware)

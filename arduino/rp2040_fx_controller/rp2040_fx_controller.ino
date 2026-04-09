@@ -502,6 +502,9 @@ void setup() {
   servoDriver.setPWMFreq(50);
   randomSeed(analogRead(A0));
 
+  pinMode(device_config::kPropMakerPwrPin, OUTPUT);
+  digitalWrite(device_config::kPropMakerPwrPin, HIGH);
+
   for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {
     sparks[i].begin(device_config::kSparkPins[i]);
   }

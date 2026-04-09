@@ -56,7 +56,7 @@ Design intent in this reference:
 
 ### H-CORE - NeoPixel Strip Harness
 - Harness Label 3
-- Signal run: RP2040 GP11 -> strip DI
+- Signal run: RP2040 GP4 -> strip DI
 - Power run: +3V7_NEO -> strip +V
 - Ground run: GND_COMMON -> strip GND
 - Recommended wire: 24-26 AWG for data, 20 AWG for strip power/ground
@@ -69,9 +69,9 @@ Design intent in this reference:
 
 ### H-SW - Switch Input Harness
 - Harness Label 4
-- SW1 -> RP2040 GP2
-- SW2 -> RP2040 GP3
-- SW3 -> RP2040 GP4
+- SW1 -> RP2040 A1 (GP27)
+- SW2 -> RP2040 A2 (GP28)
+- SW3 -> RP2040 A3 (GP29)
 - Return: shared GND
 - Recommended wire: 24-26 AWG
 - Notes: Route this harness away from spark and servo power runs.
@@ -80,7 +80,7 @@ Design intent in this reference:
 
 ### H-SPARK - Spark Output Harness
 - Harness Label 5
-- Channels: RP2040 GP5/GP6/GP9/GP10 (through series resistors) -> Spark 1-4
+- Channels: RP2040 GP5/GP6/GP9/GP14 (through series resistors) -> Spark 1-4
 - Supply domain: RP2040_BAT
 - Return: GND_COMMON
 - Recommended wire: 22-24 AWG signal legs, 20 AWG shared feed/return where applicable
@@ -101,6 +101,7 @@ Design intent in this reference:
 ### H-BEAM-PWR - Beam Load Harness
 - Harness Label 7
 - Stack note: Prop-Maker FeatherWing stacks directly on the Feather RP2040; no separate controller-to-wing harness is required.
+- Control note: RP2040 GP10 (D10) is reserved for Prop-Maker PWR enable and must be held HIGH.
 - +5V_BUS -> Prop-Maker load domain and beam load source path
 - GND_COMMON return from beam load stage
 - Recommended wire: 20 AWG minimum
@@ -129,15 +130,15 @@ Design intent in this reference:
 
 Use heat-shrink or tags at both ends:
 - Harness ID (example: H-CORE)
-- Net name (example: GP11_DI, +3V7_NEO, GND)
+- Net name (example: GP4_DI, +3V7_NEO, GND)
 - Channel index for multi-channel runs (SP1..SP4)
 
 ## Bring-Up Continuity Checklist
 
 1. Verify no short between +5V_BUS, RP2040_BAT, and +3V7_NEO.
 2. Verify all grounds share continuity to GND_COMMON.
-3. Verify H-CORE data continuity from RP2040 GP11 to strip DI.
-4. Verify H-SPARK channel mapping (GP5/6/9/10 to Spark 1/2/3/4).
+3. Verify H-CORE data continuity from RP2040 GP4 to strip DI.
+4. Verify H-SPARK channel mapping (GP5/6/9/14 to Spark 1/2/3/4).
 5. Verify H-SERVO polarity before connecting servos.
 6. Verify H-BEAM-PWR and H-PELTIER-PWR are not cross-connected.
 7. Verify U812 charger wiring only touches Neo battery rail.

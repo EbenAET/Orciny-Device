@@ -1,6 +1,6 @@
 flowchart TD
   %% Rev F — RP2040-only single-controller design
-  %% NeoPixel data: RP2040 GP11 | Switches: GP2/GP3/GP4
+  %% NeoPixel data: RP2040 GP4 | Switches: A1/A2/A3 (GP27/GP28/GP29)
   %% See orciny_wiring_ascii.txt for detailed net and harness notes
 
   J801["J801\n5V Input (battery or supply)"]
@@ -13,16 +13,17 @@ flowchart TD
   RP["Feather RP2040\nPrimary Controller"]
   CORE["SK6812 NeoPixel Strip\n166 pixels Adafruit 4865\nFW 2A max guard rail"]
   PMFW["Prop-Maker FeatherWing\nLED MOSFET Outputs"]
+  PMFWPWR["Prop-Maker PWR Enable\nGP10 held HIGH"]
   SWING["8-ch Servo FeatherWing\nPCA9685 at I2C 0x40"]
 
-  SW1["SW1 GP2 On/Off\nto GND"]
-  SW2["SW2 GP3 Previous\nto GND"]
-  SW3["SW3 GP4 Next\nto GND"]
+  SW1["SW1 A1(GP27) On/Off\nto GND"]
+  SW2["SW2 A2(GP28) Previous\nto GND"]
+  SW3["SW3 A3(GP29) Next\nto GND"]
 
   SP1["Spark Filament 1\nGP5 + R601 10Ω"]
   SP2["Spark Filament 2\nGP6 + R602 10Ω"]
   SP3["Spark Filament 3\nGP9 + R603 10Ω"]
-  SP4["Spark Filament 4\nGP10 + R604 10Ω"]
+  SP4["Spark Filament 4\nGP14 + R604 10Ω"]
 
   LED1["Beam LED CH1\n3-9W RGB leg 1"]
   LED2["Beam LED CH2\n3-9W RGB leg 2"]
@@ -49,15 +50,16 @@ flowchart TD
   CNEO --> BNEO
   BNEO -->|"+3V7_NEO"| CORE
 
-  RP -->|"GP11 data"| CORE
+  RP -->|"GP4 data"| CORE
   RP --- SW1
   RP --- SW2
   RP --- SW3
   RP -->|"GP5 PWM"| SP1
   RP -->|"GP6 PWM"| SP2
   RP -->|"GP9 PWM"| SP3
-  RP -->|"GP10 PWM"| SP4
-  RP -->|"GP12/13/14"| PMFW
+  RP -->|"GP14 PWM"| SP4
+  RP -->|"GP11/12/13"| PMFW
+  RP -->|"GP10 HIGH"| PMFWPWR
   RP -->|"GP15"| PELTIER
   RP -->|"GP8"| PUMP
   RP -->|"I2C SDA/SCL"| SWING
@@ -65,6 +67,7 @@ flowchart TD
   PMFW -->|"LED1 MOSFET"| LED1
   PMFW -->|"LED2 MOSFET"| LED2
   PMFW -->|"LED3 MOSFET"| LED3
+  PMFWPWR --- PMFW
   SWING -->|"CH0"| SA
   SWING -->|"CH1"| SB
 
