@@ -48,48 +48,6 @@
 		)
 	)
 	(sheet
-		(at 74.93 22.86)
-		(size 63.5 45.72)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(stroke
-			(width 0.1524)
-			(type solid)
-		)
-		(fill
-			(color 0 0 0 0.0000)
-		)
-		(uuid "2b72e514-ba22-409c-ab22-e55895e12f57")
-		(property "Sheetname" "Primary Control"
-			(at 74.93 22.1484 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left bottom)
-			)
-		)
-		(property "Sheetfile" "FeatherM0.kicad_sch"
-			(at 74.93 69.1646 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-			)
-		)
-		(instances
-			(project "orciny wiring RevB"
-				(path "/bfdec584-7582-4877-889f-0fbbd4c2f894"
-					(page "3")
-				)
-			)
-		)
-	)
-	(sheet
 		(at 76.2 135.89)
 		(size 62.23 43.18)
 		(exclude_from_sim no)
@@ -105,7 +63,7 @@
 			(color 0 0 0 0.0000)
 		)
 		(uuid "79a67de4-4c15-45be-be2b-e39f654dc452")
-		(property "Sheetname" "FX Executor"
+		(property "Sheetname" "Primary Control"
 			(at 76.2 135.1784 0)
 			(effects
 				(font

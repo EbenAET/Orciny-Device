@@ -4,13 +4,13 @@ Current electrical reference for the RP2040-only hardware build.
 
 Controller and UI
 - RP2040 is the only controller in this revision.
-- SW1: RP2040_GP2 -> switch -> GND (toggle output on/off)
-- SW2: RP2040_GP3 -> switch -> GND (previous sequence)
-- SW3: RP2040_GP4 -> switch -> GND (next sequence)
+- SW1: RP2040_A1 (GP27) -> switch -> GND (toggle output on/off)
+- SW2: RP2040_A2 (GP28) -> switch -> GND (previous sequence)
+- SW3: RP2040_A3 (GP29) -> switch -> GND (next sequence)
 - Hold SW1+SW3 for 5 seconds -> reset to sequence 1
 
 NeoPixel core
-- RP2040_GP11 -> NeoPixel_Data (Adafruit 4865, SK6812, 166 pixels)
+- RP2040_GP4 -> NeoPixel_Data (Adafruit 4865, SK6812, 166 pixels)
 - +3V7_NEO -> NeoPixel_Power
 - GND_COMMON -> NeoPixel_Ground
 
@@ -18,10 +18,11 @@ RP2040 effect outputs
 - RP2040_GP5  -> R601 -> SPARK1_FILAMENT
 - RP2040_GP6  -> R602 -> SPARK2_FILAMENT
 - RP2040_GP9  -> R603 -> SPARK3_FILAMENT
-- RP2040_GP10 -> R604 -> SPARK4_FILAMENT
-- RP2040_GP12 -> PROPMAKER_LED1_CTRL
-- RP2040_GP13 -> PROPMAKER_LED2_CTRL
-- RP2040_GP14 -> PROPMAKER_LED3_CTRL
+- RP2040_GP14 -> R604 -> SPARK4_FILAMENT
+- RP2040_GP10 -> PROPMAKER_PWR_ENABLE (held HIGH)
+- RP2040_GP11 -> PROPMAKER_LED1_CTRL
+- RP2040_GP12 -> PROPMAKER_LED2_CTRL
+- RP2040_GP13 -> PROPMAKER_LED3_CTRL
 - RP2040_I2C_SDA -> SERVO_WING_SDA
 - RP2040_I2C_SCL -> SERVO_WING_SCL
 - SERVO_WING_CH0 -> SERVO_A_SIGNAL
@@ -52,7 +53,7 @@ Spark branch
 - R601-R604: one 10 ohm resistor per spark channel.
 
 Prop-Maker and servo domains
-- Prop-Maker control inputs: GP12/GP13/GP14
+- Prop-Maker control inputs: GP11/GP12/GP13, with GP10 held HIGH for PWR enable
 - Prop-Maker load supply domain: +5V_BUS
 - ServoWing control: I2C SDA/SCL from RP2040
 - ServoWing power: +5V_BUS and GND_COMMON

@@ -33,7 +33,8 @@ The scaffold makes a few deliberate assumptions that you should verify against y
 - RP2040 uses three momentary switches wired to ground with internal pull-ups enabled
 - The 3-9W LED channels are driven from the Prop-Maker FeatherWing MOSFET-controlled LED outputs, commanded by RP2040 PWM control lines
 - Four spark LED filaments are wired as direct RP2040 PWM outputs through 10 ohm series current-limiting resistors and are supplied from the main RP2040 3.7V battery domain
-- RP2040 pin `GP11` drives one NeoPixel data line for Adafruit product `4865` (SK6812, 166 pixels)
+- RP2040 pin `GP4` drives one NeoPixel data line for Adafruit product `4865` (SK6812, 166 pixels)
+- RP2040 pin `GP10` is reserved for Prop-Maker PWR enable and is held HIGH in firmware
 - All power sources share `GND_COMMON`; keep positive rails isolated (`+5V_BUS`, `RP2040_BAT`, and `+3V7_NEO` are not tied together)
 - The external Adafruit 259 charger should feed only the dedicated NeoPixel battery/rail pair (`CHG_NEO <-> LP503562 -> +3V7_NEO`)
 
@@ -77,9 +78,9 @@ This revision intentionally removes NeoPXL8, Motor FeatherWing, and Feather Doub
 
 The RP2040 sketch expects three momentary switches connected from GPIO to GND and uses `INPUT_PULLUP`.
 
-- Switch 1 on pin `2`: toggle the current sequence on or off
-- Switch 2 on pin `3`: move to the previous sequence, wrapping `1 -> 3`
-- Switch 3 on pin `4`: move to the next sequence, wrapping `3 -> 1`
+- Switch 1 on pin `A1` (`GP27`): toggle the current sequence on or off
+- Switch 2 on pin `A2` (`GP28`): move to the previous sequence, wrapping `1 -> 3`
+- Switch 3 on pin `A3` (`GP29`): move to the next sequence, wrapping `3 -> 1`
 - Hold switches 1 and 3 together for 5 seconds: reset back to sequence 1
 
 Turning the sequence off does not lose its position. Turning it back on resumes the last selected sequence.
