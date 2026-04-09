@@ -22,7 +22,6 @@ Design intent in this reference:
 | H-SERVO | Servo output harness | ServoWing outputs and power out to servos | ServoWing stacks on the Feather, so no separate Feather-to-wing harness is needed. |
 | H-BEAM-PWR | Beam load harness | +5V_BUS load-side runs to beam path | Prop-Maker FeatherWing stacks on the Feather; harness is beam load-side wiring only. |
 | H-PELTIER-PWR | Peltier load harness | +5V_BUS load-side runs to peltier path | Separate high-current branch for peltier load wiring. |
-| H-PUMP-OPT | Optional pump harness | Optional pump gate control and load power | Not populated in current build. |
 
 
 ## Harness Definitions
@@ -42,7 +41,7 @@ Design intent in this reference:
 - Charging: Feather onboard charger path
 - Recommended wire: 20 AWG
 - Notes: Keep battery positive isolated from +5V_BUS and +3V7_NEO.
-- Connector note: Battery connects directly to the Feather Battery JST port.
+- Battery connects directly to Feather's Battery JST port
 
 ### H-BAT-NEO - NeoPixel Battery and Charger Harness
 - Harness Label 2
@@ -51,9 +50,9 @@ Design intent in this reference:
 - Destination rail: +3V7_NEO
 - Recommended wire: 20 AWG battery and rail runs
 - Notes: U812 output must remain dedicated to this battery/rail pair only.
-- Connector note: Use a 2-pin JST for charger power, and a separate 2-pin JST for the controller signal/ground run.
-- Capacity note: Running the strip from 3.7V still requires the harness to carry strip current; size connector and wire for at least the 2A strip budget used in project docs, with margin for any brightness or pixel-count increase.
-- Bulk capacitor note: Add a 500-1000 uF electrolytic capacitor across +3V7_NEO and GND at the strip power entry point.
+- Add a 500-1000 uF bulk electrolytic capacitor across +3V7_NEO and GND at the strip power entry point.
+- Use 2 pin JST for power to Charger output
+- Red wire is positive, black wire is negative
 
 ### H-CORE - NeoPixel Strip Harness
 - Harness Label 3
@@ -62,8 +61,11 @@ Design intent in this reference:
 - Ground run: GND_COMMON -> strip GND
 - Recommended wire: 24-26 AWG for data, 20 AWG for strip power/ground
 - Notes: Keep data conductor away from high-current switching runs where possible.
-- Capacity note: On a 3.7V rail there is less voltage-drop headroom than at 5V, so keep +V/GND path resistance low and maintain the same 2A minimum current capacity in this run.
-- Placement note: Mount the bulk capacitor physically close to the first pixel / strip power injection point.
+- Place the bulk capacitor physically close to the first pixel / strip power injection point.
+- Use 2 pin JST for signal + ground to microcontroller
+- White wire is signal, brown wire is common
+
+- Note for NeoPixel harnesses: I am using a 4 pin cable. On the neopixel side, I am using a 3 pin JST HX to combine signal and power. Pin one (red) is power, pin two (white) is signal, pin 3 (black and brown spliced) is common. A capacitor is bridging power and common. This is Harness 2/3. The cable splits into two sets of two and becomes harness 2 and harness 3. 
 
 ### H-SW - Switch Input Harness
 - Harness Label 4
@@ -73,7 +75,8 @@ Design intent in this reference:
 - Return: shared GND
 - Recommended wire: 24-26 AWG
 - Notes: Route this harness away from spark and servo power runs.
-- Connector note: Use a 4-pin JST connector.
+- use 4 pin JST connector
+- Pin 1 (blue) is SW1, pin 2 (brown) is SW2, pin 3 (orange) is SW3, and pin 4 (green) is common
 
 ### H-SPARK - Spark Output Harness
 - Harness Label 5
@@ -82,7 +85,8 @@ Design intent in this reference:
 - Return: GND_COMMON
 - Recommended wire: 22-24 AWG signal legs, 20 AWG shared feed/return where applicable
 - Notes: Keep channel labeling fixed end-to-end to avoid cross-wiring.
-- Connector note: Use a 5-pin DMX cable.
+- Use 5 pin DMX cable
+- Green is common, pins 1 (red), 2 (brown), 3 (white), and 4 (blue) are the individual positive connections for the sparks, and pin 5 (black) is a spare
 
 ### H-SERVO - Servo Output Harness
 - Harness Label 6
@@ -91,24 +95,28 @@ Design intent in this reference:
 - Power runs: ServoWing V+ and GND -> servo power branches
 - Recommended wire: 24-26 AWG for signal, 20 AWG for power/ground branches
 - Notes: Match positive and return gauge on each servo branch; no separate Feather-to-ServoWing harness is required.
-- Connector note: Use a 4-pin JST connector.
+- Use 4 pin JST connector
+- Pin 1 (white) is CH0 signal, Pin 2 (blue) is CH1 signal, Pin 3 (red) is power, pin 4 (black) is common
 
 ### H-BEAM-PWR - Beam Load Harness
 - Harness Label 7
 - Stack note: Prop-Maker FeatherWing stacks directly on the Feather RP2040; no separate controller-to-wing harness is required.
-- +5V_BUS -> Prop-Maker load domain (beam path only)
-- GND_COMMON returns from beam load stage
+- +5V_BUS -> Prop-Maker load domain and beam load source path
+- GND_COMMON return from beam load stage
 - Recommended wire: 20 AWG minimum
-- Notes: Treat as high-current branch; keep runs short; this harness is beam load-side only.
-- Connector note: Use a 4-pin JST connector.
+- Notes: Treat as high-current branch and keep runs short; this harness is beam load-side only.
+- Beam should have 4 pin JST connector
+- Beam LED chip is common anode. Connector pins are pin 1 (white) as common anode, pin 2 (red) as red channel, pin 3 (blue) as blue channel, pin 4 (green) as green channel
 
 ### H-PELTIER-PWR - Peltier Load Harness
 - Harness Label 8
+- Stack note: Prop-Maker FeatherWing stacks directly on the Feather RP2040; no separate controller-to-wing harness is required.
 - +5V_BUS -> peltier load source path
-- GND_COMMON returns from peltier load stage
+- GND_COMMON return from peltier load stage
 - Recommended wire: 20 AWG minimum
-- Notes: Treat as high-current branch; keep separate physical run from H-BEAM-PWR.
-- Connector note: Use a Deans Micro2R connector.
+- Notes: Keep this as a separate high-current branch for thermal control load wiring.
+- Peltier uses Deans Micro2R connector
+- Pin 1 (red) is power, pin 2 (black) is common
 
 ### H-PUMP-OPT - Optional Pump Harness
 - Harness Label 9
@@ -116,7 +124,6 @@ Design intent in this reference:
 - Load power: +5V_BUS and GND_COMMON pump branch
 - Recommended wire: 24-26 AWG control, 20 AWG load branch
 - Notes: Firmware currently keeps pump actions disabled.
-- Connector note: Project-defined; populate as needed.
 
 ## Labeling Convention
 
@@ -134,4 +141,3 @@ Use heat-shrink or tags at both ends:
 5. Verify H-SERVO polarity before connecting servos.
 6. Verify H-BEAM-PWR and H-PELTIER-PWR are not cross-connected.
 7. Verify U812 charger wiring only touches Neo battery rail.
-

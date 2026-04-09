@@ -20,9 +20,11 @@ static constexpr uint8_t kPreviousSwitchPin = 3;
 static constexpr uint8_t kNextSwitchPin = 4;
 
 // Prop-Maker FeatherWing MOSFET LED outputs for high-power lighting.
-static constexpr uint8_t kPropMakerLed1Pin = 12;
-static constexpr uint8_t kPropMakerLed2Pin = 13;
-static constexpr uint8_t kPropMakerLed3Pin = 14;
+// Beam LED is common anode RGB: LED1=Red(Q6), LED2=Green(Q7), LED3=Blue(Q8)
+// H-BEAM-PWR connector: pin2(red wire)=R, pin4(green wire)=G, pin3(blue wire)=B
+static constexpr uint8_t kPropMakerLed1Pin = 12;  // Red channel
+static constexpr uint8_t kPropMakerLed2Pin = 13;  // Green channel
+static constexpr uint8_t kPropMakerLed3Pin = 14;  // Blue channel
 
 // 8-channel Servo FeatherWing (PCA9685) channels/pulse timing.
 static constexpr uint8_t kServoChannelA = 0;
