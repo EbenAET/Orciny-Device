@@ -13,6 +13,7 @@ static constexpr uint8_t kServoDriverI2cAddress = 0x40;
 
 static constexpr uint8_t kSparkCount = 4;
 static constexpr uint8_t kSparkPins[kSparkCount] = {5, 6, 9, 14};
+// GP8 is currently assigned to peltier control in this revision.
 // static constexpr uint8_t kPumpControlPin = 8;
 
 static constexpr uint8_t kPowerSwitchPin = A1;    // GP27
@@ -27,6 +28,11 @@ static constexpr uint8_t kPropMakerPwrPin = 10;
 static constexpr uint8_t kPropMakerLed1Pin = 11;  // Red channel
 static constexpr uint8_t kPropMakerLed2Pin = 12;  // Green channel
 static constexpr uint8_t kPropMakerLed3Pin = 13;  // Blue channel
+
+// Peltier load control MOSFET gate (Q9).
+// Keep enabled briefly after beam turns off to dissipate residual heat.
+static constexpr uint8_t kPeltierControlPin = 8;
+static constexpr uint16_t kPeltierPostBeamHoldMs = 12000;
 
 // 8-channel Servo FeatherWing (PCA9685) channels/pulse timing.
 static constexpr uint8_t kServoChannelA = 0;

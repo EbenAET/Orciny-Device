@@ -11,8 +11,8 @@ Quick-reference index for harness identification during build and troubleshootin
 | 5 | H-SPARK | 5-pin DMX cable | RP2040 GP5/GP6/GP9/GP14, GND | Spark channels 1-4 (+ spare) | green=GND; pin 1 red=SP1, pin 2 brown=SP2, pin 3 white=SP3, pin 4 blue=SP4, pin 5 black=spare |
 | 6 | H-SERVO | 4-pin JST | ServoWing outputs/power | Servo A/B signal + power branches | Pin 1 white=CH0 sig, pin 2 blue=CH1 sig, pin 3 red=PWR, pin 4 black=GND |
 | 7 | H-BEAM-PWR | 4-pin JST (common anode RGB LED) | +5V_BUS, GND_COMMON | Beam load path | Pin 1 white=anode, pin 2 red=R(GP11), pin 3 blue=B(GP13), pin 4 green=G(GP12); GP10 reserved for Prop-Maker PWR enable |
-| 8 | H-PELTIER-PWR | Deans Micro2R | +5V_BUS, GND_COMMON | Peltier load path | Pin 1 red=PWR, pin 2 black=GND; GP15->Q9 gate; firmware ON with beam + short cooldown hold |
-| 9 | H-PUMP-OPT | Project-defined load/control connector | RP2040 GP8, +5V_BUS, GND_COMMON | Optional pump driver + load branch | Optional population |
+| 8 | H-PELTIER-PWR | Deans Micro2R | +5V_BUS, GND_COMMON | Peltier load path | Pin 1 red=PWR, pin 2 black=GND; GP8->Q9 gate; firmware ON with beam + short cooldown hold |
+| 9 | H-PUMP-OPT | Project-defined load/control connector | GPIO unassigned (this revision), +5V_BUS, GND_COMMON | Optional pump driver + load branch | GP8 reassigned to peltier; optional population |
 | 10 | H-BAT-RP | Feather battery JST | LP503562 #1 | Feather RP2040 BAT/GND | Direct battery harness; Feather onboard charger path |
 
 ## Rail Separation Reminder

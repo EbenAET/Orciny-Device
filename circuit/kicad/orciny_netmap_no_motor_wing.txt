@@ -23,12 +23,12 @@ RP2040 effect outputs
 - RP2040_GP11 -> PROPMAKER_LED1_CTRL
 - RP2040_GP12 -> PROPMAKER_LED2_CTRL
 - RP2040_GP13 -> PROPMAKER_LED3_CTRL
-- RP2040_GP15 -> PELTIER_ENABLE_GATE (Q9)
+- RP2040_GP8 -> PELTIER_ENABLE_GATE (Q9)
 - RP2040_I2C_SDA -> SERVO_WING_SDA
 - RP2040_I2C_SCL -> SERVO_WING_SCL
 - SERVO_WING_CH0 -> SERVO_A_SIGNAL
 - SERVO_WING_CH1 -> SERVO_B_SIGNAL
-- RP2040_GP8 -> PUMP_ENABLE_GATE_OPTIONAL (optional, firmware disabled)
+- PUMP_ENABLE_GATE_OPTIONAL -> GPIO unassigned in this revision (optional, firmware disabled)
 
 Power domains
 - +5V_IN (from 5V battery via main fuse)
@@ -56,12 +56,12 @@ Spark branch
 Prop-Maker and servo domains
 - Prop-Maker control inputs: GP11/GP12/GP13, with GP10 held HIGH for PWR enable
 - Prop-Maker load supply domain: +5V_BUS
-- Peltier control: GP15 drives Q9; firmware enables peltier while beam is active and holds peltier on briefly after beam off for heat dissipation
+- Peltier control: GP8 drives Q9; firmware enables peltier while beam is active and holds peltier on briefly after beam off for heat dissipation
 - ServoWing control: I2C SDA/SCL from RP2040
 - ServoWing power: +5V_BUS and GND_COMMON
 
 Optional pump branch
-- Gate: RP2040_GP8
+- Gate: GPIO unassigned in this revision (GP8 repurposed to peltier)
 - Drain: load negative
 - Source: GND_COMMON
 - Load positive: +5V_BUS

@@ -29,8 +29,8 @@ The scaffold makes a few deliberate assumptions that you should verify against y
 - One external Adafruit Micro Lipo charger (`259`) is used for the dedicated NeoPixel LP503562 cell
 - RP2040 battery rail supplies controller logic and direct spark filament branch
 - RP2040 I2C connects to an 8-channel Servo FeatherWing (PCA9685 at `0x40`) that drives two servo outputs
-- RP2040 pin `GP8` can remain wired to pump-enable MOSFET gate, but pump actions are currently disabled in firmware
-- RP2040 pin `GP15` controls the peltier MOSFET gate; firmware turns peltier on while beam output is active and holds it on briefly after beam-off for heat dissipation
+- RP2040 pin `GP8` controls the peltier MOSFET gate; firmware turns peltier on while beam output is active and holds it on briefly after beam-off for heat dissipation
+- Optional pump path is currently unassigned at GPIO level in this revision (previous GP8 pump gate mapping was repurposed to peltier control)
 - RP2040 uses three momentary switches wired to ground with internal pull-ups enabled
 - The 3-9W LED channels are driven from the Prop-Maker FeatherWing MOSFET-controlled LED outputs, commanded by RP2040 PWM control lines
 - Four spark LED filaments are wired as direct RP2040 PWM outputs through 10 ohm series current-limiting resistors and are supplied from the main RP2040 3.7V battery domain

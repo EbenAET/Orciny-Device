@@ -50,7 +50,7 @@ Power:
  │                                                                 │
  │  I2C SDA/SCL ---------------------------> Servo FeatherWing     │
  │                                           (PCA9685 @ 0x40)      │
- │  GP8      ---> (optional) Pump MOSFET gate [disabled in FW]    │
+ │  Pump gate GPIO ---> unassigned in this revision [disabled in FW] │
  └─────────────────────────────────────────────────────────────────┘
 
    +3V7_NEO (NeoPixel strip power)
@@ -116,10 +116,10 @@ Power:
 
  MOSFET Driver Stage (beam / peltier / optional pump paths):
  Harness IDs: H-BEAM-PWR, H-PELTIER-PWR, H-PUMP-OPT
- (GP11/12/13 beam control, GP10 PWR enable, and GP15 peltier control route through FeatherWing stack headers; not separately harnessed)
+ (GP11/12/13 beam control, GP10 PWR enable, and GP8 peltier control route through FeatherWing stack headers; not separately harnessed)
 
   Firmware thermal behavior:
-    GP15 drives Q9 for peltier control.
+    GP8 drives Q9 for peltier control.
     Peltier turns ON while beam is enabled and remains ON briefly after beam turns OFF for heat dissipation.
 
    RP2040 GPIO pin
@@ -158,7 +158,7 @@ Power:
  Pump Channel (optional):
  Harness ID: H-PUMP-OPT
 
-  GP8 can be wired to a pump MOSFET gate, but firmware actions are currently disabled.
+  Pump MOSFET gate is unassigned in this revision (GP8 repurposed to peltier), and firmware actions remain disabled.
 
 
  Power Domain Summary:
@@ -202,8 +202,8 @@ Power:
   RP2040 GP5/GP6/GP9/GP14 -> direct spark filament outputs (R601-R604)
   RP2040 GP10      -> Prop-Maker PWR enable (held HIGH)
   RP2040 GP11-GP13 -> Prop-Maker LED1/LED2/LED3 channel control
-  RP2040 GP15      -> peltier MOSFET gate (auto beam-follow + cooldown hold)
+  RP2040 GP8       -> peltier MOSFET gate (auto beam-follow + cooldown hold)
    RP2040 SDA/SCL   -> Servo FeatherWing (PCA9685 @ 0x40)
    Servo Wing CH0/1 -> Servo A / Servo B signal lines
-   RP2040 GP8       -> optional pump MOSFET gate (disabled in firmware)
+   Pump GPIO        -> unassigned in this revision (GP8 reassigned to peltier)
    Hold SW1 + SW3 for 5s => reset to sequence 1

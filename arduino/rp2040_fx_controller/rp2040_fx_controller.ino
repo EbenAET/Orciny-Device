@@ -268,6 +268,7 @@ uint32_t resetChordStartMs = 0;
 bool resetChordTriggered = false;
 bool suppressPowerRelease = false;
 bool suppressNextRelease = false;
+uint32_t peltierHoldUntilMs = 0;
 EffectCommand currentEffectCommand = orciny::defaultEffectCommand();
 
 void printHelp() {
@@ -480,6 +481,17 @@ EffectCommand resolveEffectCommand(uint32_t now) {
   return orciny::defaultEffectCommand();
 }
 
+void updatePeltier(uint32_t now, bool beamEnabled) {
+  if (beamEnabled) {
+    digitalWrite(device_config::kPeltierControlPin, HIGH);
+    peltierHoldUntilMs = now + device_config::kPeltierPostBeamHoldMs;
+    return;
+  }
+
+  const bool keepCooling = static_cast<int32_t>(peltierHoldUntilMs - now) > 0;
+  digitalWrite(device_config::kPeltierControlPin, keepCooling ? HIGH : LOW);
+}
+
 void updateEffects(uint32_t now) {
   const EffectCommand command = resolveEffectCommand(now);
 
@@ -491,6 +503,7 @@ void updateEffects(uint32_t now) {
     sparks[i].update(now, sparksEnabled, command.sparksIntensity);
   }
   beamEffect.update(now, beamEnabled);
+  updatePeltier(now, beamEnabled);
   clawEffect.update(now, clawEnabled);
 }
 
@@ -504,6 +517,8 @@ void setup() {
 
   pinMode(device_config::kPropMakerPwrPin, OUTPUT);
   digitalWrite(device_config::kPropMakerPwrPin, HIGH);
+  pinMode(device_config::kPeltierControlPin, OUTPUT);
+  digitalWrite(device_config::kPeltierControlPin, LOW);
 
   for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {
     sparks[i].begin(device_config::kSparkPins[i]);
