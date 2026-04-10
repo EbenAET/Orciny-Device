@@ -34,7 +34,9 @@
 //   sparks on|off|toggle|auto — per-effect override
 //   beam on|off|toggle|auto   — per-effect override
 //   claw on|off|toggle|auto   — per-effect override
-//   s|b|c on|off|toggle|auto  — short aliases for sparks|beam|claw
+//   red|green|blue on|off|toggle|auto — per-channel beam overrides
+//   s|bm|c on|off|toggle|auto — short aliases for sparks|beam|claw
+//   r|g|b on|off|toggle|auto  — short aliases for red|green|blue
 //
 // PHYSICAL CONTROLS (standalone mode)
 //   SW1 (A1 / GP27) — tap: toggle output on/off
@@ -415,6 +417,9 @@ enum EffectOverride : uint8_t {
 EffectOverride sparksOverride = OVERRIDE_AUTO;
 EffectOverride beamOverride   = OVERRIDE_AUTO;
 EffectOverride clawOverride   = OVERRIDE_AUTO;
+EffectOverride beamRedOverride   = OVERRIDE_AUTO;
+EffectOverride beamGreenOverride = OVERRIDE_AUTO;
+EffectOverride beamBlueOverride  = OVERRIDE_AUTO;
 
 // USB receive buffer — characters accumulate here until a newline is received.
 String usbCommandBuffer;
@@ -424,6 +429,7 @@ String effectLinkBuffer;
 
 uint32_t lastCoreFrameMs     = 0;  // Timestamp of last received CoreFrame
 uint32_t lastEffectCommandMs = 0;  // Timestamp of last received EffectCommand
+uint32_t peltierHoldUntilMs  = 0;  // Keep cooling active briefly after beam-off
 
 // State for the SW1+SW3 reset chord detection.
 uint32_t resetChordStartMs    = 0;
@@ -444,7 +450,8 @@ void printHelp() {
   Serial.println(F("         sparks on|off|toggle|auto"));
   Serial.println(F("         beam   on|off|toggle|auto"));
   Serial.println(F("         claw   on|off|toggle|auto"));
-  Serial.println(F("         s|b|c  on|off|toggle|auto"));
+  Serial.println(F("         red|green|blue on|off|toggle|auto"));
+  Serial.println(F("         s|bm|c and r|g|b on|off|toggle|auto"));
 }
 
 const __FlashStringHelper *overrideLabel(EffectOverride value) {
@@ -472,6 +479,13 @@ void printOverrideStatus() {
   Serial.print(overrideLabel(beamOverride));
   Serial.print(F(", claw: "));
   Serial.println(overrideLabel(clawOverride));
+
+  Serial.print(F("Beam RGB -> R: "));
+  Serial.print(overrideLabel(beamRedOverride));
+  Serial.print(F(", G: "));
+  Serial.print(overrideLabel(beamGreenOverride));
+  Serial.print(F(", B: "));
+  Serial.println(overrideLabel(beamBlueOverride));
 }
 
 // Print the current power state and sequence number to USB serial.
@@ -595,6 +609,9 @@ void resetToBeginning() {
   sparksOverride = OVERRIDE_AUTO;
   beamOverride = OVERRIDE_AUTO;
   clawOverride = OVERRIDE_AUTO;
+  beamRedOverride = OVERRIDE_AUTO;
+  beamGreenOverride = OVERRIDE_AUTO;
+  beamBlueOverride = OVERRIDE_AUTO;
   Serial.println(F("Reset -> sequence 1"));
   printSequenceStatus();
 }
@@ -643,10 +660,10 @@ void handleUsbCommands() {
       sparksOverride = (sparksOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
       printOverrideStatus();
     }
-    else if (command == F("beam on") || command == F("b on"))       { beamOverride = OVERRIDE_FORCE_ON;    printOverrideStatus(); }
-    else if (command == F("beam off") || command == F("b off"))      { beamOverride = OVERRIDE_FORCE_OFF;   printOverrideStatus(); }
-    else if (command == F("beam auto") || command == F("b auto"))     { beamOverride = OVERRIDE_AUTO;        printOverrideStatus(); }
-    else if (command == F("beam toggle") || command == F("b toggle")) {
+    else if (command == F("beam on") || command == F("bm on"))       { beamOverride = OVERRIDE_FORCE_ON;    printOverrideStatus(); }
+    else if (command == F("beam off") || command == F("bm off"))      { beamOverride = OVERRIDE_FORCE_OFF;   printOverrideStatus(); }
+    else if (command == F("beam auto") || command == F("bm auto"))     { beamOverride = OVERRIDE_AUTO;        printOverrideStatus(); }
+    else if (command == F("beam toggle") || command == F("bm toggle")) {
       beamOverride = (beamOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
       printOverrideStatus();
     }
@@ -655,6 +672,27 @@ void handleUsbCommands() {
     else if (command == F("claw auto") || command == F("c auto"))     { clawOverride = OVERRIDE_AUTO;        printOverrideStatus(); }
     else if (command == F("claw toggle") || command == F("c toggle")) {
       clawOverride = (clawOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
+      printOverrideStatus();
+    }
+    else if (command == F("red on") || command == F("r on"))         { beamRedOverride = OVERRIDE_FORCE_ON;   printOverrideStatus(); }
+    else if (command == F("red off") || command == F("r off"))        { beamRedOverride = OVERRIDE_FORCE_OFF;  printOverrideStatus(); }
+    else if (command == F("red auto") || command == F("r auto"))      { beamRedOverride = OVERRIDE_AUTO;       printOverrideStatus(); }
+    else if (command == F("red toggle") || command == F("r toggle")) {
+      beamRedOverride = (beamRedOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
+      printOverrideStatus();
+    }
+    else if (command == F("green on") || command == F("g on"))         { beamGreenOverride = OVERRIDE_FORCE_ON;   printOverrideStatus(); }
+    else if (command == F("green off") || command == F("g off"))        { beamGreenOverride = OVERRIDE_FORCE_OFF;  printOverrideStatus(); }
+    else if (command == F("green auto") || command == F("g auto"))      { beamGreenOverride = OVERRIDE_AUTO;       printOverrideStatus(); }
+    else if (command == F("green toggle") || command == F("g toggle")) {
+      beamGreenOverride = (beamGreenOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
+      printOverrideStatus();
+    }
+    else if (command == F("blue on") || command == F("b on"))         { beamBlueOverride = OVERRIDE_FORCE_ON;   printOverrideStatus(); }
+    else if (command == F("blue off") || command == F("b off"))        { beamBlueOverride = OVERRIDE_FORCE_OFF;  printOverrideStatus(); }
+    else if (command == F("blue auto") || command == F("b auto"))      { beamBlueOverride = OVERRIDE_AUTO;       printOverrideStatus(); }
+    else if (command == F("blue toggle") || command == F("b toggle")) {
+      beamBlueOverride = (beamBlueOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
       printOverrideStatus();
     }
     else {
@@ -757,6 +795,17 @@ EffectCommand resolveEffectCommand(uint32_t now) {
   return orciny::defaultEffectCommand();  // Failsafe: all off
 }
 
+void updatePeltier(uint32_t now, bool beamEnabled) {
+  if (beamEnabled) {
+    digitalWrite(device_config::kPeltierControlPin, HIGH);
+    peltierHoldUntilMs = now + device_config::kPeltierPostBeamHoldMs;
+    return;
+  }
+
+  const bool keepCooling = static_cast<int32_t>(peltierHoldUntilMs - now) > 0;
+  digitalWrite(device_config::kPeltierControlPin, keepCooling ? HIGH : LOW);
+}
+
 // =============================================================================
 // EFFECT UPDATE — applies the active EffectCommand to all hardware outputs.
 // Called every loop iteration with the current timestamp.
@@ -767,11 +816,37 @@ void updateEffects(uint32_t now, const EffectCommand &command) {
   const bool sparksEnabled = command.outputEnabled && command.sparksEnabled;
   const bool beamEnabled   = command.outputEnabled && command.beamEnabled;
   const bool clawEnabled   = command.outputEnabled && command.clawEnabled;
+  const bool beamAnyForcedOn =
+      (beamRedOverride == OVERRIDE_FORCE_ON) ||
+      (beamGreenOverride == OVERRIDE_FORCE_ON) ||
+      (beamBlueOverride == OVERRIDE_FORCE_ON);
+  const bool beamForCooling = beamEnabled || (command.outputEnabled && beamAnyForcedOn);
 
   for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {
     sparks[i].update(now, sparksEnabled, command.sparksIntensity);
   }
   beamEffect.update(now, beamEnabled);
+
+  // Per-channel debug override is applied after the base beam effect writes PWM.
+  if (!command.outputEnabled || beamRedOverride == OVERRIDE_FORCE_OFF) {
+    analogWrite(device_config::kPropMakerLed1Pin, 0);
+  } else if (beamRedOverride == OVERRIDE_FORCE_ON) {
+    analogWrite(device_config::kPropMakerLed1Pin, 255);
+  }
+
+  if (!command.outputEnabled || beamGreenOverride == OVERRIDE_FORCE_OFF) {
+    analogWrite(device_config::kPropMakerLed2Pin, 0);
+  } else if (beamGreenOverride == OVERRIDE_FORCE_ON) {
+    analogWrite(device_config::kPropMakerLed2Pin, 255);
+  }
+
+  if (!command.outputEnabled || beamBlueOverride == OVERRIDE_FORCE_OFF) {
+    analogWrite(device_config::kPropMakerLed3Pin, 0);
+  } else if (beamBlueOverride == OVERRIDE_FORCE_ON) {
+    analogWrite(device_config::kPropMakerLed3Pin, 255);
+  }
+
+  updatePeltier(now, beamForCooling);
   clawEffect.update(now, clawEnabled);
 }
 
@@ -804,6 +879,8 @@ void setup() {
   // output will work.  If this line is omitted, sparks and beam stay silent.
   pinMode(device_config::kPropMakerPwrPin, OUTPUT);
   digitalWrite(device_config::kPropMakerPwrPin, HIGH);
+  pinMode(device_config::kPeltierControlPin, OUTPUT);
+  digitalWrite(device_config::kPeltierControlPin, LOW);
 
   // Initialise all four spark channels on their respective GPIO pins.
   for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {

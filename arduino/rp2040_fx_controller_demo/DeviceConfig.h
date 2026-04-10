@@ -41,8 +41,10 @@ static constexpr uint8_t kServoDriverI2cAddress = 0x40;
 static constexpr uint8_t kSparkCount = 4;
 static constexpr uint8_t kSparkPins[kSparkCount] = {5, 6, 9, 14};
 
-// Pump pin is present on the PCB but disabled in firmware (no pump installed).
-// static constexpr uint8_t kPumpControlPin = 8;
+// Peltier load control MOSFET gate (GP8).
+// Keep enabled briefly after beam turns off to dissipate residual heat.
+static constexpr uint8_t kPeltierControlPin = 8;
+static constexpr uint16_t kPeltierPostBeamHoldMs = 12000;
 
 // --- Momentary switches (INPUT_PULLUP — LOW = pressed) ----------------------
 static constexpr uint8_t kPowerSwitchPin = A1;    // GP27 — SW1 on/off toggle
