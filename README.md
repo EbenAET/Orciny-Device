@@ -33,21 +33,22 @@ The scaffold makes a few deliberate assumptions that you should verify against y
 
 - Main 5V input feeds only the Servo FeatherWing and Prop-Maker/peltier load domains (`+5V_BUS`)
 - One PKCell LP503562 3.7V 1200mAh cell is connected directly to Feather RP2040 BAT input (Feather built-in charging path)
-- A second PKCell LP503562 3.7V 1200mAh cell powers the NeoPixel strip rail (`+3V7_NEO`)
-- One external Adafruit Micro Lipo charger (`259`) is used for the dedicated NeoPixel LP503562 cell
+- NeoPixel strip power is sourced from `+5V_BUS` in the current wiring profile
+- Optional legacy: a dedicated NeoPixel LP503562 battery rail (`+3V7_NEO`) with external Adafruit 259 charger
 - RP2040 battery rail supplies controller logic and direct spark filament branch
 - RP2040 I2C connects to an 8-channel Servo FeatherWing (PCA9685 at `0x40`) that drives two servo outputs
+- FeatherWing headers are electrically shared when used on a Feather Doubler/Tripler (pins are cross-connected, not isolated)
 - RP2040 pin `GP8` controls the peltier MOSFET gate; firmware turns peltier on while beam output is active and holds it on briefly after beam-off for heat dissipation
 - Optional pump path is currently unassigned at GPIO level in this revision (previous GP8 pump gate mapping was repurposed to peltier control)
 - RP2040 uses three momentary switches wired to ground with internal pull-ups enabled
 - The 3-9W LED channels are driven from the Prop-Maker FeatherWing MOSFET-controlled LED outputs, commanded by RP2040 PWM control lines
 - Four spark LED filaments are wired as direct RP2040 PWM outputs through 10 ohm series current-limiting resistors and are supplied from the main RP2040 3.7V battery domain
-- RP2040 pin `GP4` drives one NeoPixel data line for Adafruit product `4865` (SK6812, 166 pixels)
+- RP2040 pin `GP5` drives one NeoPixel data line for Adafruit product `4865` (SK6812, 166 pixels)
 - RP2040 pin `GP10` is reserved for Prop-Maker PWR enable and is held HIGH in firmware
 - All power sources share `GND_COMMON`; keep positive rails isolated (`+5V_BUS`, `RP2040_BAT`, and `+3V7_NEO` are not tied together)
-- The external Adafruit 259 charger should feed only the dedicated NeoPixel battery/rail pair (`CHG_NEO <-> LP503562 -> +3V7_NEO`)
+- If the legacy Neo battery path is used, the external Adafruit 259 charger should feed only that dedicated pair (`CHG_NEO <-> LP503562 -> +3V7_NEO`)
 
-This revision intentionally removes NeoPXL8, Motor FeatherWing, and Feather Doubler dependencies.
+This revision intentionally removes NeoPXL8 and Motor FeatherWing dependencies.
 
 ## Box Sync Workflow
 

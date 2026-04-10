@@ -9,15 +9,15 @@ Power:
   5V battery (J801)  -> main fused input -> +5V_MAIN trunk
   +5V_MAIN trunk     -+-> F801 (direct) -------- +5V_BUS rail (ServoWing + Prop-Maker/peltier load domain)
   3.7V battery (J811, PKCell LP503562 1200mAh) -> Feather RP2040 BAT input (controller + spark domain)
-  Adafruit 259 charger (U812, CHG_NEO) -> charges LP503562 battery at J812 -> +3V7_NEO rail
-  3.7V battery (J812, PKCell LP503562 1200mAh) -> +3V7_NEO rail (NeoPixel strip supply only)
+  NeoPixel strip supply (current profile): +5V_BUS rail
+  Legacy optional path: Adafruit 259 charger (U812, CHG_NEO) -> LP503562 battery at J812 -> +3V7_NEO rail
 
   +5V_BUS rail       -> Servo FeatherWing/load supply, Prop-Maker LED load supply, peltier source domain
   RP2040_BAT rail    -> RP2040 logic supply and direct spark filament source domain
-  +3V7_NEO rail      -> NeoPixel strip power
+  +3V7_NEO rail      -> legacy optional NeoPixel-only rail
   GND_COMMON         -> COMMON to every board, switch, driver, and load
 
-  Note: only the NeoPixel battery uses external Adafruit 259 charging; the RP2040 battery uses Feather onboard charging.
+  Note: if legacy +3V7_NEO is used, only the NeoPixel battery uses external Adafruit 259 charging; the RP2040 battery uses Feather onboard charging.
 
 
  5V BATTERY
@@ -37,7 +37,7 @@ Power:
  │                    Primary Scene + FX Node                      │
  │                                                                 │
  │  A1/A2/A3     <------------------------- SW1/SW2/SW3            │
- │  GP4  (NeoPixel data) -----------------> NeoPixel strip DI      │
+ │  GP5  (NeoPixel data) -----------------> NeoPixel strip DI      │
  │                                                                 │
  │  GP7  PWM ---> [R601 10Ω] ---> Spark Filament 1                │
  │  GP6  PWM ---> [R602 10Ω] ---> Spark Filament 2                │
@@ -53,14 +53,14 @@ Power:
  │  Pump gate GPIO ---> unassigned in this revision [disabled in FW] │
  └─────────────────────────────────────────────────────────────────┘
 
-   +3V7_NEO (NeoPixel strip power)
+  +5V_BUS (NeoPixel strip power)
        |
        v
  ┌──────────────────────────────┐
  │  SK6812 NeoPixel Strip       │
  │  166 pixels (single strand)  │
- │  Data <-- RP2040 GP4         │
- │  +V   <-- +3V7_NEO           │
+ │  Data <-- RP2040 GP5         │
+ │  +V   <-- +5V_BUS            │
  │  GND  --> GND_COMMON         │
  └──────────────────────────────┘
 
@@ -77,6 +77,9 @@ Power:
  │  Servo A +5V/GND from +5V_BUS/GND_COMMON    │
  │  Servo B +5V/GND from +5V_BUS/GND_COMMON    │
  └──────────────────────────────────────────────┘
+
+  Note: Feather Doubler/Tripler sockets are cross-connected. Header nets are
+  shared between Feather and both wings (GPIO pins are not isolated).
 
  ┌──────────────────────────────────────────────┐
  │       Prop-Maker FeatherWing (LED Driver)   │
@@ -165,13 +168,13 @@ Power:
    Rail              Source               Protected By   Consumers
    +5V_BUS           Direct from 5V bat   F801 (3A)      Servo FeatherWing + servos, Prop-Maker load stage, peltier, optional pump
    RP2040_BAT        LP503562 cell #1     Feather onboard controller supply, direct spark filament branch (Spark 1-4)
-   CHG_NEO           Adafruit 259 (U812)  Charger IC     Charges LP503562 cell #2 for +3V7_NEO
-   +3V7_NEO          LP503562 cell #2     Inline fuse rec NeoPixel strip only (Adafruit 4865 SK6812, 166 px)
+  CHG_NEO           Adafruit 259 (U812)  Charger IC     Legacy optional Neo battery path only
+  +3V7_NEO          LP503562 cell #2     Legacy optional NeoPixel-only rail
 
 
  Wire Gauge Guidance (high-current runs):
    +5V_MAIN and +5V_BUS trunk wiring: use 18 AWG minimum.
-   High-current branch feeds and returns (+3V7_NEO to NeoPixel strip, RP2040_BAT spark branch, +5V_BUS to servo wing/Prop-Maker/peltier): use 20 AWG minimum.
+  High-current branch feeds and returns (+5V_BUS to NeoPixel/servo wing/Prop-Maker/peltier, RP2040_BAT spark branch): use 20 AWG minimum.
    Keep GND return wiring for each high-current branch at the same gauge as its positive feed.
    Signal/control lines (GPIO, I2C, serial, switch leads): 24-26 AWG is acceptable.
    If a branch run is long or heating is observed, step one gauge larger and re-validate thermal rise under peak load.
@@ -182,7 +185,7 @@ Power:
    Harness map:
    H-PWR-5V    -> +5V input trunk and +5V_BUS load backbone
    H-BAT-RP    -> J811 RP2040 BAT battery run
-   H-BAT-NEO   -> J812 NeoPixel battery and U812 charger pair
+  H-BAT-NEO   -> optional legacy J812 NeoPixel battery and U812 charger pair
    H-CORE      -> NeoPixel data/power/ground run
    H-SW        -> switch inputs to controller
    H-SPARK     -> spark PWM channels and returns
@@ -194,10 +197,10 @@ Power:
    RP2040 A1(GP27) <- SW1 -> GND   (toggle ON/OFF)
    RP2040 A2(GP28) <- SW2 -> GND   (previous sequence, 1->3 wrap)
    RP2040 A3(GP29) <- SW3 -> GND   (next sequence, 3->1 wrap)
-  RP2040 GP4   -> NeoPixel strip data (166 pixels, SK6812, Adafruit 4865, single strand)
+  RP2040 GP5   -> NeoPixel strip data (166 pixels, SK6812, Adafruit 4865, single strand)
    J811         -> RP2040 Feather BAT input (main 3.7V controller/spark battery)
-   U812         -> dedicated external charger for J812 LP503562 battery (+3V7_NEO)
-   +3V7_NEO     -> NeoPixel strip +V (dedicated LP503562 cell)
+  U812         -> optional legacy charger for J812 LP503562 battery (+3V7_NEO)
+  +5V_BUS      -> NeoPixel strip +V (current profile)
    +5V_BUS      -> Prop-Maker load supply and peltier source domain
   RP2040 GP7/GP6/GP9/GP24 -> direct spark filament outputs (R601-R604)
   RP2040 GP10      -> Prop-Maker PWR enable (held HIGH)

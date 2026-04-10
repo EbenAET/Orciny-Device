@@ -89,11 +89,13 @@ static constexpr uint16_t kClawStepIntervalMs = 8;
 // firmware falls back to defaultEffectCommand() (all outputs off).
 static constexpr uint16_t kEffectCommandTimeoutMs = 400;
 
-// --- NeoPixel strip (GP4, 166 pixels, SK6812 / Adafruit 4865) ---------------
-// Single strand attached to +3V7_NEO (dedicated Li-Po battery).
+// --- NeoPixel strip (GP5, 166 pixels, SK6812 / Adafruit 4865) ---------------
+// Single strand attached to +5V_BUS via servo wing stacked connector.
 // Current limiting: 166 pixels * 60 mA worst-case per pixel = 10A theoretical
 // max. Firmware uses global brightness cap to stay under 2A.
-static constexpr uint8_t kNeoPixelPin = 4;
+// GPIO5 routed through servo wing area; power from +5V_BUS (same domain as
+// Servo FeatherWing + Prop-Maker). The 5V input is fused at 3A (F801).
+static constexpr uint8_t kNeoPixelPin = 5;
 static constexpr uint16_t kNeoPixelCount = 166;
 static constexpr neoPixelType kNeoPixelType = NEO_GRB + NEO_KHZ800;  // SK6812
 static constexpr uint16_t kNeoPixelCurrentLimitMa = 2000;

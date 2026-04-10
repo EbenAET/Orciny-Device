@@ -1175,12 +1175,6 @@ void updateEffects(uint32_t now) {
 // Runs once at power-on or after a reset.  Initialises every subsystem in order.
 // =============================================================================
 void setup() {
-  // Drive the NeoPixel data line LOW immediately. The strip's +3V7_NEO supply
-  // is always live (direct Li-Po), so GP4 can float before begin() claims it,
-  // causing pixel 0 to latch noise and appear stuck on.
-  pinMode(device_config::kNeoPixelPin, OUTPUT);
-  digitalWrite(device_config::kNeoPixelPin, LOW);
-
   // Start USB serial console (appears on the Arduino IDE Serial Monitor).
   Serial.begin(device_config::kUsbBaudRate);
 
