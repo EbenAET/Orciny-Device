@@ -6,7 +6,7 @@ Quick-reference index for harness identification during build and troubleshootin
 |---|---|---|---|---|---|
 | 1 | H-PWR-5V | Header / terminal (project-defined) | J801 / +5V input | +5V_BUS branches | 18 AWG trunk, 20 AWG branches |
 | 2 | H-BAT-NEO | 2-pin JST | LP503562 #2 + U812 output | +3V7_NEO rail | red=+, black=-; 500-1000 uF bulk cap at strip entry |
-| 3 | H-CORE | 3-pin JST HX (NeoPixel side); splits from same 4-pin cable as H-BAT-NEO | RP2040 GP4, +3V7_NEO, GND_COMMON | NeoPixel strip DI, +V, GND | Pin 1 red=+V, pin 2 white=signal, pin 3 black+brown=GND; cap across pins 1-3 |
+| 3 | H-CORE | 3-pin JST HX (NeoPixel side); splits from same 4-pin cable as H-BAT-NEO | RP2040 GP25, +5V_BUS, GND_COMMON | NeoPixel strip DI, +V, GND | Pin 1 red=+V, pin 2 white=signal, pin 3 black+brown=GND; cap across pins 1-3 |
 | 4 | H-SW | 4-pin JST | SW1/SW2/SW3, GND | RP2040 A1/A2/A3 (GP27/GP28/GP29), GND | Pin 1 blue=SW1, pin 2 brown=SW2, pin 3 orange=SW3, pin 4 green=GND |
 | 5 | H-SPARK | 5-pin DMX cable | RP2040 GP7/GP6/GP9/GP24, GND | Spark channels 1-4 (+ spare) | green=GND; pin 1 red=SP1, pin 2 brown=SP2, pin 3 white=SP3, pin 4 blue=SP4, pin 5 black=spare |
 | 6 | H-SERVO | 4-pin JST | ServoWing outputs/power | Servo A/B signal + power branches | Pin 1 white=CH0 sig, pin 2 blue=CH1 sig, pin 3 red=PWR, pin 4 black=GND |

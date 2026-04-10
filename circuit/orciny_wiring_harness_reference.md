@@ -8,7 +8,7 @@ Design intent in this reference:
 - On a Feather Doubler/Tripler, header nets are electrically shared across sockets (GPIO pins are not isolated between wings).
 - Main 5V rail powers only ServoWing and Prop-Maker/peltier load domains.
 - One LP503562 battery feeds RP2040 BAT directly.
-- NeoPixel strip is powered from +5V_BUS and data is driven from RP2040 GP5.
+- NeoPixel strip is powered from +5V_BUS and data is driven from RP2040 GP25.
 
 ## Harness Set Overview
 
@@ -57,7 +57,7 @@ Design intent in this reference:
 
 ### H-CORE - NeoPixel Strip Harness
 - Harness Label 3
-- Signal run: RP2040 GP5 -> strip DI
+- Signal run: RP2040 GP25 -> strip DI
 - Power run: +5V_BUS -> strip +V
 - Ground run: GND_COMMON -> strip GND
 - Recommended wire: 24-26 AWG for data, 20 AWG for strip power/ground
@@ -133,7 +133,7 @@ Design intent in this reference:
 
 Use heat-shrink or tags at both ends:
 - Harness ID (example: H-CORE)
-- Net name (example: GP5_DI, +5V_BUS, GND)
+- Net name (example: GP25_DI, +5V_BUS, GND)
 - Channel index for multi-channel runs (SP1..SP4)
 
 ## Bring-Up Continuity Checklist
@@ -141,7 +141,7 @@ Use heat-shrink or tags at both ends:
 1. Verify no short between +5V_BUS and RP2040_BAT.
 2. If using the legacy Neo battery path, also verify no short to +3V7_NEO.
 3. Verify all grounds share continuity to GND_COMMON.
-4. Verify H-CORE data continuity from RP2040 GP5 to strip DI.
+4. Verify H-CORE data continuity from RP2040 GP25 to strip DI.
 5. Verify H-SPARK channel mapping (GP7/6/9/24 to Spark 1/2/3/4).
 6. Verify H-SERVO polarity before connecting servos.
 7. Verify H-BEAM-PWR and H-PELTIER-PWR are not cross-connected.

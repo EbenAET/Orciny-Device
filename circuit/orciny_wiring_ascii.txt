@@ -37,7 +37,7 @@ Power:
  │                    Primary Scene + FX Node                      │
  │                                                                 │
  │  A1/A2/A3     <------------------------- SW1/SW2/SW3            │
- │  GP5  (NeoPixel data) -----------------> NeoPixel strip DI      │
+ │  GP25 (NeoPixel data) -----------------> NeoPixel strip DI      │
  │                                                                 │
  │  GP7  PWM ---> [R601 10Ω] ---> Spark Filament 1                │
  │  GP6  PWM ---> [R602 10Ω] ---> Spark Filament 2                │
@@ -59,7 +59,7 @@ Power:
  ┌──────────────────────────────┐
  │  SK6812 NeoPixel Strip       │
  │  166 pixels (single strand)  │
- │  Data <-- RP2040 GP5         │
+ │  Data <-- RP2040 GP25        │
  │  +V   <-- +5V_BUS            │
  │  GND  --> GND_COMMON         │
  └──────────────────────────────┘
@@ -197,7 +197,7 @@ Power:
    RP2040 A1(GP27) <- SW1 -> GND   (toggle ON/OFF)
    RP2040 A2(GP28) <- SW2 -> GND   (previous sequence, 1->3 wrap)
    RP2040 A3(GP29) <- SW3 -> GND   (next sequence, 3->1 wrap)
-  RP2040 GP5   -> NeoPixel strip data (166 pixels, SK6812, Adafruit 4865, single strand)
+  RP2040 GP25  -> NeoPixel strip data (166 pixels, SK6812, Adafruit 4865, single strand)
    J811         -> RP2040 Feather BAT input (main 3.7V controller/spark battery)
   U812         -> optional legacy charger for J812 LP503562 battery (+3V7_NEO)
   +5V_BUS      -> NeoPixel strip +V (current profile)
