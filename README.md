@@ -8,8 +8,10 @@ The RP2040 handles scene control, switch and USB command handling, NeoPixel core
 
 ## Folder Layout
 
-- `arduino/rp2040_fx_controller`: primary controller sketch for RP2040 scene, core, and FX control
-- `arduino/m0_core_controller`: legacy split-controller reference sketch (not used in RP2040-only wiring)
+- `arduino/rp2040_fx_controller_demo`: primary RP2040 FX controller sketch for the current demo/test build
+- `arduino/rp2040_fx_starter`: minimal RP2040 starter sketch for hardware bring-up
+- `arduino/depreciated/rp2040_fx_controller`: older RP2040 controller reference sketch
+- `arduino/depreciated/m0_core_controller`: legacy split-controller reference sketch
 - `arduino/libraries/OrcinyCommon`: shared protocol and data structures
 
 ## Arduino Libraries
@@ -18,6 +20,12 @@ Install these in the Arduino IDE before compiling:
 
 - Adafruit NeoPixel
 - Adafruit PWM Servo Driver Library
+
+Set the Arduino sketchbook location to the repo's `arduino` folder so custom libraries resolve correctly:
+
+- Sketchbook location: `C:\Users\ebena\Box\Orciny Device\arduino`
+
+`OrcinyCommon` is intended to be used from `arduino/libraries/OrcinyCommon`. Do not keep per-sketch duplicate copies of that header.
 
 ## Wiring Assumptions
 
@@ -70,10 +78,11 @@ This revision intentionally removes NeoPXL8, Motor FeatherWing, and Feather Doub
 
 ## How To Use
 
-1. Open `arduino/rp2040_fx_controller/rp2040_fx_controller.ino` in Arduino IDE and select the Feather RP2040 target.
-2. Adjust RP2040 `DeviceConfig.h` settings to match your actual wiring and strip length.
-3. Upload the RP2040 sketch.
-4. Open the RP2040 USB serial monitor at `115200` baud for operator commands and status.
+1. In Arduino IDE, set Sketchbook location to `C:\Users\ebena\Box\Orciny Device\arduino`.
+2. Open `arduino/rp2040_fx_controller_demo/rp2040_fx_controller_demo.ino` in Arduino IDE and select the Feather RP2040 target.
+3. Adjust RP2040 `DeviceConfig.h` settings to match your actual wiring and strip length.
+4. Upload the RP2040 sketch.
+5. Open the RP2040 USB serial monitor at `115200` baud for operator commands and status.
 
 ## Switch Inputs
 

@@ -1,4 +1,5 @@
 {
     "arduino.useArduinoCli": true,
-    "arduino.disableIntelliSenseAutoGen": true
+    "arduino.disableIntelliSenseAutoGen": true,
+    "arduino.sketchbookPath": "${workspaceFolder}/arduino"
 }

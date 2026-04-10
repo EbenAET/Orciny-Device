@@ -1,3 +1,4 @@
 {
-    "arduino-cli-wrapper.path": "/home/ebena/bin/arduino-cli"
+    "arduino.useArduinoCli": true,
+    "arduino.sketchbookPath": "${workspaceFolder}"
 }
