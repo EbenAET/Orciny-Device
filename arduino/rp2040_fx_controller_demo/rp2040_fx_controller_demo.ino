@@ -37,6 +37,7 @@
 //   red|green|blue on|off|toggle|auto — per-channel beam overrides
 //   s|bm|c on|off|toggle|auto — short aliases for sparks|beam|claw
 //   r|g|b on|off|toggle|auto  — short aliases for red|green|blue
+//   beam palette cool|ember|cyan|violet|auto — beam colour palette
 //   buttons         — print raw and debounced switch states
 //   servoa/servob min|max|mid — direct PCA9685 channel test writes
 //
@@ -47,9 +48,9 @@
 //   SW1 + SW3 held 5 s — reset to sequence 1
 //
 // DEMO SEQUENCES
-//   1 — Ember  : sparks on, warm-orange NeoPixel ember glow
-//   2 — Pulse  : beam pulsing cool-white, orange NeoPixel pulse
-//   3 — Show   : sparks + beam + claw sweep + cyan NeoPixel show mode
+//   1 — Ember  : sparks on, warm-orange NeoPixel ember glow    (beam: ember palette)
+//   2 — Pulse  : beam pulsing, orange NeoPixel pulse           (beam: cool-white palette)
+//   3 — Show   : sparks + beam + claw sweep, cyan NeoPixel     (beam: cyan palette)
 // =============================================================================
 
 #include <Adafruit_PWMServoDriver.h>  // PCA9685 servo wing driver
@@ -78,17 +79,43 @@ enum SequenceId : uint8_t {
 };
 
 // =============================================================================
+// BEAM PALETTE IDs
+// Named identifiers for the built-in beam colour palettes defined in
+// DeviceConfig.h.  BEAM_PALETTE_AUTO means "use whatever the active scene
+// requests"; the other values lock the palette regardless of scene.
+// =============================================================================
+enum BeamPaletteId : uint8_t {
+  BEAM_PALETTE_AUTO = 0,   // follow the scene's palette selection
+  BEAM_PALETTE_COOL,       // cool white (original swell colour)
+  BEAM_PALETTE_EMBER,      // warm orange-red
+  BEAM_PALETTE_CYAN,       // pure cyan
+  BEAM_PALETTE_VIOLET,     // purple-violet
+};
+
+// Return the DeviceConfig palette for a given BeamPaletteId.
+// BEAM_PALETTE_AUTO resolves to kPaletteCoolWhite (same as the original default).
+const device_config::BeamPalette &getPaletteForId(BeamPaletteId id) {
+  switch (id) {
+    case BEAM_PALETTE_EMBER:  return device_config::kPaletteEmber;
+    case BEAM_PALETTE_CYAN:   return device_config::kPaletteCyan;
+    case BEAM_PALETTE_VIOLET: return device_config::kPaletteViolet;
+    default:                  return device_config::kPaletteCoolWhite;
+  }
+}
+
+// =============================================================================
 // SceneProfile
 // A flat data record that describes what every output subsystem should be doing
 // for the currently active sequence.  buildActiveProfile() fills one of these;
 // profileToEffectCommand() converts it into a wire-format EffectCommand.
 // =============================================================================
 struct SceneProfile {
-  bool    sparksEnabled;
-  uint8_t sparksIntensity;   // 0–255 PWM brightness of random spark flashes
-  bool    beamEnabled;       // Prop-Maker LED beam on/off
-  bool    clawEnabled;       // Servo claw sweep on/off
-  CoreFrame coreFrame;       // NeoPixel core parameters (mode, color, speed…)
+  bool          sparksEnabled;
+  uint8_t       sparksIntensity;   // 0–255 PWM brightness of random spark flashes
+  bool          beamEnabled;       // Prop-Maker LED beam on/off
+  bool          clawEnabled;       // Servo claw sweep on/off
+  BeamPaletteId beamPaletteId;     // colour palette for the beam swell
+  CoreFrame     coreFrame;         // NeoPixel core parameters (mode, color, speed…)
 };
 
 // =============================================================================
@@ -226,7 +253,7 @@ class SparkChannel {
 // =============================================================================
 // BeamEffect
 // Drives the three Prop-Maker MOSFET channels (Red/Green/Blue) with a slow
-// sinusoidal swell.
+// sinusoidal swell whose colour is defined by a BeamPalette.
 //
 // The swell is computed from millis() so it runs continuously whether or not
 // there is an upstream controller — no state machine needed.
@@ -235,8 +262,8 @@ class SparkChannel {
 //   • phase = (now % 2400) gives a 2.4-second repeating window (0–2399).
 //   • First half (0–1199): linearly ramps from 100 → 255 (brightening).
 //   • Second half (1200–2399): linearly ramps from 255 → 100 (dimming).
-//   • Red is attenuated to 1/5 of the swell for a cyan/white tint.
-//   • Blue gets a slight boost (+30) to skew the color cooler.
+//   • Each RGB channel is scaled: output = (swell × palette.channel) / 255.
+//   • Call setPalette() to change colour; defaults to kPaletteDefault.
 // =============================================================================
 class BeamEffect {
  public:
@@ -248,6 +275,11 @@ class BeamEffect {
     pinMode(greenPin_, OUTPUT);
     pinMode(bluePin_,  OUTPUT);
     stop();
+  }
+
+  // Change the active colour palette.  Takes effect on the next update() call.
+  void setPalette(const device_config::BeamPalette &palette) {
+    currentPalette_ = palette;
   }
 
   void update(uint32_t now, bool enabled) {
@@ -263,9 +295,11 @@ class BeamEffect {
                           ? map(phase, 0,    1200, 100, 255)
                           : map(phase, 1200, 2400, 255, 100);
 
-    analogWrite(redPin_,   swell / 5);                       // dim red
-    analogWrite(greenPin_, swell);                           // full green
-    analogWrite(bluePin_,  min<uint16_t>(255, swell + 30));  // boosted blue
+    // Scale each channel by (swell / 255) × palette peak value.
+    const uint16_t s = swell;
+    analogWrite(redPin_,   static_cast<uint8_t>((s * currentPalette_.red)   / 255));
+    analogWrite(greenPin_, static_cast<uint8_t>((s * currentPalette_.green) / 255));
+    analogWrite(bluePin_,  static_cast<uint8_t>((s * currentPalette_.blue)  / 255));
     active_ = true;
   }
 
@@ -281,6 +315,7 @@ class BeamEffect {
   uint8_t greenPin_ = 0;
   uint8_t bluePin_  = 0;
   bool    active_   = false;
+  device_config::BeamPalette currentPalette_ = device_config::kPaletteDefault;
 };
 
 // =============================================================================
@@ -423,6 +458,9 @@ EffectOverride beamRedOverride   = OVERRIDE_AUTO;
 EffectOverride beamGreenOverride = OVERRIDE_AUTO;
 EffectOverride beamBlueOverride  = OVERRIDE_AUTO;
 
+// Active beam palette override.  BEAM_PALETTE_AUTO uses the active scene's default.
+BeamPaletteId beamPaletteOverride = BEAM_PALETTE_AUTO;
+
 // USB receive buffer — characters accumulate here until a newline is received.
 String usbCommandBuffer;
 
@@ -454,6 +492,7 @@ void printHelp() {
   Serial.println(F("         claw   on|off|toggle|auto"));
   Serial.println(F("         red|green|blue on|off|toggle|auto"));
   Serial.println(F("         s|bm|c and r|g|b on|off|toggle|auto"));
+  Serial.println(F("         beam palette cool|ember|cyan|violet|auto"));
   Serial.println(F("         buttons"));
   Serial.println(F("         servoa min|max|mid"));
   Serial.println(F("         servob min|max|mid"));
@@ -523,6 +562,17 @@ void printOverrideStatus() {
   Serial.print(overrideLabel(beamGreenOverride));
   Serial.print(F(", B: "));
   Serial.println(overrideLabel(beamBlueOverride));
+
+  const __FlashStringHelper *palLabel;
+  switch (beamPaletteOverride) {
+    case BEAM_PALETTE_COOL:   palLabel = F("cool");   break;
+    case BEAM_PALETTE_EMBER:  palLabel = F("ember");  break;
+    case BEAM_PALETTE_CYAN:   palLabel = F("cyan");   break;
+    case BEAM_PALETTE_VIOLET: palLabel = F("violet"); break;
+    default:                  palLabel = F("auto");   break;
+  }
+  Serial.print(F("Beam palette -> "));
+  Serial.println(palLabel);
 }
 
 // Print the current power state and sequence number to USB serial.
@@ -563,6 +613,7 @@ SceneProfile buildActiveProfile() {
     case SEQUENCE_1:
       profile.sparksEnabled    = true;
       profile.sparksIntensity  = 220;
+      profile.beamPaletteId        = BEAM_PALETTE_EMBER;
       profile.coreFrame.mode       = orciny::CORE_MODE_EMBER;
       profile.coreFrame.brightness = 56;
       profile.coreFrame.speed      = 90;
@@ -574,7 +625,8 @@ SceneProfile buildActiveProfile() {
     // --- SEQUENCE 2: Pulse ---------------------------------------------------
     // Beam lamp cycles on/off.  NeoPixel pulses in a cooler orange.
     case SEQUENCE_2:
-      profile.beamEnabled = true;
+      profile.beamEnabled          = true;
+      profile.beamPaletteId        = BEAM_PALETTE_COOL;
       profile.coreFrame.mode       = orciny::CORE_MODE_PULSE;
       profile.coreFrame.brightness = 96;
       profile.coreFrame.speed      = 110;
@@ -589,6 +641,7 @@ SceneProfile buildActiveProfile() {
       profile.sparksEnabled    = true;
       profile.sparksIntensity  = 255;
       profile.beamEnabled      = true;
+      profile.beamPaletteId    = BEAM_PALETTE_CYAN;
       profile.clawEnabled      = true;
       profile.coreFrame.mode       = orciny::CORE_MODE_SHOW;
       profile.coreFrame.brightness = 180;
@@ -650,6 +703,7 @@ void resetToBeginning() {
   beamRedOverride = OVERRIDE_AUTO;
   beamGreenOverride = OVERRIDE_AUTO;
   beamBlueOverride = OVERRIDE_AUTO;
+  beamPaletteOverride = BEAM_PALETTE_AUTO;
   Serial.println(F("Reset -> sequence 1"));
   printSequenceStatus();
 }
@@ -740,6 +794,11 @@ void handleUsbCommands() {
       beamBlueOverride = (beamBlueOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
       printOverrideStatus();
     }
+    else if (command == F("beam palette cool")   || command == F("bm pal cool"))   { beamPaletteOverride = BEAM_PALETTE_COOL;   printOverrideStatus(); }
+    else if (command == F("beam palette ember")  || command == F("bm pal ember"))  { beamPaletteOverride = BEAM_PALETTE_EMBER;  printOverrideStatus(); }
+    else if (command == F("beam palette cyan")   || command == F("bm pal cyan"))   { beamPaletteOverride = BEAM_PALETTE_CYAN;   printOverrideStatus(); }
+    else if (command == F("beam palette violet") || command == F("bm pal violet")) { beamPaletteOverride = BEAM_PALETTE_VIOLET; printOverrideStatus(); }
+    else if (command == F("beam palette auto")   || command == F("bm pal auto"))   { beamPaletteOverride = BEAM_PALETTE_AUTO;   printOverrideStatus(); }
     else {
       Serial.print(F("Unknown command: "));
       Serial.println(command);
@@ -988,6 +1047,11 @@ void loop() {
   // --- Standalone mode (uncomment to enable; comment out effect-link above) --
   handleUsbCommands();
   handleSwitches(now);
-  EffectCommand cmd = profileToEffectCommand(buildActiveProfile());
-  updateEffects(now, cmd);
+  const SceneProfile profile = buildActiveProfile();
+  // Apply the active beam palette (scene default unless overridden via USB).
+  beamEffect.setPalette(getPaletteForId(
+      beamPaletteOverride == BEAM_PALETTE_AUTO
+          ? profile.beamPaletteId
+          : beamPaletteOverride));
+  updateEffects(now, profileToEffectCommand(profile));
 }

@@ -5,7 +5,7 @@
 // =============================================================================
 // DeviceConfig.h — Hardware pin map and tuning constants for the Orciny device.
 //
-// All magic numbers live here. Change a value once and every part of the
+// All preset numbers live here. Change a value once and every part of the
 // firmware that uses it automatically picks up the change.
 // =============================================================================
 
@@ -88,5 +88,21 @@ static constexpr uint16_t kClawStepIntervalMs = 8;
 // If no EffectCommand arrives from Serial1 within this window (ms), the
 // firmware falls back to defaultEffectCommand() (all outputs off).
 static constexpr uint16_t kEffectCommandTimeoutMs = 400;
+
+// --- Beam colour palettes -------------------------------------------------
+// A BeamPalette specifies the peak RGB colour for the sinusoidal beam swell.
+// The swell multiplier (0–255) scales each channel proportionally, so the
+// same waveform shape applies to any colour.  Values are 0–255 per channel.
+struct BeamPalette {
+  uint8_t red;
+  uint8_t green;
+  uint8_t blue;
+};
+
+static constexpr BeamPalette kPaletteCoolWhite = {  51, 255, 255 };  // cyan-white (classic)
+static constexpr BeamPalette kPaletteEmber     = { 255,  70,   8 };  // warm orange-red
+static constexpr BeamPalette kPaletteCyan      = {   0, 220, 255 };  // pure cyan
+static constexpr BeamPalette kPaletteViolet    = { 180,   0, 255 };  // purple-violet
+static constexpr BeamPalette kPaletteDefault   = kPaletteCoolWhite;
 
 }  // namespace device_config
