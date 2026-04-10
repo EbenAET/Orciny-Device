@@ -40,6 +40,10 @@
 //   beam palette cool|ember|cyan|violet|auto — beam colour palette
 //   buttons         — print raw and debounced switch states
 //   servoa/servob min|max|mid — direct PCA9685 channel test writes
+//   neo on|off      — turn all pixels on (white) or off
+//   neo color <R G B> [BRIGHT] — set all pixels to RGB color (0-255 each)
+//   neo ember|pulse|beam|claw|show — test specific animation modes
+//   neo auto        — follow scene default (stop testing)
 //
 // PHYSICAL CONTROLS (standalone mode)
 //   SW1 (A1 / GP27) — tap: toggle output on/off
@@ -54,6 +58,7 @@
 // =============================================================================
 
 #include <Adafruit_PWMServoDriver.h>  // PCA9685 servo wing driver
+#include <Adafruit_NeoPixel.h>        // NeoPixel strip driver
 #include <Wire.h>                     // I2C bus (required by servo driver)
 
 #include <OrcinyCommon.h>  // Shared packet types: CoreFrame, EffectCommand, etc.
@@ -431,6 +436,9 @@ SparkChannel sparks[device_config::kSparkCount];  // Four independent spark chan
 BeamEffect   beamEffect;                           // Prop-Maker RGB beam
 ClawEffect   clawEffect;                           // Dual-servo claw
 Adafruit_PWMServoDriver servoDriver(device_config::kServoDriverI2cAddress);
+Adafruit_NeoPixel neoPixelStrip(device_config::kNeoPixelCount,
+                                device_config::kNeoPixelPin,
+                                device_config::kNeoPixelType);
 
 MomentarySwitch powerSwitch;    // SW1 — on/off toggle
 MomentarySwitch previousSwitch; // SW2 — previous sequence
@@ -460,6 +468,9 @@ EffectOverride beamBlueOverride  = OVERRIDE_AUTO;
 
 // Active beam palette override.  BEAM_PALETTE_AUTO uses the active scene's default.
 BeamPaletteId beamPaletteOverride = BEAM_PALETTE_AUTO;
+
+// Active NeoPixel frame override. Mode OFF means "use scene default".
+CoreFrame neoPixelOverride = orciny::defaultFrame();
 
 // USB receive buffer — characters accumulate here until a newline is received.
 String usbCommandBuffer;
@@ -496,6 +507,8 @@ void printHelp() {
   Serial.println(F("         buttons"));
   Serial.println(F("         servoa min|max|mid"));
   Serial.println(F("         servob min|max|mid"));
+  Serial.println(F("         neo on|off|color <R G B> [BRIGHT]"));
+  Serial.println(F("         neo ember|pulse|beam|claw|show|auto"));
 }
 
 uint16_t servoAngleToPulse(uint8_t angle) {
@@ -799,6 +812,63 @@ void handleUsbCommands() {
     else if (command == F("beam palette cyan")   || command == F("bm pal cyan"))   { beamPaletteOverride = BEAM_PALETTE_CYAN;   printOverrideStatus(); }
     else if (command == F("beam palette violet") || command == F("bm pal violet")) { beamPaletteOverride = BEAM_PALETTE_VIOLET; printOverrideStatus(); }
     else if (command == F("beam palette auto")   || command == F("bm pal auto"))   { beamPaletteOverride = BEAM_PALETTE_AUTO;   printOverrideStatus(); }
+
+    // --- NeoPixel test commands ------------------------------------------------
+    else if (command == F("neo off")) {
+      neoPixelStrip.clear();
+      neoPixelStrip.show();
+      Serial.println(F("Neo: OFF"));
+    }
+    else if (command == F("neo on")) {
+      for (uint16_t i = 0; i < neoPixelStrip.numPixels(); ++i) {
+        neoPixelStrip.setPixelColor(i, neoPixelStrip.Color(64, 64, 64));
+      }
+      neoPixelStrip.show();
+      Serial.println(F("Neo: all white"));
+    }
+    else if (command.startsWith(F("neo color "))) {
+      // Parse "neo color R G B" or "neo color R G B BRIGHTNESS"
+      String args = command.substring(10);
+      int r = 0, g = 0, b = 0, bright = 255;
+      int parsed = sscanf(args.c_str(), "%d %d %d %d", &r, &g, &b, &bright);
+      if (parsed >= 3) {
+        r = constrain(r, 0, 255);
+        g = constrain(g, 0, 255);
+        b = constrain(b, 0, 255);
+        bright = constrain(bright, 0, 255);
+        for (uint16_t i = 0; i < neoPixelStrip.numPixels(); ++i) {
+          neoPixelStrip.setPixelColor(i, neoPixelStrip.Color(
+              (r * bright) / 255, (g * bright) / 255, (b * bright) / 255));
+        }
+        neoPixelStrip.show();
+        Serial.print(F("Neo: RGB "));
+        Serial.print(r); Serial.print(F(" "));
+        Serial.print(g); Serial.print(F(" "));
+        Serial.print(b); Serial.print(F(" @ "));
+        Serial.println(bright);
+      } else {
+        Serial.println(F("Usage: neo color <R 0-255> <G 0-255> <B 0-255> [BRIGHT 0-255]"));
+      }
+    }
+    else if (command == F("neo ember") || command == F("neo pulse") || 
+             command == F("neo beam") || command == F("neo claw") ||
+             command == F("neo show")) {
+      // Test specific modes
+      CoreFrame testFrame = orciny::defaultFrame();
+      if (command == F("neo ember")) { testFrame.mode = orciny::CORE_MODE_EMBER; testFrame.brightness = 120; }
+      else if (command == F("neo pulse")) { testFrame.mode = orciny::CORE_MODE_PULSE; testFrame.brightness = 200; }
+      else if (command == F("neo beam")) { testFrame.mode = orciny::CORE_MODE_BEAM; testFrame.brightness = 150; }
+      else if (command == F("neo claw")) { testFrame.mode = orciny::CORE_MODE_CLAW; testFrame.brightness = 100; }
+      else if (command == F("neo show")) { testFrame.mode = orciny::CORE_MODE_SHOW; testFrame.brightness = 100; }
+      neoPixelOverride = testFrame;
+      Serial.print(F("Neo: testing mode "));
+      Serial.println(static_cast<uint8_t>(testFrame.mode));
+    }
+    else if (command == F("neo auto")) {
+      neoPixelOverride.mode = orciny::CORE_MODE_OFF;  // Signal to use scene default
+      Serial.println(F("Neo: auto (follow scene)"));
+    }
+
     else {
       Serial.print(F("Unknown command: "));
       Serial.println(command);
@@ -917,7 +987,142 @@ void updatePeltier(uint32_t now, bool beamEnabled) {
 }
 
 // =============================================================================
+// NEOPIXEL UPDATE — applies CoreFrame animation to the NeoPixel strip.
+// Called every loop iteration with the current timestamp and frame data.
+// =============================================================================
+void updateNeoPixel(uint32_t now, const CoreFrame &frame) {
+  // Return early if mode is OFF or if output is disabled.
+  if (frame.mode == orciny::CORE_MODE_OFF) {
+    neoPixelStrip.clear();
+    neoPixelStrip.show();
+    return;
+  }
+
+  // Safety cap: ensure brightness is within current limit.
+  const uint8_t cappedBrightness = min(frame.brightness,
+                                       device_config::kMaxBrightnessForCurrentLimit);
+
+  switch (frame.mode) {
+    // --- EMBER mode: warm orange flicker across the strip -------------------
+    case orciny::CORE_MODE_EMBER: {
+      const uint8_t fFlicker = (sin8(now * frame.speed / 50U) + sin8(now * 19U + frame.speed * 3U)) / 2;
+      const uint8_t level = map(fFlicker, 0, 255, 16, cappedBrightness);
+      const uint32_t color = neoPixelStrip.Color(
+          (frame.red * level) / 255,
+          (frame.green * level) / 255,
+          (frame.blue * level) / 255);
+      for (uint16_t i = 0; i < neoPixelStrip.numPixels(); ++i) {
+        neoPixelStrip.setPixelColor(i, color);
+      }
+      break;
+    }
+
+    // --- PULSE mode: solid color pulsing in and out -------------------------
+    case orciny::CORE_MODE_PULSE: {
+      const uint8_t pulseWave = triwave8(now / max(1U, (260U - frame.speed) / 4));
+      const uint8_t level = map(pulseWave, 0, 255, 32, cappedBrightness);
+      const uint32_t color = neoPixelStrip.Color(
+          (frame.red * level) / 255,
+          (frame.green * level) / 255,
+          (frame.blue * level) / 255);
+      for (uint16_t i = 0; i < neoPixelStrip.numPixels(); ++i) {
+        neoPixelStrip.setPixelColor(i, color);
+      }
+      break;
+    }
+
+    // --- BEAM mode: beam-linked animation (matches beam colour) -----
+    case orciny::CORE_MODE_BEAM: {
+      const uint8_t level = map(sin8(now * frame.speed / 50U), 0, 255, 24, cappedBrightness);
+      const uint32_t color = neoPixelStrip.Color(
+          (frame.red * level) / 255,
+          (frame.green * level) / 255,
+          (frame.blue * level) / 255);
+      for (uint16_t i = 0; i < neoPixelStrip.numPixels(); ++i) {
+        neoPixelStrip.setPixelColor(i, color);
+      }
+      break;
+    }
+
+    // --- CLAW mode: trailing indicator following claw position -------
+    case orciny::CORE_MODE_CLAW: {
+      const uint8_t tailLength = max(1U, device_config::kNeoPixelCount / 8);
+      const uint32_t baseColor = neoPixelStrip.Color(frame.red, frame.green, frame.blue);
+      neoPixelStrip.clear();
+      // Animate a trailing tail down the strip based on speed/time.
+      const uint16_t headPos = ((now / 20U) * frame.speed / 100U) % device_config::kNeoPixelCount;
+      for (uint8_t t = 0; t < tailLength; ++t) {
+        const uint16_t pos = (headPos + device_config::kNeoPixelCount - t) % device_config::kNeoPixelCount;
+        const uint8_t fadeFactor = (tailLength > 0) ? (255 * t / tailLength) : 255;
+        neoPixelStrip.setPixelColor(pos, neoPixelStrip.Color(
+            (frame.red * fadeFactor) / 510U,
+            (frame.green * fadeFactor) / 510U,
+            (frame.blue * fadeFactor) / 510U));
+      }
+      break;
+    }
+
+    // --- SHOW mode: rainbow color wheel animation ---------
+    case orciny::CORE_MODE_SHOW: {
+      for (uint16_t i = 0; i < neoPixelStrip.numPixels(); ++i) {
+        // Hue varies by pixel position and time, creating a flowing rainbow.
+        const uint8_t hue = (now / 10U) + (i * 5U);
+        const uint32_t color = neoPixelStrip.ColorHSV(
+            (hue << 8),              // Hue (0–65535 maps to 0–360 degrees)
+            255,                      // Saturation (255 = fully saturated)
+            cappedBrightness * 2);   // Value (brightness, scaled up)
+        neoPixelStrip.setPixelColor(i, color);
+      }
+      break;
+    }
+
+    default:
+      neoPixelStrip.clear();
+      break;
+  }
+
+  // Push the buffered pixel data to the strip.
+  neoPixelStrip.show();
+}
+
+// Helper: triangle wave generator (0–255, period in ms).
+uint8_t triwave8(uint16_t elapsedMs) {
+  const uint16_t cycleMs = 500;  // 500ms cycle = ~1 Hz
+  const uint16_t phaseMs = elapsedMs % cycleMs;
+  if (phaseMs < cycleMs / 2) {
+    return (phaseMs * 510) / cycleMs;  // Ramp up
+  } else {
+    return 510 - (phaseMs * 510) / cycleMs;  // Ramp down
+  }
+}
+
+// Helper: sine wave generator (0–255).
+uint8_t sin8(uint32_t input) {
+  input = input % 256;
+  static const uint8_t sineTable[256] PROGMEM = {
+    128, 131, 134, 137, 140, 143, 146, 149, 152, 155, 158, 161, 164, 167, 170, 173,
+    176, 179, 182, 185, 188, 191, 194, 197, 199, 202, 205, 208, 210, 213, 216, 218,
+    221, 223, 226, 228, 231, 233, 235, 238, 240, 242, 244, 246, 248, 250, 251, 253,
+    254, 255, 256, 257, 258, 259, 260, 260, 261, 262, 262, 263, 263, 263, 263, 263,
+    263, 263, 262, 262, 261, 260, 260, 259, 258, 257, 256, 255, 254, 253, 251, 250,
+    248, 246, 244, 242, 240, 238, 235, 233, 231, 228, 226, 223, 221, 218, 216, 213,
+    210, 208, 205, 202, 199, 197, 194, 191, 188, 185, 182, 179, 176, 173, 170, 167,
+    164, 161, 158, 155, 152, 149, 146, 143, 140, 137, 134, 131, 128, 125, 122, 119,
+    116, 113, 110, 107, 104, 101,  98,  95,  92,  89,  86,  83,  80,  77,  74,  71,
+     68,  65,  62,  59,  57,  54,  51,  48,  46,  43,  40,  37,  35,  32,  29,  27,
+     24,  22,  19,  17,  15,  12,  10,   8,   6,   4,   2,   1,   0,   0,   0,   0,
+      0,   0,   1,   2,   4,   6,   8,  10,  12,  15,  17,  19,  22,  24,  27,  29,
+     32,  35,  37,  40,  43,  46,  48,  51,  54,  57,  59,  62,  65,  68,  71,  74,
+     77,  80,  83,  86,  89,  92,  95,  98, 101, 104, 107, 110, 113, 116, 119, 122,
+    125, 128, 131, 134, 137, 140, 143, 146, 149, 152, 155, 158, 161, 164, 167, 170,
+    173, 176, 179, 182, 185, 188, 191, 194, 197, 199, 202, 205, 208, 210, 213, 216
+  };
+  return pgm_read_byte(&sineTable[input]);
+}
+
+// =============================================================================
 // EFFECT UPDATE — applies the active EffectCommand to all hardware outputs.
+
 // Called every loop iteration with the current timestamp.
 // =============================================================================
 void updateEffects(uint32_t now, const EffectCommand &command) {
@@ -1016,6 +1221,12 @@ void setup() {
                    device_config::kServoBMinAngle,
                    device_config::kServoBMaxAngle);
 
+  // Initialise the NeoPixel strip on GP4.
+  neoPixelStrip.begin();
+  neoPixelStrip.setBrightness(device_config::kMaxBrightnessForCurrentLimit);
+  neoPixelStrip.clear();  // Start all pixels off
+  neoPixelStrip.show();
+
   // Start with a clean default command (all outputs off).
   currentEffectCommand = orciny::defaultEffectCommand();
 
@@ -1054,4 +1265,11 @@ void loop() {
           ? profile.beamPaletteId
           : beamPaletteOverride));
   updateEffects(now, profileToEffectCommand(profile));
+  
+  // Use NeoPixel override if active (mode != OFF), otherwise use scene default.
+  const CoreFrame &frameToRender =
+      (neoPixelOverride.mode != orciny::CORE_MODE_OFF)
+          ? neoPixelOverride
+          : profile.coreFrame;
+  updateNeoPixel(now, frameToRender);
 }

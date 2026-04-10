@@ -89,6 +89,22 @@ static constexpr uint16_t kClawStepIntervalMs = 8;
 // firmware falls back to defaultEffectCommand() (all outputs off).
 static constexpr uint16_t kEffectCommandTimeoutMs = 400;
 
+// --- NeoPixel strip (GP4, 166 pixels, SK6812 / Adafruit 4865) ---------------
+// Single strand attached to +3V7_NEO (dedicated Li-Po battery).
+// Current limiting: 166 pixels * 60 mA worst-case per pixel = 10A theoretical
+// max. Firmware uses global brightness cap to stay under 2A.
+static constexpr uint8_t kNeoPixelPin = 4;
+static constexpr uint16_t kNeoPixelCount = 166;
+static constexpr neoPixelType kNeoPixelType = NEO_GRB + NEO_KHZ800;  // SK6812
+static constexpr uint16_t kNeoPixelCurrentLimitMa = 2000;
+// Worst-case 60mA per pixel; firmware caps brightness to stay under limit.
+static constexpr uint16_t kNeoPixelWorstCaseMaPerPixel = 60;
+static constexpr uint8_t kMaxBrightnessForCurrentLimit =
+    (static_cast<uint32_t>(kNeoPixelCurrentLimitMa) * 255U) /
+    (static_cast<uint32_t>(kNeoPixelCount) * kNeoPixelWorstCaseMaPerPixel);
+static_assert(kMaxBrightnessForCurrentLimit > 0,
+              "NeoPixel current limit too low for strip length");
+
 // --- Beam colour palettes -------------------------------------------------
 // A BeamPalette specifies the peak RGB colour for the sinusoidal beam swell.
 // The swell multiplier (0–255) scales each channel proportionally, so the
