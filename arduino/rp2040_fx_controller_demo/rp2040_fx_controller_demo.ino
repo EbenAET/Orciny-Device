@@ -38,6 +38,7 @@
 //   s|bm|c on|off|toggle|auto — short aliases for sparks|beam|claw
 //   r|g|b on|off|toggle|auto  — short aliases for red|green|blue
 //   buttons         — print raw and debounced switch states
+//   servoa/servob min|max|mid — direct PCA9685 channel test writes
 //
 // PHYSICAL CONTROLS (standalone mode)
 //   SW1 (A1 / GP27) — tap: toggle output on/off
@@ -454,6 +455,20 @@ void printHelp() {
   Serial.println(F("         red|green|blue on|off|toggle|auto"));
   Serial.println(F("         s|bm|c and r|g|b on|off|toggle|auto"));
   Serial.println(F("         buttons"));
+  Serial.println(F("         servoa min|max|mid"));
+  Serial.println(F("         servob min|max|mid"));
+}
+
+uint16_t servoAngleToPulse(uint8_t angle) {
+  return map(angle, 0, 180, device_config::kServoMinPulse, device_config::kServoMaxPulse);
+}
+
+void writeServoTest(uint8_t channel, uint8_t angle) {
+  servoDriver.setPWM(channel, 0, servoAngleToPulse(angle));
+  Serial.print(F("Servo CH"));
+  Serial.print(channel);
+  Serial.print(F(" -> angle "));
+  Serial.println(angle);
 }
 
 void printButtonSnapshot() {
@@ -698,6 +713,12 @@ void handleUsbCommands() {
       clawOverride = (clawOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
       printOverrideStatus();
     }
+    else if (command == F("servoa min")) { writeServoTest(device_config::kServoChannelA, device_config::kServoAMinAngle); }
+    else if (command == F("servoa max")) { writeServoTest(device_config::kServoChannelA, device_config::kServoAMaxAngle); }
+    else if (command == F("servoa mid")) { writeServoTest(device_config::kServoChannelA, (device_config::kServoAMinAngle + device_config::kServoAMaxAngle) / 2); }
+    else if (command == F("servob min")) { writeServoTest(device_config::kServoChannelB, device_config::kServoBMinAngle); }
+    else if (command == F("servob max")) { writeServoTest(device_config::kServoChannelB, device_config::kServoBMaxAngle); }
+    else if (command == F("servob mid")) { writeServoTest(device_config::kServoChannelB, (device_config::kServoBMinAngle + device_config::kServoBMaxAngle) / 2); }
     else if (command == F("red on") || command == F("r on"))         { beamRedOverride = OVERRIDE_FORCE_ON;   printOverrideStatus(); }
     else if (command == F("red off") || command == F("r off"))        { beamRedOverride = OVERRIDE_FORCE_OFF;  printOverrideStatus(); }
     else if (command == F("red auto") || command == F("r auto"))      { beamRedOverride = OVERRIDE_AUTO;       printOverrideStatus(); }

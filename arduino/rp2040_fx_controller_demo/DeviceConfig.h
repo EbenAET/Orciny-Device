@@ -35,11 +35,11 @@ static constexpr uint32_t kResetHoldMs = 5000;
 // Default factory address is 0x40 (all address-select pads open).
 static constexpr uint8_t kServoDriverI2cAddress = 0x40;
 
-// --- Spark channels (GP5, GP6, GP9, GP14 via 10-ohm series resistors) ------
+// --- Spark channels (GP7, GP6, GP9, GP24 via 10-ohm series resistors) ------
 // Each channel is a bare GPIO driven with analogWrite() (PWM) and connected
 // to a spark-gap element through a current-limiting resistor.
 static constexpr uint8_t kSparkCount = 4;
-static constexpr uint8_t kSparkPins[kSparkCount] = {5, 6, 9, 14};
+static constexpr uint8_t kSparkPins[kSparkCount] = {7, 6, 9, 24};
 
 // Peltier load control MOSFET gate (GP8).
 // Keep enabled briefly after beam turns off to dissipate residual heat.
