@@ -25,11 +25,16 @@
 //
 // USB SERIAL COMMANDS (115200 baud, standalone mode)
 //   help            — list all commands
+//   status          — print power, sequence, and effect overrides
 //   on / off        — enable or disable all outputs
 //   toggle          — flip current output state
 //   prev / next     — step through sequences
 //   seq1 / seq2 / seq3 — jump directly to a numbered sequence
 //   reset           — return to sequence 1, output off
+//   sparks on|off|toggle|auto — per-effect override
+//   beam on|off|toggle|auto   — per-effect override
+//   claw on|off|toggle|auto   — per-effect override
+//   s|b|c on|off|toggle|auto  — short aliases for sparks|beam|claw
 //
 // PHYSICAL CONTROLS (standalone mode)
 //   SW1 (A1 / GP27) — tap: toggle output on/off
@@ -401,6 +406,16 @@ MomentarySwitch nextSwitch;     // SW3 — next sequence
 SequenceId currentSequence      = SEQUENCE_1;  // Which scene is active
 bool       outputEnabled        = false;         // Master on/off flag
 
+enum EffectOverride : uint8_t {
+  OVERRIDE_AUTO = 0,
+  OVERRIDE_FORCE_OFF,
+  OVERRIDE_FORCE_ON,
+};
+
+EffectOverride sparksOverride = OVERRIDE_AUTO;
+EffectOverride beamOverride   = OVERRIDE_AUTO;
+EffectOverride clawOverride   = OVERRIDE_AUTO;
+
 // USB receive buffer — characters accumulate here until a newline is received.
 String usbCommandBuffer;
 
@@ -425,7 +440,38 @@ EffectCommand currentEffectCommand = orciny::defaultEffectCommand();
 
 // Print a list of available USB serial commands.
 void printHelp() {
-  Serial.println(F("Commands: help, on, off, toggle, prev, next, seq1, seq2, seq3, reset"));
+  Serial.println(F("Commands: help, status, on, off, toggle, prev, next, seq1, seq2, seq3, reset"));
+  Serial.println(F("         sparks on|off|toggle|auto"));
+  Serial.println(F("         beam   on|off|toggle|auto"));
+  Serial.println(F("         claw   on|off|toggle|auto"));
+  Serial.println(F("         s|b|c  on|off|toggle|auto"));
+}
+
+const __FlashStringHelper *overrideLabel(EffectOverride value) {
+  switch (value) {
+    case OVERRIDE_FORCE_OFF: return F("FORCE_OFF");
+    case OVERRIDE_FORCE_ON:  return F("FORCE_ON");
+    default:                 return F("AUTO");
+  }
+}
+
+bool applyOverride(bool baseState, EffectOverride value) {
+  if (value == OVERRIDE_FORCE_ON) {
+    return true;
+  }
+  if (value == OVERRIDE_FORCE_OFF) {
+    return false;
+  }
+  return baseState;
+}
+
+void printOverrideStatus() {
+  Serial.print(F("Overrides -> sparks: "));
+  Serial.print(overrideLabel(sparksOverride));
+  Serial.print(F(", beam: "));
+  Serial.print(overrideLabel(beamOverride));
+  Serial.print(F(", claw: "));
+  Serial.println(overrideLabel(clawOverride));
 }
 
 // Print the current power state and sequence number to USB serial.
@@ -434,6 +480,7 @@ void printSequenceStatus() {
   Serial.print(outputEnabled ? F("ON") : F("OFF"));
   Serial.print(F(", Sequence -> "));
   Serial.println(static_cast<uint8_t>(currentSequence) + 1);
+  printOverrideStatus();
 }
 
 // =============================================================================
@@ -511,11 +558,13 @@ SceneProfile buildActiveProfile() {
 EffectCommand profileToEffectCommand(const SceneProfile &profile) {
   EffectCommand command = orciny::defaultEffectCommand();
   command.outputEnabled   = outputEnabled;
-  command.sparksEnabled   = profile.sparksEnabled;
-  command.sparksIntensity = profile.sparksIntensity;
+  command.sparksEnabled   = applyOverride(profile.sparksEnabled, sparksOverride);
+  command.sparksIntensity = command.sparksEnabled
+                            ? (profile.sparksIntensity > 0 ? profile.sparksIntensity : 220)
+                            : 0;
   command.pulseEnabled    = false;  // Not used in current hardware
-  command.beamEnabled     = profile.beamEnabled;
-  command.clawEnabled     = profile.clawEnabled;
+  command.beamEnabled     = applyOverride(profile.beamEnabled, beamOverride);
+  command.clawEnabled     = applyOverride(profile.clawEnabled, clawOverride);
   return command;
 }
 
@@ -542,6 +591,10 @@ void setSequence(SequenceId sequence) {
 
 void resetToBeginning() {
   currentSequence = SEQUENCE_1;
+  outputEnabled = false;
+  sparksOverride = OVERRIDE_AUTO;
+  beamOverride = OVERRIDE_AUTO;
+  clawOverride = OVERRIDE_AUTO;
   Serial.println(F("Reset -> sequence 1"));
   printSequenceStatus();
 }
@@ -573,6 +626,7 @@ void handleUsbCommands() {
     }
 
     if      (command == F("help"))   { printHelp(); }
+    else if (command == F("status")) { printSequenceStatus(); }
     else if (command == F("on"))     { outputEnabled = true;              printSequenceStatus(); }
     else if (command == F("off"))    { outputEnabled = false;             printSequenceStatus(); }
     else if (command == F("toggle")) { outputEnabled = !outputEnabled;    printSequenceStatus(); }
@@ -582,6 +636,32 @@ void handleUsbCommands() {
     else if (command == F("seq2"))   { setSequence(SEQUENCE_2); }
     else if (command == F("seq3"))   { setSequence(SEQUENCE_3); }
     else if (command == F("reset"))  { resetToBeginning(); }
+    else if (command == F("sparks on") || command == F("s on"))     { sparksOverride = OVERRIDE_FORCE_ON;  printOverrideStatus(); }
+    else if (command == F("sparks off") || command == F("s off"))    { sparksOverride = OVERRIDE_FORCE_OFF; printOverrideStatus(); }
+    else if (command == F("sparks auto") || command == F("s auto"))   { sparksOverride = OVERRIDE_AUTO;      printOverrideStatus(); }
+    else if (command == F("sparks toggle") || command == F("s toggle")) {
+      sparksOverride = (sparksOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
+      printOverrideStatus();
+    }
+    else if (command == F("beam on") || command == F("b on"))       { beamOverride = OVERRIDE_FORCE_ON;    printOverrideStatus(); }
+    else if (command == F("beam off") || command == F("b off"))      { beamOverride = OVERRIDE_FORCE_OFF;   printOverrideStatus(); }
+    else if (command == F("beam auto") || command == F("b auto"))     { beamOverride = OVERRIDE_AUTO;        printOverrideStatus(); }
+    else if (command == F("beam toggle") || command == F("b toggle")) {
+      beamOverride = (beamOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
+      printOverrideStatus();
+    }
+    else if (command == F("claw on") || command == F("c on"))       { clawOverride = OVERRIDE_FORCE_ON;    printOverrideStatus(); }
+    else if (command == F("claw off") || command == F("c off"))      { clawOverride = OVERRIDE_FORCE_OFF;   printOverrideStatus(); }
+    else if (command == F("claw auto") || command == F("c auto"))     { clawOverride = OVERRIDE_AUTO;        printOverrideStatus(); }
+    else if (command == F("claw toggle") || command == F("c toggle")) {
+      clawOverride = (clawOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
+      printOverrideStatus();
+    }
+    else {
+      Serial.print(F("Unknown command: "));
+      Serial.println(command);
+      printHelp();
+    }
   }
 }
 
@@ -681,8 +761,7 @@ EffectCommand resolveEffectCommand(uint32_t now) {
 // EFFECT UPDATE — applies the active EffectCommand to all hardware outputs.
 // Called every loop iteration with the current timestamp.
 // =============================================================================
-void updateEffects(uint32_t now) {
-  const EffectCommand command = resolveEffectCommand(now);
+void updateEffects(uint32_t now, const EffectCommand &command) {
 
   // Gate every subsystem on the master outputEnabled flag from the command.
   const bool sparksEnabled = command.outputEnabled && command.sparksEnabled;
@@ -694,6 +773,11 @@ void updateEffects(uint32_t now) {
   }
   beamEffect.update(now, beamEnabled);
   clawEffect.update(now, clawEnabled);
+}
+
+void updateEffects(uint32_t now) {
+  const EffectCommand command = resolveEffectCommand(now);
+  updateEffects(now, command);
 }
 
 // =============================================================================
@@ -761,12 +845,12 @@ void loop() {
   const uint32_t now = millis();
 
   // --- Effect-Link mode (active) -------------------------------------------
-  processEffectLink(now);   // Read and parse Serial1 EffectCommand packets
-  updateEffects(now);        // Apply the current EffectCommand to all hardware
+  // processEffectLink(now);   // Read and parse Serial1 EffectCommand packets
+  // updateEffects(now);        // Apply the current EffectCommand to all hardware
 
   // --- Standalone mode (uncomment to enable; comment out effect-link above) --
-  // handleUsbCommands();
-  // handleSwitches(now);
-  // EffectCommand cmd = profileToEffectCommand(buildActiveProfile());
-  // — then replace resolveEffectCommand(now) inside updateEffects with cmd —
+  handleUsbCommands();
+  handleSwitches(now);
+  EffectCommand cmd = profileToEffectCommand(buildActiveProfile());
+  updateEffects(now, cmd);
 }
