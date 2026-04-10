@@ -37,6 +37,7 @@
 //   red|green|blue on|off|toggle|auto — per-channel beam overrides
 //   s|bm|c on|off|toggle|auto — short aliases for sparks|beam|claw
 //   r|g|b on|off|toggle|auto  — short aliases for red|green|blue
+//   buttons         — print raw and debounced switch states
 //
 // PHYSICAL CONTROLS (standalone mode)
 //   SW1 (A1 / GP27) — tap: toggle output on/off
@@ -452,6 +453,27 @@ void printHelp() {
   Serial.println(F("         claw   on|off|toggle|auto"));
   Serial.println(F("         red|green|blue on|off|toggle|auto"));
   Serial.println(F("         s|bm|c and r|g|b on|off|toggle|auto"));
+  Serial.println(F("         buttons"));
+}
+
+void printButtonSnapshot() {
+  const bool rawSw1Pressed = digitalRead(device_config::kPowerSwitchPin) == LOW;
+  const bool rawSw2Pressed = digitalRead(device_config::kPreviousSwitchPin) == LOW;
+  const bool rawSw3Pressed = digitalRead(device_config::kNextSwitchPin) == LOW;
+
+  Serial.print(F("Buttons raw      -> SW1:"));
+  Serial.print(rawSw1Pressed ? F("P") : F("R"));
+  Serial.print(F(" SW2:"));
+  Serial.print(rawSw2Pressed ? F("P") : F("R"));
+  Serial.print(F(" SW3:"));
+  Serial.println(rawSw3Pressed ? F("P") : F("R"));
+
+  Serial.print(F("Buttons debounced-> SW1:"));
+  Serial.print(powerSwitch.isPressed() ? F("P") : F("R"));
+  Serial.print(F(" SW2:"));
+  Serial.print(previousSwitch.isPressed() ? F("P") : F("R"));
+  Serial.print(F(" SW3:"));
+  Serial.println(nextSwitch.isPressed() ? F("P") : F("R"));
 }
 
 const __FlashStringHelper *overrideLabel(EffectOverride value) {
@@ -495,6 +517,7 @@ void printSequenceStatus() {
   Serial.print(F(", Sequence -> "));
   Serial.println(static_cast<uint8_t>(currentSequence) + 1);
   printOverrideStatus();
+  printButtonSnapshot();
 }
 
 // =============================================================================
@@ -653,6 +676,7 @@ void handleUsbCommands() {
     else if (command == F("seq2"))   { setSequence(SEQUENCE_2); }
     else if (command == F("seq3"))   { setSequence(SEQUENCE_3); }
     else if (command == F("reset"))  { resetToBeginning(); }
+    else if (command == F("buttons")) { printButtonSnapshot(); }
     else if (command == F("sparks on") || command == F("s on"))     { sparksOverride = OVERRIDE_FORCE_ON;  printOverrideStatus(); }
     else if (command == F("sparks off") || command == F("s off"))    { sparksOverride = OVERRIDE_FORCE_OFF; printOverrideStatus(); }
     else if (command == F("sparks auto") || command == F("s auto"))   { sparksOverride = OVERRIDE_AUTO;      printOverrideStatus(); }
@@ -714,6 +738,12 @@ void handleSwitches(uint32_t now) {
   powerSwitch.update(now);
   previousSwitch.update(now);
   nextSwitch.update(now);
+
+  if (powerSwitch.wasPressed() || powerSwitch.wasReleased() ||
+      previousSwitch.wasPressed() || previousSwitch.wasReleased() ||
+      nextSwitch.wasPressed() || nextSwitch.wasReleased()) {
+    printButtonSnapshot();
+  }
 
   // --- Reset chord: SW1 + SW3 held for kResetHoldMs -------------------------
   const bool resetChordDown = powerSwitch.isPressed() && nextSwitch.isPressed();
@@ -882,6 +912,11 @@ void setup() {
   pinMode(device_config::kPeltierControlPin, OUTPUT);
   digitalWrite(device_config::kPeltierControlPin, LOW);
 
+  // Initialise switch debouncers before handleSwitches() is ever called.
+  powerSwitch.begin(device_config::kPowerSwitchPin);
+  previousSwitch.begin(device_config::kPreviousSwitchPin);
+  nextSwitch.begin(device_config::kNextSwitchPin);
+
   // Initialise all four spark channels on their respective GPIO pins.
   for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {
     sparks[i].begin(device_config::kSparkPins[i]);
@@ -903,6 +938,10 @@ void setup() {
 
   // Start with a clean default command (all outputs off).
   currentEffectCommand = orciny::defaultEffectCommand();
+
+  Serial.println(F("FX demo ready (standalone USB mode)."));
+  printHelp();
+  printSequenceStatus();
 }
 
 // =============================================================================
