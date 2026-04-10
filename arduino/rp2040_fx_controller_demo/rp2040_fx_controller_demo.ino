@@ -1103,8 +1103,8 @@ uint8_t sin8(uint32_t input) {
     128, 131, 134, 137, 140, 143, 146, 149, 152, 155, 158, 161, 164, 167, 170, 173,
     176, 179, 182, 185, 188, 191, 194, 197, 199, 202, 205, 208, 210, 213, 216, 218,
     221, 223, 226, 228, 231, 233, 235, 238, 240, 242, 244, 246, 248, 250, 251, 253,
-    254, 255, 256, 257, 258, 259, 260, 260, 261, 262, 262, 263, 263, 263, 263, 263,
-    263, 263, 262, 262, 261, 260, 260, 259, 258, 257, 256, 255, 254, 253, 251, 250,
+    254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 253, 251, 250,
     248, 246, 244, 242, 240, 238, 235, 233, 231, 228, 226, 223, 221, 218, 216, 213,
     210, 208, 205, 202, 199, 197, 194, 191, 188, 185, 182, 179, 176, 173, 170, 167,
     164, 161, 158, 155, 152, 149, 146, 143, 140, 137, 134, 131, 128, 125, 122, 119,
@@ -1175,6 +1175,12 @@ void updateEffects(uint32_t now) {
 // Runs once at power-on or after a reset.  Initialises every subsystem in order.
 // =============================================================================
 void setup() {
+  // Drive the NeoPixel data line LOW immediately. The strip's +3V7_NEO supply
+  // is always live (direct Li-Po), so GP4 can float before begin() claims it,
+  // causing pixel 0 to latch noise and appear stuck on.
+  pinMode(device_config::kNeoPixelPin, OUTPUT);
+  digitalWrite(device_config::kNeoPixelPin, LOW);
+
   // Start USB serial console (appears on the Arduino IDE Serial Monitor).
   Serial.begin(device_config::kUsbBaudRate);
 
