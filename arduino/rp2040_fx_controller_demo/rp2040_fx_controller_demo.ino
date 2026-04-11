@@ -34,6 +34,7 @@
 //   sparks on|off|toggle|auto — per-effect override
 //   spark1|spark2|spark3|spark4 on|off — force one spark channel for bench test
 //   spark all on|off — force all spark channels on/off for bench test
+//   spark status — print spark test mode and GPIO mapping
 //   beam on|off|toggle|auto   — per-effect override
 //   claw on|off|toggle|auto   — per-effect override
 //   red|green|blue on|off|toggle|auto — per-channel beam overrides
@@ -509,6 +510,7 @@ void printHelp() {
   Serial.println(F("         sparks on|off|toggle|auto"));
   Serial.println(F("         spark1|spark2|spark3|spark4 on|off"));
   Serial.println(F("         spark all on|off"));
+  Serial.println(F("         spark status"));
   Serial.println(F("         beam   on|off|toggle|auto"));
   Serial.println(F("         claw   on|off|toggle|auto"));
   Serial.println(F("         red|green|blue on|off|toggle|auto"));
@@ -594,6 +596,22 @@ void printSparkTestStatus() {
   Serial.print(F("Spark test -> CH"));
   Serial.print(sparkTestSelection + 1);
   Serial.println(F(" ON"));
+}
+
+void printSparkPinMap() {
+  Serial.print(F("Spark pins -> CH1:GP"));
+  Serial.print(device_config::kSparkPins[0]);
+  Serial.print(F(" CH2:GP"));
+  Serial.print(device_config::kSparkPins[1]);
+  Serial.print(F(" CH3:GP"));
+  Serial.print(device_config::kSparkPins[2]);
+  Serial.print(F(" CH4:GP"));
+  Serial.println(device_config::kSparkPins[3]);
+}
+
+void printSparkStatus() {
+  printSparkTestStatus();
+  printSparkPinMap();
 }
 
 void printOverrideStatus() {
@@ -802,20 +820,21 @@ void handleUsbCommands() {
       sparksOverride = (sparksOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
       printOverrideStatus();
     }
-    else if (command == F("spark1 on")) { sparkTestSelection = 0; printSparkTestStatus(); }
-    else if (command == F("spark2 on")) { sparkTestSelection = 1; printSparkTestStatus(); }
-    else if (command == F("spark3 on")) { sparkTestSelection = 2; printSparkTestStatus(); }
-    else if (command == F("spark4 on")) { sparkTestSelection = 3; printSparkTestStatus(); }
+    else if (command == F("spark1 on")) { sparkTestSelection = 0; printSparkStatus(); }
+    else if (command == F("spark2 on")) { sparkTestSelection = 1; printSparkStatus(); }
+    else if (command == F("spark3 on")) { sparkTestSelection = 2; printSparkStatus(); }
+    else if (command == F("spark4 on")) { sparkTestSelection = 3; printSparkStatus(); }
     else if (command == F("spark1 off") || command == F("spark2 off") ||
              command == F("spark3 off") || command == F("spark4 off") ||
              command == F("spark all off") || command == F("spark off")) {
       sparkTestSelection = -1;
-      printSparkTestStatus();
+      printSparkStatus();
     }
     else if (command == F("spark all on")) {
       sparkTestSelection = device_config::kSparkCount;
-      printSparkTestStatus();
+      printSparkStatus();
     }
+    else if (command == F("spark status")) { printSparkStatus(); }
     else if (command == F("beam on") || command == F("bm on"))       { beamOverride = OVERRIDE_FORCE_ON;    printOverrideStatus(); }
     else if (command == F("beam off") || command == F("bm off"))      { beamOverride = OVERRIDE_FORCE_OFF;   printOverrideStatus(); }
     else if (command == F("beam auto") || command == F("bm auto"))     { beamOverride = OVERRIDE_AUTO;        printOverrideStatus(); }
