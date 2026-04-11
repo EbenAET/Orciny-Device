@@ -4,6 +4,7 @@
 
 // =============================================================================
 // DeviceConfig.h — Hardware pin map and tuning constants for the Orciny device.
+// Version : V 0.1.0
 //
 // All preset numbers live here. Change a value once and every part of the
 // firmware that uses it automatically picks up the change.
