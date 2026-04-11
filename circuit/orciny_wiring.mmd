@@ -1,6 +1,6 @@
 flowchart TD
   %% Rev F — RP2040-only single-controller design
-  %% NeoPixel data: RP2040 GP4 | Switches: A1/A2/A3 (GP27/GP28/GP29)
+  %% NeoPixel data: RP2040 GP25 | Switches: GP27/GP28/GP29
   %% See orciny_wiring_ascii.txt for detailed net and harness notes
 
   J801["J801\n5V Input (battery or supply)"]
@@ -16,13 +16,13 @@ flowchart TD
   PMFWPWR["Prop-Maker PWR Enable\nGP10 held HIGH"]
   SWING["8-ch Servo FeatherWing\nPCA9685 at I2C 0x40"]
 
-  SW1["SW1 A1(GP27) On/Off\nto GND"]
-  SW2["SW2 A2(GP28) Previous\nto GND"]
-  SW3["SW3 A3(GP29) Next\nto GND"]
+  SW1["SW1 GP27 On/Off\nto GND"]
+  SW2["SW2 GP28 Previous\nto GND"]
+  SW3["SW3 GP29 Next\nto GND"]
 
-  SP1["Spark Filament 1\nGP7 + R601 10Ω"]
-  SP2["Spark Filament 2\nGP6 + R602 10Ω"]
-  SP3["Spark Filament 3\nGP9 + R603 10Ω"]
+  SP1["Spark Filament 1\nGP18 + R601 10Ω"]
+  SP2["Spark Filament 2\nGP19 + R602 10Ω"]
+  SP3["Spark Filament 3\nGP20 + R603 10Ω"]
   SP4["Spark Filament 4\nGP24 + R604 10Ω"]
 
   LED1["Beam LED CH1\n3-9W RGB leg 1"]
@@ -48,15 +48,16 @@ flowchart TD
   BRP -->|"RP2040_BAT"| SP4
 
   CNEO --> BNEO
-  BNEO -->|"+3V7_NEO"| CORE
+  BNEO -. legacy .->|"+3V7_NEO"| CORE
 
-  RP -->|"GP4 data"| CORE
+  F801 -->|"+5V_BUS"| CORE
+  RP -->|"GP25 data"| CORE
   RP --- SW1
   RP --- SW2
   RP --- SW3
-  RP -->|"GP7 PWM"| SP1
-  RP -->|"GP6 PWM"| SP2
-  RP -->|"GP9 PWM"| SP3
+  RP -->|"GP18 PWM"| SP1
+  RP -->|"GP19 PWM"| SP2
+  RP -->|"GP20 PWM"| SP3
   RP -->|"GP24 PWM"| SP4
   RP -->|"GP11/12/13"| PMFW
   RP -->|"GP10 HIGH"| PMFWPWR

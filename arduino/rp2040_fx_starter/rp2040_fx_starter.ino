@@ -12,22 +12,22 @@
 //   4. Upload and test.  The three physical switches cycle through states.
 //
 // PHYSICAL CONTROLS  (ready to go — no changes needed)
-//   SW1 (A1) — tap: toggle all outputs on / off
-//   SW2 (A2) — tap: step backward through states
-//   SW3 (A3) — tap: step forward  through states
+//   SW1 (GP27) — tap: toggle all outputs on / off
+//   SW2 (GP28) — tap: step backward through states
+//   SW3 (GP29) — tap: step forward  through states
 //   SW1 + SW3 held 5 s — reset to State 1, outputs off
 //
 // USB SERIAL (115200 baud, Arduino IDE Serial Monitor)
 //   Prints state changes.  Add Serial.println() calls anywhere for debugging.
 //
 // OUTPUTS AVAILABLE
-//   Spark channels  — GP5 / GP6 / GP9 / GP14   analogWrite(pin, 0–255)
+//   Spark channels  — GP18 / GP19 / GP20 / GP24 analogWrite(pin, 0–255)
 //   Beam LED Red    — GP11                       analogWrite(GP11, 0–255)
 //   Beam LED Green  — GP12                       analogWrite(GP12, 0–255)
 //   Beam LED Blue   — GP13                       analogWrite(GP13, 0–255)
 //   Servo A (claw)  — PCA9685 channel 0          setServo(0, angle 22–120)
 //   Servo B (claw)  — PCA9685 channel 1          setServo(1, angle 22–120)
-//   NeoPixel strip  — GP4 (166 pixels)           use neoPixelSetAll() helper
+//   NeoPixel strip  — GP25 (166 pixels)           use neoPixelSetAll() helper
 // =============================================================================
 
 #include <Wire.h>                      // I2C bus (required for servo driver)
@@ -49,20 +49,20 @@
 #define BEAM_BLUE_PIN        13
 
 // Spark channels — current-limited GPIO outputs
-#define SPARK_PIN_1          5
-#define SPARK_PIN_2          6
-#define SPARK_PIN_3          9
-#define SPARK_PIN_4          14
+#define SPARK_PIN_1          18
+#define SPARK_PIN_2          19
+#define SPARK_PIN_3          20
+#define SPARK_PIN_4          24
 
 // NeoPixel strip data line
-#define NEO_DATA_PIN         4
+#define NEO_DATA_PIN         25
 #define NEO_PIXEL_COUNT      166      // Number of pixels on the strip
 #define NEO_COLOR_ORDER      NEO_GRBW // SK6812 RGBW pixel order
 
 // Momentary switches (INPUT_PULLUP: LOW = pressed)
-#define SW_POWER_PIN         A1       // GP27 — on/off toggle
-#define SW_PREV_PIN          A2       // GP28 — previous state
-#define SW_NEXT_PIN          A3       // GP29 — next state
+#define SW_POWER_PIN         27       // GP27 — on/off toggle
+#define SW_PREV_PIN          28       // GP28 — previous state
+#define SW_NEXT_PIN          29       // GP29 — next state
 
 // =============================================================================
 // STEP 2 — TUNING PARAMETERS

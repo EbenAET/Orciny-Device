@@ -32,6 +32,8 @@
 //   seq1 / seq2 / seq3 — jump directly to a numbered sequence
 //   reset           — return to sequence 1, output off
 //   sparks on|off|toggle|auto — per-effect override
+//   spark1|spark2|spark3|spark4 on|off — force one spark channel for bench test
+//   spark all on|off — force all spark channels on/off for bench test
 //   beam on|off|toggle|auto   — per-effect override
 //   claw on|off|toggle|auto   — per-effect override
 //   red|green|blue on|off|toggle|auto — per-channel beam overrides
@@ -243,9 +245,14 @@ class SparkChannel {
     const int minimum = max(32, intensity / 3);   // Minimum brightness floor
     const int peak    = max(minimum + 1, static_cast<int>(intensity) + 1);
     analogWrite(pin_, random(minimum, peak));
-    // Hold the flash for a random short duration (15–70 ms).
-    flashUntilMs_ = now + random(15, 70);
+    // Hold the flash for a random short duration (20–70 ms).
+    flashUntilMs_ = now + random(20, 71);
     active_ = true;
+  }
+
+  void setManualLevel(uint8_t level) {
+    analogWrite(pin_, level);
+    active_ = (level > 0);
   }
 
  private:
@@ -465,6 +472,7 @@ EffectOverride clawOverride   = OVERRIDE_AUTO;
 EffectOverride beamRedOverride   = OVERRIDE_AUTO;
 EffectOverride beamGreenOverride = OVERRIDE_AUTO;
 EffectOverride beamBlueOverride  = OVERRIDE_AUTO;
+int8_t sparkTestSelection = -1;  // -1=auto, 0..3=single channel, 4=all channels
 
 // Active beam palette override.  BEAM_PALETTE_AUTO uses the active scene's default.
 BeamPaletteId beamPaletteOverride = BEAM_PALETTE_AUTO;
@@ -499,6 +507,8 @@ EffectCommand currentEffectCommand = orciny::defaultEffectCommand();
 void printHelp() {
   Serial.println(F("Commands: help, status, on, off, toggle, prev, next, seq1, seq2, seq3, reset"));
   Serial.println(F("         sparks on|off|toggle|auto"));
+  Serial.println(F("         spark1|spark2|spark3|spark4 on|off"));
+  Serial.println(F("         spark all on|off"));
   Serial.println(F("         beam   on|off|toggle|auto"));
   Serial.println(F("         claw   on|off|toggle|auto"));
   Serial.println(F("         red|green|blue on|off|toggle|auto"));
@@ -561,6 +571,31 @@ bool applyOverride(bool baseState, EffectOverride value) {
   return baseState;
 }
 
+bool isSparkTestActive() {
+  return sparkTestSelection >= 0;
+}
+
+bool isSparkTestChannelEnabled(uint8_t index) {
+  return sparkTestSelection == device_config::kSparkCount ||
+         sparkTestSelection == static_cast<int8_t>(index);
+}
+
+void printSparkTestStatus() {
+  if (!isSparkTestActive()) {
+    Serial.println(F("Spark test -> AUTO"));
+    return;
+  }
+
+  if (sparkTestSelection == device_config::kSparkCount) {
+    Serial.println(F("Spark test -> ALL ON"));
+    return;
+  }
+
+  Serial.print(F("Spark test -> CH"));
+  Serial.print(sparkTestSelection + 1);
+  Serial.println(F(" ON"));
+}
+
 void printOverrideStatus() {
   Serial.print(F("Overrides -> sparks: "));
   Serial.print(overrideLabel(sparksOverride));
@@ -586,6 +621,7 @@ void printOverrideStatus() {
   }
   Serial.print(F("Beam palette -> "));
   Serial.println(palLabel);
+  printSparkTestStatus();
 }
 
 // Print the current power state and sequence number to USB serial.
@@ -765,6 +801,20 @@ void handleUsbCommands() {
     else if (command == F("sparks toggle") || command == F("s toggle")) {
       sparksOverride = (sparksOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
       printOverrideStatus();
+    }
+    else if (command == F("spark1 on")) { sparkTestSelection = 0; printSparkTestStatus(); }
+    else if (command == F("spark2 on")) { sparkTestSelection = 1; printSparkTestStatus(); }
+    else if (command == F("spark3 on")) { sparkTestSelection = 2; printSparkTestStatus(); }
+    else if (command == F("spark4 on")) { sparkTestSelection = 3; printSparkTestStatus(); }
+    else if (command == F("spark1 off") || command == F("spark2 off") ||
+             command == F("spark3 off") || command == F("spark4 off") ||
+             command == F("spark all off") || command == F("spark off")) {
+      sparkTestSelection = -1;
+      printSparkTestStatus();
+    }
+    else if (command == F("spark all on")) {
+      sparkTestSelection = device_config::kSparkCount;
+      printSparkTestStatus();
     }
     else if (command == F("beam on") || command == F("bm on"))       { beamOverride = OVERRIDE_FORCE_ON;    printOverrideStatus(); }
     else if (command == F("beam off") || command == F("bm off"))      { beamOverride = OVERRIDE_FORCE_OFF;   printOverrideStatus(); }
@@ -1138,6 +1188,10 @@ void updateEffects(uint32_t now, const EffectCommand &command) {
   const bool beamForCooling = beamEnabled || (command.outputEnabled && beamAnyForcedOn);
 
   for (uint8_t i = 0; i < device_config::kSparkCount; ++i) {
+    if (isSparkTestActive()) {
+      sparks[i].setManualLevel(isSparkTestChannelEnabled(i) ? 255 : 0);
+      continue;
+    }
     sparks[i].update(now, sparksEnabled, command.sparksIntensity);
   }
   beamEffect.update(now, beamEnabled);

@@ -39,9 +39,9 @@ Power:
  │  A1/A2/A3     <------------------------- SW1/SW2/SW3            │
  │  GP25 (NeoPixel data) -----------------> NeoPixel strip DI      │
  │                                                                 │
- │  GP7  PWM ---> [R601 10Ω] ---> Spark Filament 1                │
- │  GP6  PWM ---> [R602 10Ω] ---> Spark Filament 2                │
- │  GP9  PWM ---> [R603 10Ω] ---> Spark Filament 3                │
+ │  GP18 PWM ---> [R601 10Ω] ---> Spark Filament 1                │
+ │  GP19 PWM ---> [R602 10Ω] ---> Spark Filament 2                │
+ │  GP20 PWM ---> [R603 10Ω] ---> Spark Filament 3                │
  │  GP24 PWM ---> [R604 10Ω] ---> Spark Filament 4                │
  │                                                                 │
  │  GP11 PWM ---> Prop-Maker LED1 MOSFET out ---> 3-9W LED CH1    │
@@ -202,7 +202,7 @@ Power:
   U812         -> optional legacy charger for J812 LP503562 battery (+3V7_NEO)
   +5V_BUS      -> NeoPixel strip +V (current profile)
    +5V_BUS      -> Prop-Maker load supply and peltier source domain
-  RP2040 GP7/GP6/GP9/GP24 -> direct spark filament outputs (R601-R604)
+  RP2040 GP18/GP19/GP20/GP24 -> direct spark filament outputs (R601-R604)
   RP2040 GP10      -> Prop-Maker PWR enable (held HIGH)
   RP2040 GP11-GP13 -> Prop-Maker LED1/LED2/LED3 channel control
   RP2040 GP8       -> peltier MOSFET gate (auto beam-follow + cooldown hold)
