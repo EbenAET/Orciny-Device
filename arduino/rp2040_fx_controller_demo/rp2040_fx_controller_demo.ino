@@ -11,18 +11,16 @@
 //   throughout to explain every section for anyone reviewing or testing it.
 //
 // CONTROL PATHS — how the hardware receives show commands
-//   A) Effect-Link mode  (active by default in this sketch)
+//   A) Effect-Link mode  (ACTIVE by default)
 //      An upstream controller sends EffectCommand packets over the hardware
-//      UART (Serial1 / TX/RX pins).  updateEffects() uses those packets
-//      directly.  If no packet arrives within kEffectCommandTimeoutMs all
+//      UART (Serial1 / TX/RX pins).  updateEffects() applies those packets
+//      to hardware.  If no packet arrives within kEffectCommandTimeoutMs all
 //      outputs shut off automatically.
 //
-//   B) Standalone mode  (functions exist but are NOT wired into loop() here)
-//      handleSwitches(), handleUsbCommands(), and buildActiveProfile() are
-//      fully implemented below.  To run without an upstream controller, call
-//      those three functions inside loop() and pass the resulting SceneProfile
-//      through profileToEffectCommand() into updateEffects().  See the
-//      commented stub at the bottom of loop() for the exact wiring.
+//   B) Standalone mode  (activated at runtime by SW1 + SW2 held 5 s)
+//      handleSwitches(), handleUsbCommands(), and buildActiveProfile() take
+//      over and drive all outputs directly from the physical buttons and USB
+//      serial commands.  No upstream controller is required in this mode.
 //
 // USB SERIAL COMMANDS (115200 baud, standalone mode)
 //   help            — list all commands
@@ -49,11 +47,12 @@
 //   neo ember|pulse|beam|claw|show — test specific animation modes
 //   neo auto        — follow scene default (stop testing)
 //
-// PHYSICAL CONTROLS (standalone mode)
-//   SW1 (A1 / GP27) — tap: toggle output on/off
-//   SW2 (A2 / GP28) — tap: step to previous sequence
-//   SW3 (A3 / GP29) — tap: step to next sequence
-//   SW1 + SW3 held 5 s — reset to sequence 1
+// PHYSICAL CONTROLS
+//   SW1 + SW2 held 5 s — switch from effect-link to standalone mode
+//   SW1 (A1 / GP27) — tap: toggle output on/off          (standalone only)
+//   SW2 (A2 / GP28) — tap: step to previous sequence     (standalone only)
+//   SW3 (A3 / GP29) — tap: step to next sequence         (standalone only)
+//   SW1 + SW3 held 5 s — reset to sequence 1             (standalone only)
 //
 // DEMO SEQUENCES
 //   1 — Ember  : sparks on, warm-orange NeoPixel ember glow    (beam: ember palette)
@@ -492,7 +491,15 @@ uint32_t lastCoreFrameMs     = 0;  // Timestamp of last received CoreFrame
 uint32_t lastEffectCommandMs = 0;  // Timestamp of last received EffectCommand
 uint32_t peltierHoldUntilMs  = 0;  // Keep cooling active briefly after beam-off
 
-// State for the SW1+SW3 reset chord detection.
+// Runtime control-path flag.  false = effect-link (default), true = standalone.
+bool standaloneMode = false;
+
+// State for the SW1+SW2 mode-switch chord (always active).
+uint32_t modeChordStartMs       = 0;
+bool     modeChordTriggered     = false;
+bool     suppressPreviousRelease = false;  // Prevent prev-seq fire after chord
+
+// State for the SW1+SW3 reset chord (standalone mode only).
 uint32_t resetChordStartMs    = 0;
 bool     resetChordTriggered  = false;
 bool     suppressPowerRelease = false;  // Prevent toggle fire after chord hold
@@ -948,10 +955,11 @@ void handleUsbCommands() {
 }
 
 // =============================================================================
-// STANDALONE MODE — PHYSICAL SWITCH HANDLER
-// Reads the three momentary switches, handles the SW1+SW3 reset chord, and
-// updates outputEnabled / currentSequence accordingly.
-// Call this from loop() to enable hardware button control (standalone mode).
+// PHYSICAL SWITCH HANDLER
+// Updates all three switch debouncers and processes chord / button events.
+// Always called from loop() so that the mode-switch chord is detected even
+// in effect-link mode.  Button events (prev/next/toggle) are gated behind
+// standaloneMode so they have no effect until standalone mode is active.
 // =============================================================================
 void handleSwitches(uint32_t now) {
   // Update all three switch debounce state machines.
@@ -965,7 +973,37 @@ void handleSwitches(uint32_t now) {
     printButtonSnapshot();
   }
 
-  // --- Reset chord: SW1 + SW3 held for kResetHoldMs -------------------------
+  // --- Mode-switch chord: SW1 + SW2 held for kResetHoldMs (always active) ---
+  // Transitions the device from effect-link mode to standalone mode.
+  const bool modeChordDown = powerSwitch.isPressed() && previousSwitch.isPressed();
+
+  if (modeChordDown) {
+    if (modeChordStartMs == 0) {
+      modeChordStartMs        = now;
+      suppressPowerRelease    = true;   // Don't fire toggle on chord release
+      suppressPreviousRelease = true;   // Don't fire prev-seq on chord release
+    }
+    if (!modeChordTriggered &&
+        (now - modeChordStartMs >= device_config::kResetHoldMs)) {
+      modeChordTriggered = true;
+      standaloneMode     = true;
+      Serial.println(F("Mode -> STANDALONE (SW1+SW2 chord)"));
+      printSequenceStatus();
+    }
+  } else if (!powerSwitch.isPressed() && !previousSwitch.isPressed()) {
+    modeChordStartMs    = 0;
+    modeChordTriggered  = false;
+    // Only clear power suppression if the reset chord isn't also active.
+    if (resetChordStartMs == 0) suppressPowerRelease = false;
+    suppressPreviousRelease = false;
+  }
+
+  // Everything below is only relevant in standalone mode.
+  if (!standaloneMode) {
+    return;
+  }
+
+  // --- Reset chord: SW1 + SW3 held for kResetHoldMs (standalone only) ------
   const bool resetChordDown = powerSwitch.isPressed() && nextSwitch.isPressed();
 
   if (resetChordDown) {
@@ -980,15 +1018,15 @@ void handleSwitches(uint32_t now) {
       resetToBeginning();
     }
   } else if (!powerSwitch.isPressed() && !nextSwitch.isPressed()) {
-    // Both released — clear chord tracking.
     resetChordStartMs    = 0;
     resetChordTriggered  = false;
-    suppressPowerRelease = false;
+    // Only clear power suppression if the mode chord isn't also active.
+    if (modeChordStartMs == 0) suppressPowerRelease = false;
     suppressNextRelease  = false;
   }
 
-  // --- Individual button events (only fire if not part of a chord) ----------
-  if (previousSwitch.wasReleased()) {
+  // --- Individual button events (standalone mode only) ----------------------
+  if (previousSwitch.wasReleased() && !suppressPreviousRelease) {
     setSequence(previousSequenceValue(currentSequence));
   }
 
@@ -1304,7 +1342,7 @@ void setup() {
   // Start with a clean default command (all outputs off).
   currentEffectCommand = orciny::defaultEffectCommand();
 
-  Serial.println(F("FX demo ready (standalone USB mode)."));
+  Serial.println(F("FX demo ready (effect-link mode; hold SW1+SW2 5s for standalone)."));
   printHelp();
   printSequenceStatus();
 }
@@ -1313,37 +1351,41 @@ void setup() {
 // LOOP
 // Runs repeatedly after setup().  Keep it fast — no delay() calls.
 //
-// CURRENT MODE: Effect-Link (receives commands from upstream controller)
-//   - processEffectLink() ingests Serial1 packets.
-//   - updateEffects()     applies the latest command to hardware.
+// DEFAULT MODE: Effect-Link — processEffectLink() ingests Serial1 packets and
+//   updateEffects() applies the latest EffectCommand to all hardware.  If no
+//   packet arrives within kEffectCommandTimeoutMs the outputs go dark.
 //
-// TO SWITCH TO STANDALONE MODE (no upstream controller):
-//   1. Uncomment the three lines in the "Standalone mode" block below.
-//   2. Comment out or remove processEffectLink(now).
-//   3. The switches and USB serial will then drive all outputs directly.
+// RUNTIME SWITCH: Hold SW1 + SW2 for 5 seconds to activate Standalone mode.
+//   In Standalone mode handleSwitches() / handleUsbCommands() / buildActiveProfile()
+//   drive all outputs from the physical buttons and USB serial commands.
+//
+// handleUsbCommands() and handleSwitches() are always called so that the
+// mode-switch chord is detected and USB commands remain available in both modes.
 // =============================================================================
 void loop() {
   const uint32_t now = millis();
 
-  // --- Effect-Link mode (active) -------------------------------------------
-  // processEffectLink(now);   // Read and parse Serial1 EffectCommand packets
-  // updateEffects(now);        // Apply the current EffectCommand to all hardware
-
-  // --- Standalone mode (uncomment to enable; comment out effect-link above) --
+  // Always service USB commands and switch debouncers (chord detection needs
+  // to run even while in effect-link mode).
   handleUsbCommands();
   handleSwitches(now);
-  const SceneProfile profile = buildActiveProfile();
-  // Apply the active beam palette (scene default unless overridden via USB).
-  beamEffect.setPalette(getPaletteForId(
-      beamPaletteOverride == BEAM_PALETTE_AUTO
-          ? profile.beamPaletteId
-          : beamPaletteOverride));
-  updateEffects(now, profileToEffectCommand(profile));
-  
-  // Use NeoPixel override if active (mode != OFF), otherwise use scene default.
-  const CoreFrame &frameToRender =
-      (neoPixelOverride.mode != orciny::CORE_MODE_OFF)
-          ? neoPixelOverride
-          : profile.coreFrame;
-  updateNeoPixel(now, frameToRender);
+
+  if (standaloneMode) {
+    // --- Standalone mode (SW1+SW2 chord activated) --------------------------
+    const SceneProfile profile = buildActiveProfile();
+    beamEffect.setPalette(getPaletteForId(
+        beamPaletteOverride == BEAM_PALETTE_AUTO
+            ? profile.beamPaletteId
+            : beamPaletteOverride));
+    updateEffects(now, profileToEffectCommand(profile));
+    const CoreFrame &frameToRender =
+        (neoPixelOverride.mode != orciny::CORE_MODE_OFF)
+            ? neoPixelOverride
+            : profile.coreFrame;
+    updateNeoPixel(now, frameToRender);
+  } else {
+    // --- Effect-Link mode (default) -----------------------------------------
+    processEffectLink(now);
+    updateEffects(now);
+  }
 }
