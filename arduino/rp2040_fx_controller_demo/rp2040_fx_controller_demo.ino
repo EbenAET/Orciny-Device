@@ -40,6 +40,7 @@
 //   spark status — print spark test mode and GPIO mapping
 //   beam on|off|toggle|auto   — per-effect override
 //   claw on|off|toggle|auto   — per-effect override
+//   peltier on|off|auto|status — GP8 MOSFET gate override/test
 //   red|green|blue on|off|toggle|auto — per-channel beam overrides
 //   s|bm|c on|off|toggle|auto — short aliases for sparks|beam|claw
 //   r|g|b on|off|toggle|auto  — short aliases for red|green|blue
@@ -474,6 +475,7 @@ enum EffectOverride : uint8_t {
 EffectOverride sparksOverride = OVERRIDE_AUTO;
 EffectOverride beamOverride   = OVERRIDE_AUTO;
 EffectOverride clawOverride   = OVERRIDE_AUTO;
+EffectOverride peltierOverride = OVERRIDE_AUTO;
 EffectOverride beamRedOverride   = OVERRIDE_AUTO;
 EffectOverride beamGreenOverride = OVERRIDE_AUTO;
 EffectOverride beamBlueOverride  = OVERRIDE_AUTO;
@@ -526,6 +528,7 @@ void printHelp() {
   Serial.println(F("         spark status"));
   Serial.println(F("         beam   on|off|toggle|auto"));
   Serial.println(F("         claw   on|off|toggle|auto"));
+  Serial.println(F("         peltier on|off|auto|status"));
   Serial.println(F("         red|green|blue on|off|toggle|auto"));
   Serial.println(F("         s|bm|c and r|g|b on|off|toggle|auto"));
   Serial.println(F("         beam palette cool|ember|cyan|violet|auto"));
@@ -627,6 +630,15 @@ void printSparkStatus() {
   printSparkPinMap();
 }
 
+void printPeltierStatus() {
+  Serial.print(F("Peltier -> "));
+  Serial.print(overrideLabel(peltierOverride));
+  Serial.print(F(", GP"));
+  Serial.print(device_config::kPeltierControlPin);
+  Serial.print(F(" pin is "));
+  Serial.println(digitalRead(device_config::kPeltierControlPin) == HIGH ? F("HIGH") : F("LOW"));
+}
+
 void printModeStatus() {
   Serial.print(F("Mode -> "));
   Serial.println(standaloneMode ? F("STANDALONE") : F("EFFECT-LINK"));
@@ -655,7 +667,9 @@ void printOverrideStatus() {
   Serial.print(F(", beam: "));
   Serial.print(overrideLabel(beamOverride));
   Serial.print(F(", claw: "));
-  Serial.println(overrideLabel(clawOverride));
+  Serial.print(overrideLabel(clawOverride));
+  Serial.print(F(", peltier: "));
+  Serial.println(overrideLabel(peltierOverride));
 
   Serial.print(F("Beam RGB -> R: "));
   Serial.print(overrideLabel(beamRedOverride));
@@ -803,6 +817,7 @@ void resetToBeginning() {
   sparksOverride = OVERRIDE_AUTO;
   beamOverride = OVERRIDE_AUTO;
   clawOverride = OVERRIDE_AUTO;
+  peltierOverride = OVERRIDE_AUTO;
   beamRedOverride = OVERRIDE_AUTO;
   beamGreenOverride = OVERRIDE_AUTO;
   beamBlueOverride = OVERRIDE_AUTO;
@@ -890,6 +905,23 @@ void handleUsbCommands() {
     else if (command == F("claw toggle") || command == F("c toggle")) {
       clawOverride = (clawOverride == OVERRIDE_FORCE_ON) ? OVERRIDE_FORCE_OFF : OVERRIDE_FORCE_ON;
       printOverrideStatus();
+    }
+    else if (command == F("peltier on") || command == F("pel on")) {
+      peltierOverride = OVERRIDE_FORCE_ON;
+      peltierHoldUntilMs = millis() + device_config::kPeltierPostBeamHoldMs;
+      printPeltierStatus();
+    }
+    else if (command == F("peltier off") || command == F("pel off")) {
+      peltierOverride = OVERRIDE_FORCE_OFF;
+      peltierHoldUntilMs = 0;
+      printPeltierStatus();
+    }
+    else if (command == F("peltier auto") || command == F("pel auto")) {
+      peltierOverride = OVERRIDE_AUTO;
+      printPeltierStatus();
+    }
+    else if (command == F("peltier status") || command == F("pel status")) {
+      printPeltierStatus();
     }
     else if (command == F("servoa min")) { writeServoTest(device_config::kServoChannelA, device_config::kServoAMinAngle); }
     else if (command == F("servoa max")) { writeServoTest(device_config::kServoChannelA, device_config::kServoAMaxAngle); }
@@ -1116,6 +1148,18 @@ EffectCommand resolveEffectCommand(uint32_t now) {
 }
 
 void updatePeltier(uint32_t now, bool beamEnabled) {
+  if (peltierOverride == OVERRIDE_FORCE_ON) {
+    digitalWrite(device_config::kPeltierControlPin, HIGH);
+    peltierHoldUntilMs = now + device_config::kPeltierPostBeamHoldMs;
+    return;
+  }
+
+  if (peltierOverride == OVERRIDE_FORCE_OFF) {
+    peltierHoldUntilMs = 0;
+    digitalWrite(device_config::kPeltierControlPin, LOW);
+    return;
+  }
+
   if (beamEnabled) {
     digitalWrite(device_config::kPeltierControlPin, HIGH);
     peltierHoldUntilMs = now + device_config::kPeltierPostBeamHoldMs;
