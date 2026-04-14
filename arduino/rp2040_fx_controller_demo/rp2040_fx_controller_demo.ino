@@ -25,6 +25,10 @@
 // USB SERIAL COMMANDS (115200 baud, standalone mode)
 //   help            — list all commands
 //   status          — print power, sequence, and effect overrides
+//   mode status     — print current control mode (effect-link or standalone)
+//   mode standalone — switch to standalone mode immediately
+//   mode effect-link — switch to effect-link mode immediately
+//   mode toggle     — toggle between standalone and effect-link modes
 //   on / off        — enable or disable all outputs
 //   toggle          — flip current output state
 //   prev / next     — step through sequences
@@ -515,6 +519,7 @@ EffectCommand currentEffectCommand = orciny::defaultEffectCommand();
 // Print a list of available USB serial commands.
 void printHelp() {
   Serial.println(F("Commands: help, status, on, off, toggle, prev, next, seq1, seq2, seq3, reset"));
+  Serial.println(F("         mode status|standalone|effect-link|toggle"));
   Serial.println(F("         sparks on|off|toggle|auto"));
   Serial.println(F("         spark1|spark2|spark3|spark4 on|off"));
   Serial.println(F("         spark all on|off"));
@@ -622,6 +627,28 @@ void printSparkStatus() {
   printSparkPinMap();
 }
 
+void printModeStatus() {
+  Serial.print(F("Mode -> "));
+  Serial.println(standaloneMode ? F("STANDALONE") : F("EFFECT-LINK"));
+}
+
+void setControlMode(bool enableStandalone, const __FlashStringHelper *source) {
+  if (standaloneMode == enableStandalone) {
+    Serial.print(F("Mode unchanged ("));
+    Serial.print(source);
+    Serial.println(F(")"));
+    printModeStatus();
+    return;
+  }
+
+  standaloneMode = enableStandalone;
+  Serial.print(F("Mode switched by "));
+  Serial.print(source);
+  Serial.print(F(" -> "));
+  Serial.println(standaloneMode ? F("STANDALONE") : F("EFFECT-LINK"));
+  printSequenceStatus();
+}
+
 void printOverrideStatus() {
   Serial.print(F("Overrides -> sparks: "));
   Serial.print(overrideLabel(sparksOverride));
@@ -652,6 +679,7 @@ void printOverrideStatus() {
 
 // Print the current power state and sequence number to USB serial.
 void printSequenceStatus() {
+  printModeStatus();
   Serial.print(F("Power -> "));
   Serial.print(outputEnabled ? F("ON") : F("OFF"));
   Serial.print(F(", Sequence -> "));
@@ -811,6 +839,12 @@ void handleUsbCommands() {
 
     if      (command == F("help"))   { printHelp(); }
     else if (command == F("status")) { printSequenceStatus(); }
+    else if (command == F("mode status")) { printModeStatus(); }
+    else if (command == F("mode standalone")) { setControlMode(true, F("USB command")); }
+    else if (command == F("mode effect") || command == F("mode effect-link") || command == F("mode fx")) {
+      setControlMode(false, F("USB command"));
+    }
+    else if (command == F("mode toggle")) { setControlMode(!standaloneMode, F("USB command")); }
     else if (command == F("on"))     { outputEnabled = true;              printSequenceStatus(); }
     else if (command == F("off"))    { outputEnabled = false;             printSequenceStatus(); }
     else if (command == F("toggle")) { outputEnabled = !outputEnabled;    printSequenceStatus(); }
@@ -986,9 +1020,7 @@ void handleSwitches(uint32_t now) {
     if (!modeChordTriggered &&
         (now - modeChordStartMs >= device_config::kResetHoldMs)) {
       modeChordTriggered = true;
-      standaloneMode     = true;
-      Serial.println(F("Mode -> STANDALONE (SW1+SW2 chord)"));
-      printSequenceStatus();
+      setControlMode(true, F("SW1+SW2 chord"));
     }
   } else if (!powerSwitch.isPressed() && !previousSwitch.isPressed()) {
     modeChordStartMs    = 0;
