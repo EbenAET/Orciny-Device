@@ -78,13 +78,17 @@ static constexpr uint16_t kServoMinPulse = 120;
 static constexpr uint16_t kServoMaxPulse = 600;
 
 // Claw travel limits (degrees). Keep away from 0° and 180° to avoid binding.
-static constexpr uint8_t kServoAMinAngle = 0;
-static constexpr uint8_t kServoAMaxAngle = 40;
-static constexpr uint8_t kServoBMinAngle = 90;
-static constexpr uint8_t kServoBMaxAngle = 125;
+static constexpr uint8_t kServoAMinAngle = 40;
+static constexpr uint8_t kServoAMaxAngle = 80;
+static constexpr uint8_t kServoBMinAngle = 100;
+static constexpr uint8_t kServoBMaxAngle = 160;
 
 // How often (ms) the claw advances one degree. Lower = faster sweep.
 static constexpr uint16_t kClawStepIntervalMs = 15;
+
+// When true, claw servos are de-energized (PWM off) whenever claw motion is
+// not enabled. This reduces idle current draw and holding torque.
+static constexpr bool kServoIdleWhenInactive = true;
 
 // If no EffectCommand arrives from Serial1 within this window (ms), the
 // firmware falls back to defaultEffectCommand() (all outputs off).

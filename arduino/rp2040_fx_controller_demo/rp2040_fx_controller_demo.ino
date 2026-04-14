@@ -352,12 +352,30 @@ class ClawEffect {
     maxAngleB_ = max(minAngleB, maxAngleB);
     angle_     = minAngleA_;
     direction_ = 1;             // Start sweeping toward maxAngleA_
-    writeServos(static_cast<uint8_t>(angle_));
+    active_    = false;
+    wasEnabled_ = false;
+    if (device_config::kServoIdleWhenInactive) {
+      idleServos();
+    } else {
+      writeServos(static_cast<uint8_t>(angle_));
+      active_ = true;
+    }
   }
 
   void update(uint32_t now, bool enabled) {
     if (!enabled) {
-      stop();
+      if (wasEnabled_) {
+        stop();
+      }
+      wasEnabled_ = false;
+      return;
+    }
+
+    if (!wasEnabled_) {
+      writeServos(static_cast<uint8_t>(angle_));
+      nextStepMs_  = now + device_config::kClawStepIntervalMs;
+      active_      = true;
+      wasEnabled_  = true;
       return;
     }
 
@@ -382,12 +400,18 @@ class ClawEffect {
     active_ = true;
   }
 
-  // Park claw at the minimum (closed) position.
+  // Disable or park claw servos when motion is inactive.
   void stop() {
     if (!active_) {
       return;  // Already stopped — avoid redundant I2C writes.
     }
-    writeServos(minAngleA_);
+
+    if (device_config::kServoIdleWhenInactive) {
+      idleServos();
+    } else {
+      writeServos(minAngleA_);
+    }
+
     active_ = false;
   }
 
@@ -415,6 +439,15 @@ class ClawEffect {
     driver_->setPWM(servoChannelB_, 0, angleToPulse(angleB));
   }
 
+  // PCA9685 off command for a channel: ON=0/OFF=0 disables pulses.
+  void idleServos() {
+    if (driver_ == nullptr) {
+      return;
+    }
+    driver_->setPWM(servoChannelA_, 0, 0);
+    driver_->setPWM(servoChannelB_, 0, 0);
+  }
+
   Adafruit_PWMServoDriver *driver_ = nullptr;
   uint8_t  servoChannelA_ = 0;
   uint8_t  servoChannelB_ = 1;
@@ -425,6 +458,7 @@ class ClawEffect {
   uint8_t  maxAngleB_     = 180;
   int8_t   direction_     = 1;
   bool     active_        = false;
+  bool     wasEnabled_    = false;
   uint32_t nextStepMs_    = 0;
 };
 
