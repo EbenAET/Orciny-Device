@@ -26,7 +26,9 @@ The library is already in your sketchbook at:
 arduino/libraries/OrcinyEffects/
 ```
 
-No action needed—the Arduino IDE will discover it automatically.
+Arduino IDE will discover it automatically only if your sketchbook path is set to this repo's `arduino` folder.
+
+If the library or headers are not found, check `arduino/TROUBLESHOOTING.md` and restart Arduino IDE after correcting the sketchbook path.
 
 ## Quick Start
 
@@ -111,8 +113,8 @@ Edit `arduino/libraries/OrcinyEffects/src/OrcinyEffects.h` in the `Scene::Ember(
 // Original:
 analogWrite(BEAM_RED_PIN,   ColorPalettes::kBeamEmber.red);
 
-// Change to use Cool palette:
-analogWrite(BEAM_RED_PIN,   ColorPalettes::kBeamCool.red);
+// Change to use Cool White palette:
+analogWrite(BEAM_RED_PIN,   ColorPalettes::kBeamCoolWhite.red);
 ```
 
 ### Example: Faster or slower pulse
@@ -129,6 +131,7 @@ uint16_t phase = now % 1200;
 
 ## See Also
 
-- [ColorPalettes.h](../OrcinyCommon/ColorPalettes.h) — Available color palettes
-- [rp2040_fx_starter.ino](../rp2040_fx_starter/) — Starter template for learning
-- [rp2040_fx_controller_demo.ino](../rp2040_fx_controller_demo/) — Full-featured demo
+- [ColorPalettes.h](../OrcinyCommon/src/ColorPalettes.h) — Available color palettes
+- [rp2040_fx_starter.ino](../../rp2040_fx_starter/rp2040_fx_starter.ino) — Starter template for learning
+- [rp2040_fx_controller_demo.ino](../../rp2040_fx_controller_demo/rp2040_fx_controller_demo.ino) — Full-featured demo
+- [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md) — Arduino setup and common fixes

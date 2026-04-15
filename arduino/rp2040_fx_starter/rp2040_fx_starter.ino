@@ -164,8 +164,8 @@ void allOutputsOff();
 //   NeoPixel:       neoPixelSetAll(ColorPalettes::kNeoCyan.red, ...);
 //   Available beam palettes:  kBeamCool, kBeamEmber, kBeamWarmWhite, kBeamCyan, kBeamViolet
 //   Available neo palettes:   kNeoCool, kNeoEmber, kNeoWarmWhite, kNeoCyan, kNeoViolet, kNeoDeepRed
-//   To add or modify palettes, please edit and define in the animationpalettes.h and colorpalettes.h
-//   located in the OrcinyCommon library folder.
+//   To add or modify palettes, edit AnimationPalettes.h and ColorPalettes.h
+//   in the OrcinyCommon library src folder.
 
 void doState1() {
   // ---- INSERT YOUR STATE 1 EFFECT CODE BELOW --------------------------------

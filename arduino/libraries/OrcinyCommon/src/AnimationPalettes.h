@@ -37,11 +37,11 @@ struct BeamAnimation {
   uint16_t cycleMs;        // Total cycle duration in milliseconds
   uint8_t  minIntensity;   // Minimum swell level (0–255)
   uint8_t  maxIntensity;   // Maximum swell level (0–255)
-  
+
   // Calculate current swell envelope (0–maxIntensity) based on elapsed time
   uint8_t getCurrentSwell(uint32_t now) const {
     uint16_t phase = now % cycleMs;
-    
+
     // Linear ramp: first half brightens, second half dims
     if (phase < cycleMs / 2) {
       // Ramp up: minIntensity → maxIntensity
@@ -336,7 +336,7 @@ inline uint8_t getSineEnvelope(uint8_t phase) {
     48,  45,  42,  39,  36,  33,  30,  27,  24,  21,  18,  15,  12,   9,   6,
     3,   0
   };
-  
+
   phase = constrain(phase, 0, 100);
   return SineTable[phase];
 }
@@ -346,5 +346,3 @@ inline uint8_t getRainbowHue(uint32_t now, uint16_t cycleMs) {
   uint16_t phase = now % cycleMs;
   return map(phase, 0, cycleMs, 0, 255);
 }
-
-#endif

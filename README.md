@@ -22,6 +22,8 @@ Install these in the Arduino IDE before compiling:
 - Adafruit NeoPixel
 - Adafruit PWM Servo Driver Library
 
+If Arduino cannot find local headers or libraries, see `arduino/TROUBLESHOOTING.md` for setup and recovery steps.
+
 Set the Arduino sketchbook location to the repo's `arduino` folder so custom libraries resolve correctly:
 
 - Sketchbook location: `C:\Users\ebena\Box\Orciny Device\arduino`

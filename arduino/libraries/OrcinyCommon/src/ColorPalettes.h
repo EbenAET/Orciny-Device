@@ -267,5 +267,3 @@ inline void neoPixelSetAllFromPalette(Adafruit_NeoPixel &strip,
   }
   strip.show();
 }
-
-#endif
