@@ -169,24 +169,28 @@ void allOutputsOff();
 void doState1() {
   // ---- INSERT YOUR STATE 1 EFFECT CODE BELOW --------------------------------
 
-  // Example: simple warm spark flash on channel 1
-  // (analogWrite sends a PWM signal; 0 = off, 255 = full brightness)
+  // Example: ember scene — warm spark flash + ember beam + ember NeoPixels
   static uint32_t nextFlashMs = 0;
   uint32_t now = millis();
+
+  // Random spark bursts on channel 1
   if (now >= nextFlashMs) {
     analogWrite(SPARK_PIN_1, random(100, 220));
-    delay(20);                          // Short blocking delay is OK here for a quick flash
+    delay(15);
     analogWrite(SPARK_PIN_1, 0);
-    nextFlashMs = now + random(50, 200); // Wait a random interval before the next flash
+    nextFlashMs = now + random(100, 300);
   }
 
-  // Example: set beam to warm orange (comment in to try it)
-  // analogWrite(BEAM_RED_PIN,   200);
-  // analogWrite(BEAM_GREEN_PIN,  80);
-  // analogWrite(BEAM_BLUE_PIN,    0);
+  // Set beam to warm ember palette
+  analogWrite(BEAM_RED_PIN,   ColorPalettes::kBeamEmber.red);
+  analogWrite(BEAM_GREEN_PIN, ColorPalettes::kBeamEmber.green);
+  analogWrite(BEAM_BLUE_PIN,  ColorPalettes::kBeamEmber.blue);
 
-  // Example: set all NeoPixels to dim orange
-  // neoPixelSetAll(200, 60, 0, 0);
+  // Set all NeoPixels to ember palette
+  neoPixelSetAll(ColorPalettes::kNeoEmber.red,
+                 ColorPalettes::kNeoEmber.green,
+                 ColorPalettes::kNeoEmber.blue,
+                 ColorPalettes::kNeoEmber.white);
 
   // ---- END OF STATE 1 CODE --------------------------------------------------
 }
@@ -198,19 +202,24 @@ void doState1() {
 void doState2() {
   // ---- INSERT YOUR STATE 2 EFFECT CODE BELOW --------------------------------
 
-  // Example: slow beam swell (cyan/white)
+  // Example: pulsing cyan beam + matching NeoPixel swell
   uint32_t now   = millis();
   uint16_t phase = now % 2400;              // 2.4-second repeating cycle
   uint8_t  swell = phase < 1200
-                   ? map(phase, 0,    1200, 80, 255)
-                   : map(phase, 1200, 2400, 255, 80);
+                   ? map(phase, 0,    1200, 40, 255)
+                   : map(phase, 1200, 2400, 255, 40);
 
-  analogWrite(BEAM_RED_PIN,   swell / 6);
-  analogWrite(BEAM_GREEN_PIN, swell);
-  analogWrite(BEAM_BLUE_PIN,  min(255, (int)swell + 40));
+  // Apply swell to cyan palette
+  analogWrite(BEAM_RED_PIN,   map(swell, 0, 255, 0, ColorPalettes::kBeamCyan.red));
+  analogWrite(BEAM_GREEN_PIN, map(swell, 0, 255, 0, ColorPalettes::kBeamCyan.green));
+  analogWrite(BEAM_BLUE_PIN,  map(swell, 0, 255, 0, ColorPalettes::kBeamCyan.blue));
 
-  // Example: NeoPixel matching the swell color
-  // neoPixelSetAll(swell / 6, swell, min(255, swell + 40));
+  // Match NeoPixels to beam swell
+  uint8_t neo_r = map(swell, 0, 255, 0, ColorPalettes::kNeoCyan.red);
+  uint8_t neo_g = map(swell, 0, 255, 0, ColorPalettes::kNeoCyan.green);
+  uint8_t neo_b = map(swell, 0, 255, 0, ColorPalettes::kNeoCyan.blue);
+  uint8_t neo_w = map(swell, 0, 255, 0, ColorPalettes::kNeoCyan.white);
+  neoPixelSetAll(neo_r, neo_g, neo_b, neo_w);
 
   // ---- END OF STATE 2 CODE --------------------------------------------------
 }
@@ -222,32 +231,44 @@ void doState2() {
 void doState3() {
   // ---- INSERT YOUR STATE 3 EFFECT CODE BELOW --------------------------------
 
-  // Example: all sparks at full intensity + claw sweeping
-  for (int i = 0; i < 5; i++) {             // Quick multi-channel spark burst
-    analogWrite(SPARK_PIN_1, random(180, 255));
-    analogWrite(SPARK_PIN_2, random(180, 255));
-    analogWrite(SPARK_PIN_3, random(160, 240));
-    analogWrite(SPARK_PIN_4, random(160, 240));
-  }
-  delay(15);
-  analogWrite(SPARK_PIN_1, 0);
-  analogWrite(SPARK_PIN_2, 0);
-  analogWrite(SPARK_PIN_3, 0);
-  analogWrite(SPARK_PIN_4, 0);
+  // Example: full show — sparks + violet beam + claw sweep + cyan NeoPixels
+  static uint32_t nextSpark = 0;
+  static int8_t   servo_dir = 1;
+  static uint8_t  servo_angle = 22;
+  static uint32_t nextServo = 0;
+  uint32_t now = millis();
 
-  // Example: non-blocking servo sweep (uncomment to enable)
-  // static int8_t  direction = 1;
-  // static uint8_t angle     = 22;
-  // static uint32_t nextStep = 0;
-  // uint32_t now = millis();
-  // if (now >= nextStep) {
-  //   angle += direction;
-  //   if (angle >= 120) direction = -1;
-  //   if (angle <= 22)  direction =  1;
-  //   setServo(0, angle);
-  //   setServo(1, map(angle, 22, 120, 120, 22)); // Mirror servo B
-  //   nextStep = now + 8;
-  // }
+  // Random spark bursts across all channels
+  if (now >= nextSpark) {
+    for (int i = 0; i < 3; i++) {
+      analogWrite(SPARK_PIN_1, random(200, 255));
+      analogWrite(SPARK_PIN_2, random(200, 255));
+      delay(8);
+    }
+    allOutputsOff();  // Clear sparks
+    nextSpark = now + random(200, 400);
+  }
+
+  // Set beam to violet palette
+  analogWrite(BEAM_RED_PIN,   ColorPalettes::kBeamViolet.red);
+  analogWrite(BEAM_GREEN_PIN, ColorPalettes::kBeamViolet.green);
+  analogWrite(BEAM_BLUE_PIN,  ColorPalettes::kBeamViolet.blue);
+
+  // Non-blocking claw servo sweep
+  if (now >= nextServo) {
+    servo_angle += servo_dir;
+    if (servo_angle >= 120) servo_dir = -1;
+    if (servo_angle <= 22)  servo_dir =  1;
+    setServo(0, servo_angle);
+    setServo(1, map(servo_angle, 22, 120, 120, 22));
+    nextServo = now + 10;
+  }
+
+  // Set all NeoPixels to cyan palette
+  neoPixelSetAll(ColorPalettes::kNeoCyan.red,
+                 ColorPalettes::kNeoCyan.green,
+                 ColorPalettes::kNeoCyan.blue,
+                 ColorPalettes::kNeoCyan.white);
 
   // ---- END OF STATE 3 CODE --------------------------------------------------
 }
