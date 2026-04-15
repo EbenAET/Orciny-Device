@@ -1,6 +1,6 @@
 // =============================================================================
 // rp2040_fx_starter.ino
-// Version : V 0.2.0
+// Version : V 0.2.5
 // Orciny Device — Plug-and-Play FX Starter Template
 // Board : Adafruit Feather RP2040
 // Wings : Prop-Maker FeatherWing + 8-Channel Servo FeatherWing (PCA9685)
@@ -97,11 +97,12 @@ enum DeviceState : uint8_t {
   STATE_1,         // Rename these to match your scene (e.g. STATE_EMBER)
   STATE_2,
   STATE_3,
+  STATE_4,
   STATE_COUNT      // Keep this last — used to wrap the selector
 };
 
 // Readable names printed to Serial Monitor when states change.
-const char* STATE_NAMES[] = { "OFF", "State 1", "State 2", "State 3" };
+const char* STATE_NAMES[] = { "OFF", "Ember", "Cyan Pulse", "Full Show", "AnimPal Demo" };
 
 // =============================================================================
 // STEP 4 — GLOBAL OBJECTS (nothing to change here in most cases)
@@ -273,6 +274,57 @@ void doState3() {
   // ---- END OF STATE 3 CODE --------------------------------------------------
 }
 
+// --- STATE 4 -----------------------------------------------------------------
+// ANIMATION PALETTE ONLY EXAMPLE:
+// This state demonstrates using AnimationPalettes timing/intensity presets
+// directly for beam, NeoPixel pulse, and spark cadence.
+
+void doState4() {
+  // ---- INSERT YOUR STATE 4 EFFECT CODE BELOW --------------------------------
+
+  const auto beamAnim  = AnimationPalettes::kBeamPulseMedium;
+  const auto neoAnim   = AnimationPalettes::kNeoPulseFast;
+  const auto sparkAnim = AnimationPalettes::kSparkCrackle;
+  const uint32_t now   = millis();
+
+  // Beam level from animation preset envelope.
+  uint8_t beamLevel = beamAnim.getCurrentSwell(now);
+  analogWrite(BEAM_RED_PIN,   beamLevel / 8);
+  analogWrite(BEAM_GREEN_PIN, beamLevel);
+  analogWrite(BEAM_BLUE_PIN,  beamLevel);
+
+  // Neo pulse level from animation timing + intensity presets.
+  uint8_t neoLevel = neoAnim.intensity;
+  if (neoAnim.mode == AnimationPalettes::NEO_MODE_PULSE && neoAnim.cycleMs > 0) {
+    uint8_t phase = map(now % neoAnim.cycleMs, 0, neoAnim.cycleMs, 0, 100);
+    neoLevel = map(getSineEnvelope(phase), 0, 106, 8, neoAnim.intensity);
+  }
+  neoPixelSetAll(0, neoLevel / 2, neoLevel, neoLevel / 4);
+
+  // Spark cadence and intensity from spark animation preset.
+  static uint32_t nextSparkStepMs = 0;
+  static bool sparkOn = false;
+  if (now >= nextSparkStepMs) {
+    sparkOn = !sparkOn;
+    if (sparkOn) {
+      uint8_t sparkLevel = random(sparkAnim.intensityFloor, sparkAnim.peakIntensity + 1);
+      analogWrite(SPARK_PIN_1, sparkLevel);
+      analogWrite(SPARK_PIN_2, sparkLevel);
+      analogWrite(SPARK_PIN_3, sparkLevel / 2);
+      analogWrite(SPARK_PIN_4, sparkLevel / 2);
+      nextSparkStepMs = now + random(sparkAnim.minFlashMs, sparkAnim.maxFlashMs + 1);
+    } else {
+      analogWrite(SPARK_PIN_1, 0);
+      analogWrite(SPARK_PIN_2, 0);
+      analogWrite(SPARK_PIN_3, 0);
+      analogWrite(SPARK_PIN_4, 0);
+      nextSparkStepMs = now + random(sparkAnim.minGapMs, sparkAnim.maxGapMs + 1);
+    }
+  }
+
+  // ---- END OF STATE 4 CODE --------------------------------------------------
+}
+
 // =============================================================================
 // SETUP — runs once at power-on
 // =============================================================================
@@ -345,6 +397,7 @@ void loop() {
     case STATE_1: doState1(); break;
     case STATE_2: doState2(); break;
     case STATE_3: doState3(); break;
+    case STATE_4: doState4(); break;
     default:      allOutputsOff(); break;
   }
 

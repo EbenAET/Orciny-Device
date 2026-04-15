@@ -1,6 +1,6 @@
 // =============================================================================
 // rp2040_fx_controller_demo.ino
-// Version : V 0.2.0
+// Version : V 0.2.5
 // Orciny Device — FX Controller  |  Demo / Testing Build
 // Board : Adafruit Feather RP2040
 // Wings : Prop-Maker FeatherWing + 8-Channel Servo FeatherWing (PCA9685)

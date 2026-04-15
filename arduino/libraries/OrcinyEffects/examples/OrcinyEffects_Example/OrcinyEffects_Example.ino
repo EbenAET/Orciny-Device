@@ -1,6 +1,6 @@
 // =============================================================================
 // OrcinyEffects_Example.ino
-// Version : V 0.1.0
+// Version : V 0.2.5
 // Example sketch showing how to use the OrcinyEffects library
 //
 // This is a simplified version of rp2040_fx_starter.ino that uses
