@@ -28,28 +28,45 @@ Set the Arduino sketchbook location to the repo's `arduino` folder so custom lib
 
 `OrcinyCommon` is intended to be used from `arduino/libraries/OrcinyCommon`. Do not keep per-sketch duplicate copies of that header.
 
-## Getting Started: Which Sketch Should I Use?
+## Sketch Use Cases
 
-### Beginners: Start with `rp2040_fx_starter.ino`
+Use this section to pick the right sketch for your task.
 
-This is the recommended starting point. It has:
-- Clear inline documentation
-- Three example effect functions you edit directly
-- Palette examples built into the comments
-- Everything in one file — easy to understand and modify
+### `arduino/rp2040_fx_starter/rp2040_fx_starter.ino` (recommended first)
 
-Edit the `doState1()`, `doState2()`, and `doState3()` functions to create your own effects.
+Use this when you are doing hardware bring-up, learning the framework, or creating custom scenes quickly.
 
-### Advanced Users: Use `OrcinyEffects` Library
+- Simple, single-file structure
+- Physical switch control only (no command parser)
+- Four state behaviors you can edit directly:
+	- State 1: Ember-style palette scene
+	- State 2: Cyan pulse palette scene
+	- State 3: Full show palette scene
+	- State 4: AnimationPalettes-only usage example
 
-If you want to skip writing effect code and use pre-built scenes:
-- Include `<OrcinyEffects.h>` in your sketch
-- Call pre-configured scenes: `Scene::Ember()`, `Scene::CyanPulse()`, `Scene::FullShow()`
-- See `arduino/libraries/OrcinyEffects/README.md` and the example sketch for details
+Edit `doState1()` through `doState4()` to customize behavior.
 
-### Reference: `rp2040_fx_controller_demo.ino`
+### `arduino/rp2040_fx_controller_demo/rp2040_fx_controller_demo.ino` (advanced controller)
 
-Full-featured controller with USB command interface, effect overrides, and detailed comments. Use this as a reference for advanced features or USB testing.
+Use this when you need richer runtime control and USB command-driven testing.
+
+- Full standalone controller flow
+- USB serial command interface (status, overrides, palette selection, servo/neo tests)
+- Sequence-driven profile system
+- Best choice for integration/bench testing and operator workflows
+
+### `arduino/libraries/OrcinyEffects/examples/OrcinyEffects_Example/OrcinyEffects_Example.ino` (hybrid quick-start)
+
+Use this when you want minimal sketch logic and pre-built scene calls.
+
+- Demonstrates the hybrid model
+- Calls library scenes (`Scene::Ember()`, `Scene::CyanPulse()`, `Scene::FullShow()`) rather than writing effect internals inline
+- Good for rapid deployment and reusable scene architecture
+
+### Library Roles
+
+- `arduino/libraries/OrcinyCommon`: shared protocol structs, palette definitions, animation presets
+- `arduino/libraries/OrcinyEffects`: optional pre-built scene implementations for advanced/hybrid workflows
 
 ## Wiring Assumptions
 
@@ -103,43 +120,45 @@ This revision intentionally removes NeoPXL8 and Motor FeatherWing dependencies.
 
 ## How To Use
 
+### Path A: Starter Sketch (most users)
+
 1. In Arduino IDE, set Sketchbook location to `C:\Users\ebena\Box\Orciny Device\arduino`.
-2. Open `arduino/rp2040_fx_controller_demo/rp2040_fx_controller_demo.ino` in Arduino IDE and select the Feather RP2040 target.
-3. Adjust RP2040 `DeviceConfig.h` settings to match your actual wiring and strip length.
-4. Upload the RP2040 sketch.
-5. Open the RP2040 USB serial monitor at `115200` baud for operator commands and status.
+2. Open `arduino/rp2040_fx_starter/rp2040_fx_starter.ino` and select Feather RP2040.
+3. Upload and test with hardware switches.
+4. Customize `doState1()` to `doState4()`.
 
-## Switch Inputs
+Starter switch behavior:
 
-The RP2040 sketch expects three momentary switches connected from GPIO to GND and uses `INPUT_PULLUP`.
+- SW1 (`GP27`): toggle outputs on/off
+- SW2 (`GP28`): previous state
+- SW3 (`GP29`): next state
+- Hold SW1 + SW3 for 5 seconds: reset to State 1 with outputs off
 
-- Switch 1 on pin `GP27`: toggle the current sequence on or off
-- Switch 2 on pin `GP28`: move to the previous sequence, wrapping `1 -> 3`
-- Switch 3 on pin `GP29`: move to the next sequence, wrapping `3 -> 1`
-- Hold switches 1 and 3 together for 5 seconds: reset back to sequence 1
+### Path B: Demo Controller (advanced)
 
-Turning the sequence off does not lose its position. Turning it back on resumes the last selected sequence.
+1. Open `arduino/rp2040_fx_controller_demo/rp2040_fx_controller_demo.ino`.
+2. Adjust `arduino/rp2040_fx_controller_demo/DeviceConfig.h` for your hardware.
+3. Upload and open USB serial monitor at `115200` baud.
 
-## Sequence Map
+Demo controller uses three sequences:
 
-- Sequence 1: sparks + ember-style core
-- Sequence 2: beam + pulsing core (peltier auto-follows beam with cooldown hold)
-- Sequence 3: full show with sparks, beam, claw, and animated core
+- Sequence 1: ember-focused profile
+- Sequence 2: pulse/beam-focused profile
+- Sequence 3: full show profile
 
-## Serial Commands
+Common serial commands:
 
-Send any of these lines from the RP2040 serial monitor:
+- `help`, `status`
+- `on`, `off`, `toggle`
+- `prev`, `next`, `seq1`, `seq2`, `seq3`, `reset`
+- `beam palette cool|ember|cyan|violet|auto`
+- `neo on|off|auto`
 
-- `help`
-- `on`
-- `off`
-- `toggle`
-- `prev`
-- `next`
-- `seq1`
-- `seq2`
-- `seq3`
-- `reset`
+### Path C: Hybrid with OrcinyEffects
+
+1. Open `arduino/libraries/OrcinyEffects/examples/OrcinyEffects_Example/OrcinyEffects_Example.ino`.
+2. Upload as-is for quick validation.
+3. Replace scene calls or tune library scene internals in `arduino/libraries/OrcinyEffects/src/OrcinyEffects.h`.
 
 ## Notes
 
