@@ -52,7 +52,17 @@ In Arduino IDE:
 
 1. Open `File > Preferences`.
 2. Set `Sketchbook location` to this repo's `arduino` folder.
-3. Restart Arduino IDE.
+3. In `Additional Boards Manager URLs`, add:
+
+```text
+https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+```
+
+4. Click `OK` to save Preferences.
+5. Open `Tools > Board > Boards Manager`.
+6. Search for `Raspberry Pi Pico/RP2040`.
+7. Install the `Raspberry Pi Pico/RP2040` package by Earle F. Philhower, III.
+8. Restart Arduino IDE.
 
 Why this matters:
 
