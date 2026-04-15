@@ -150,7 +150,8 @@ void setup() {
   servoDriver.setPWMFreq(50);
 
   // Switches
-  for (SwitchState *sw : {&swPower, &swPrev, &swNext}) {
+  SwitchState *switches[] = { &swPower, &swPrev, &swNext };
+  for (SwitchState *sw : switches) {
     pinMode(sw->pin, INPUT_PULLUP);
     sw->stable = sw->raw = (digitalRead(sw->pin) == LOW);
     sw->lastChangeMs = millis();

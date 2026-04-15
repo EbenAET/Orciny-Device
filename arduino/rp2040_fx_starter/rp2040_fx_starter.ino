@@ -362,7 +362,8 @@ void setup() {
   servoDriver.setPWMFreq(50);  // 50 Hz standard for hobby servos
 
   // --- Switches (INPUT_PULLUP: floating = HIGH, pressed = LOW) ---------------
-  for (SwitchState *sw : {&swPower, &swPrev, &swNext}) {
+  SwitchState *switches[] = { &swPower, &swPrev, &swNext };
+  for (SwitchState *sw : switches) {
     pinMode(sw->pin, INPUT_PULLUP);
     sw->stable = sw->raw = (digitalRead(sw->pin) == LOW);
     sw->lastChangeMs = millis();
