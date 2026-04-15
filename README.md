@@ -9,10 +9,11 @@ The RP2040 handles scene control, switch and USB command handling, NeoPixel core
 ## Folder Layout
 
 - `arduino/rp2040_fx_controller_demo`: primary RP2040 FX controller sketch for the current demo/test build
-- `arduino/rp2040_fx_starter`: minimal RP2040 starter sketch for hardware bring-up
+- `arduino/rp2040_fx_starter`: minimal RP2040 starter sketch for hardware bring-up (recommended for learning)
 - `arduino/depreciated/rp2040_fx_controller`: older RP2040 controller reference sketch
 - `arduino/depreciated/m0_core_controller`: legacy split-controller reference sketch
 - `arduino/libraries/OrcinyCommon`: shared protocol and data structures
+- `arduino/libraries/OrcinyEffects`: optional pre-built effect scenes (advanced users only)
 
 ## Arduino Libraries
 
@@ -26,6 +27,29 @@ Set the Arduino sketchbook location to the repo's `arduino` folder so custom lib
 - Sketchbook location: `C:\Users\ebena\Box\Orciny Device\arduino`
 
 `OrcinyCommon` is intended to be used from `arduino/libraries/OrcinyCommon`. Do not keep per-sketch duplicate copies of that header.
+
+## Getting Started: Which Sketch Should I Use?
+
+### Beginners: Start with `rp2040_fx_starter.ino`
+
+This is the recommended starting point. It has:
+- Clear inline documentation
+- Three example effect functions you edit directly
+- Palette examples built into the comments
+- Everything in one file — easy to understand and modify
+
+Edit the `doState1()`, `doState2()`, and `doState3()` functions to create your own effects.
+
+### Advanced Users: Use `OrcinyEffects` Library
+
+If you want to skip writing effect code and use pre-built scenes:
+- Include `<OrcinyEffects.h>` in your sketch
+- Call pre-configured scenes: `Scene::Ember()`, `Scene::CyanPulse()`, `Scene::FullShow()`
+- See `arduino/libraries/OrcinyEffects/README.md` and the example sketch for details
+
+### Reference: `rp2040_fx_controller_demo.ino`
+
+Full-featured controller with USB command interface, effect overrides, and detailed comments. Use this as a reference for advanced features or USB testing.
 
 ## Wiring Assumptions
 
