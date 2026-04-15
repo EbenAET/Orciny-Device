@@ -48,6 +48,8 @@ Example:
 C:\Users\USERNAME\Box\Orciny Device\arduino
 ```
 
+**Note (v1.0.0+):** Once this project reaches version 1.0.0 or later, reconfigure the folder structure out of Box and into the default Arduino sketchbook location (for example, `Documents\Arduino`).
+
 In Arduino IDE:
 
 1. Open `File > Preferences`.
