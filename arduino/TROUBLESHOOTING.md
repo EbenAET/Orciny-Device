@@ -45,7 +45,7 @@ Set Arduino IDE's Sketchbook location to the `arduino` folder in this repo.
 Example:
 
 ```text
-C:\Users\ebena\Box\Orciny Device\arduino
+C:\Users\USERNAME\Box\Orciny Device\arduino
 ```
 
 In Arduino IDE:
