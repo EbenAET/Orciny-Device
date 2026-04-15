@@ -57,7 +57,9 @@
 #include <Adafruit_NeoPixel.h>        // NeoPixel strip driver
 #include <Wire.h>                     // I2C bus (required by servo driver)
 
-#include <OrcinyCommon.h>  // Shared packet types: CoreFrame, EffectCommand, etc.
+#include <OrcinyCommon.h>              // Shared packet types: CoreFrame, EffectCommand, etc.
+#include <ColorPalettes.h>             // Beam and NeoPixel color palettes
+#include <AnimationPalettes.h>         // Animation preset definitions
 
 #include "DeviceConfig.h"  // All pin assignments and tuning constants
 

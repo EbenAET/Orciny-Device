@@ -34,6 +34,8 @@
 #include <Wire.h>                      // I2C bus (required for servo driver)
 #include <Adafruit_PWMServoDriver.h>   // PCA9685 servo wing library
 #include <Adafruit_NeoPixel.h>         // NeoPixel strip library
+#include <ColorPalettes.h>             // Beam and NeoPixel color palettes
+#include <AnimationPalettes.h>         // Animation preset definitions
 
 // =============================================================================
 // STEP 1 — PIN CONFIGURATION
@@ -98,7 +100,7 @@ enum DeviceState : uint8_t {
   STATE_COUNT      // Keep this last — used to wrap the selector
 };
 
-// Human-readable names printed to Serial Monitor when states change.
+// Readable names printed to Serial Monitor when states change.
 const char* STATE_NAMES[] = { "OFF", "State 1", "State 2", "State 3" };
 
 // =============================================================================
@@ -155,6 +157,14 @@ void allOutputsOff();
 
 // --- STATE 1 -----------------------------------------------------------------
 // Replace the example code with your own effects.
+//
+// PALETTE EXAMPLES:
+//   Beam color:     analogWrite(BEAM_RED_PIN, r); // Use ColorPalettes::kBeamEmber etc.
+//   NeoPixel:       neoPixelSetAll(ColorPalettes::kNeoCyan.red, ...);
+//   Available beam palettes:  kBeamCool, kBeamEmber, kBeamWarmWhite, kBeamCyan, kBeamViolet
+//   Available neo palettes:   kNeoCool, kNeoEmber, kNeoWarmWhite, kNeoCyan, kNeoViolet, kNeoDeepRed
+//   To add or modify palettes, please edit and define in the animationpalettes.h and colorpalettes.h
+//   located in the OrcinyCommon library folder.
 
 void doState1() {
   // ---- INSERT YOUR STATE 1 EFFECT CODE BELOW --------------------------------
@@ -182,6 +192,8 @@ void doState1() {
 }
 
 // --- STATE 2 -----------------------------------------------------------------
+// PALETTE TIP: Use ColorPalettes to set beam colors without manually tuning RGB values.
+// Example: Reference ColorPalettes::kBeamCyan for the cyan swell below.
 
 void doState2() {
   // ---- INSERT YOUR STATE 2 EFFECT CODE BELOW --------------------------------
@@ -204,6 +216,8 @@ void doState2() {
 }
 
 // --- STATE 3 -----------------------------------------------------------------
+// PALETTE TIP: Use ColorPalettes::kNeoEmber or similar to set all NeoPixels to a palette color.
+// Example: neoPixelSetAll(ColorPalettes::kNeoEmber.red, kNeoEmber.green, kNeoEmber.blue, kNeoEmber.white);
 
 void doState3() {
   // ---- INSERT YOUR STATE 3 EFFECT CODE BELOW --------------------------------
