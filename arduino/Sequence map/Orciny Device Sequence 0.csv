@@ -1,0 +1,9 @@
+﻿Orciny Device Sequence,,
+"Sequence 0: ""Inactive""",,
+,,
+Output/Time (seconds),,
+Sparks,Random single short flickers with 3-5 seconds between events,Loop until button press
+Core,,
+Beam,,
+Pincer,,
+Pump and filament,,

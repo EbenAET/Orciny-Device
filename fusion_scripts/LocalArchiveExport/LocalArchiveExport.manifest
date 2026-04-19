@@ -1,0 +1,11 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Eben + Copilot",
+  "description": {
+    "": "Exports the active Fusion design to a local archive folder (F3D/STEP/STL)."
+  },
+  "version": "0.1.0",
+  "supportedOS": "windows|mac",
+  "editEnabled": true
+}

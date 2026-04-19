@@ -1,0 +1,17 @@
+{
+  "version": "0.1.0",
+  "exportRoot": "C:/Users/ebena/OneDrive - University of Illinois - Urbana/Documents/GitHub",
+  "formats": [
+    "f3d",
+    "step",
+    "stl"
+  ],
+  "stlOneFilePerBody": false,
+  "createTimestampRunFolder": true,
+  "boxSyncScriptPath": "..\\..\\tools\\sync-box-local.ps1",
+  "boxSyncArgs": [
+    "-Mode",
+    "RepoToBox",
+    "-PruneLegacyDuplicates"
+  ]
+}

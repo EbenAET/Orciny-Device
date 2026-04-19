@@ -120,6 +120,57 @@ This revision intentionally removes NeoPXL8 and Motor FeatherWing dependencies.
 - Add `-PruneLegacyDuplicates` to remove the old root-level duplicate library and backup folders and keep the canonical `circuit/kicad/...` layout intact.
 - The sync skips nested `.git` directories, the old root-level duplicate library and backup folders, plus `.DS_Store` and `Thumbs.db` files.
 
+## Fusion MCP Archive Workflow
+
+- Use `tools/sync-fusion-mcp-archive.ps1` to query recent Fusion docs through your local MCP adapter and export archive files into this repo.
+- Default MCP URL is `http://127.0.0.1:27182/mcp`.
+- Default export root is `3d Models/Archive/fusion_auto`.
+- If `tools/fusion-project-map.json` exists and you do not pass `-Project`, the script automatically uses map rules to route each Fusion project into its own subfolder.
+
+- Run an audit first to see what would match and export:
+
+```powershell
+.\tools\sync-fusion-mcp-archive.ps1 -Mode Audit -Project "City and the City - Orciny Device"
+```
+
+- Export selected files by project and name pattern:
+
+```powershell
+.\tools\sync-fusion-mcp-archive.ps1 -Mode Export -Project "City and the City - Orciny Device" -NameLike "*Pincer*" -Formats f3d,step,stl
+```
+
+- Add `-IncludeStlOneFilePerBody` if you want STL outputs split by body.
+- Add `-WhatIf` to preview actions without opening or exporting any document.
+- Add `-ReportPath` to write a machine-readable run report.
+- Add `-DisableProjectMap` to bypass the map and use manual `-Project` / `-NameLike` filters.
+
+- Audit all mapped projects:
+
+```powershell
+.\tools\sync-fusion-mcp-archive.ps1 -Mode Audit
+```
+
+- Export all mapped projects into project-specific archive folders:
+
+```powershell
+.\tools\sync-fusion-mcp-archive.ps1 -Mode Export
+```
+
+- Map file location and format: `tools/fusion-project-map.json`
+- Each rule can include:
+	- `project` or `projectId`
+	- `outputSubfolder`
+	- `formats` (`f3d`, `step`, `stl`)
+	- optional `nameLike`
+
+- Chain export and Box upload in one command:
+
+```powershell
+.\tools\sync-fusion-mcp-archive.ps1 -Mode Export -Project "City and the City - Orciny Device" -Formats f3d,step -RunBoxSync
+```
+
+- The script creates a timestamped run folder under `3d Models/Archive/fusion_auto` so every run is non-destructive.
+
 ## How To Use
 
 ### Path A: Starter Sketch (most users)

@@ -1,0 +1,86 @@
+MODE=Export
+MCP_URL=http://127.0.0.1:27182/mcp
+REPO_PATH=C:\Users\ebena\OneDrive - University of Illinois - Urbana\Documents\GitHub\Orciny-Device
+EXPORT_ROOT=C:\Users\ebena\OneDrive - University of Illinois - Urbana\Documents\GitHub\Orciny-Device\3d Models\Archive\fusion_auto
+PROJECT_FILTER=
+NAMELIKE_FILTER=
+FORMAT_FILTER=f3d,step
+PROJECT_MAP_PATH=C:\Users\ebena\OneDrive - University of Illinois - Urbana\Documents\GitHub\Orciny-Device\tools\fusion-project-map.json
+PROJECT_MAP_ACTIVE=True
+MATCH_COUNT=37
+MATCH=0000 Device Assembly | urn:adsk.wipprod:dm.lineage:0i7we0qBRXyN4Au_lZAOfA | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Donuts | urn:adsk.wipprod:dm.lineage:x_f3pI8QSxqb1imuMA4Tkw | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Large disk insert | urn:adsk.wipprod:dm.lineage:e5Ka2zAoSriwOnS_mKsbtw | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Pincer2 | urn:adsk.wipprod:dm.lineage:Z4H9nMHJRkywdjsSsq7myw | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=adafruit | urn:adsk.wipprod:dm.lineage:Ej6vKYrnSt-ZIFgxbDMd9g | City and the City - Orciny Device | Circuit | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Pin | urn:adsk.wipprod:dm.lineage:PLMYrBxTQdqTRPHx7Qjl8w | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=End connector | urn:adsk.wipprod:dm.lineage:xL0HUBYZQrGGkRIrOdHDPw | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Nozzle | urn:adsk.wipprod:dm.lineage:XH76Vv6oStSqThVJ8LdOsw | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Rotary Shaft | urn:adsk.wipprod:dm.lineage:Y_C4eCmAQlGzDhUTAhTmWw | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Coupler | urn:adsk.wipprod:dm.lineage:pr6ihEBnSuqMdRxkfSCbQw | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Central shaft | urn:adsk.wipprod:dm.lineage:qKA4xiB4RSe2X-p6imrm5g | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Broken tail | urn:adsk.wipprod:dm.lineage:KY0QbmYLRIuuyMJGiDZOdw | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Mounting Martrix | urn:adsk.wipprod:dm.lineage:OBUW4VHMSKGCA77YboDdjg | City and the City - Orciny Device | City and the City - Orciny Device | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=emeey pinchers pt1 | urn:adsk.wipprod:dm.lineage:gWEqI1OyTM-vEEHmxptcwQ | City and the City - Orciny Device | Archive | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Pincer Mesh | urn:adsk.wipprod:dm.lineage:DkKWn12oQ7KZ3K4VdfnyJQ | City and the City - Orciny Device | Archive | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Clay pincer meshmodel | urn:adsk.wipprod:dm.lineage:GIoec0_ZQzCYo7EZ0XneOQ | City and the City - Orciny Device | Mesh scans | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Device Nozzle | urn:adsk.wipprod:dm.lineage:wPSjv7ReQXulWAZpgUlfvQ | City and the City - Orciny Device | Archive | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Pincer | urn:adsk.wipprod:dm.lineage:LqhbNozhQHq2CwXfs8nBlQ | City and the City - Orciny Device | Archive | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=emery test | urn:adsk.wipprod:dm.lineage:FYrKI2XZQSa07a1-etMyPg | City and the City - Orciny Device | Archive | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Emery Test | urn:adsk.wipprod:dm.lineage:BRCgBeIaSra0wubaWRF43Q | City and the City - Orciny Device | Archive | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=emery test | urn:adsk.wipprod:dm.lineage:FaK44H6cSXKmsoEH3gZrqg | City and the City - Orciny Device | Archive | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=Nozzle Cap | urn:adsk.wipprod:dm.lineage:_48LmerfRO-RmRAW0qVxWA | City and the City - Orciny Device | Archive | subfolder=orciny-device | formats=f3d,step,stl
+MATCH=000 Claw assembly | urn:adsk.wipprod:dm.lineage:s7H_Vr9sT2ukSLe7j24oaw | Orciny device | Orciny device | subfolder=orciny-device-next | formats=f3d,step,stl
+MATCH=Screw | urn:adsk.wipprod:dm.lineage:RjQVy1nPQRKoVIJjv0cjCQ | Orciny device | Orciny device | subfolder=orciny-device-next | formats=f3d,step,stl
+MATCH=0000 Effect Assembly | urn:adsk.wipprod:dm.lineage:MgjUV8lTTwCATlut9x-gGg | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=Bung | urn:adsk.wipprod:dm.lineage:AIxvFMD1TlaubFQTPOqOWw | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=PCB3 | urn:adsk.wipprod:dm.lineage:rGX81_E_SMe7DuCYjnw8zg | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=PCB3 | urn:adsk.wipprod:dm.lineage:CceROSsmQnKhIDO-hsE-gQ | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=PCB3 | urn:adsk.wipprod:dm.lineage:Wt0j8bskTZ-lOoiLNmkJyQ | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=PCB Assembly | urn:adsk.wipprod:dm.lineage:iWvl_ixJS6KupJv7bIMY4w | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=PCB3 | urn:adsk.wipprod:dm.lineage:zwZO-YlHRzK7X6FbYi3zog | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=4 pin fpc | urn:adsk.wipprod:dm.lineage:DiI6vidnQ76GTtji4kISsQ | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=2026-02-20_17-37-38_Library | urn:adsk.wipprod:dm.lineage:nSYjRbDsSKOJwaZLO-sgmA | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=CONN4_93-0470_MOL | urn:adsk.wipprod:dm.lineage:B5IE1y8fR1q9EawdSpntRA | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=4pin FPC Connector | urn:adsk.wipprod:dm.lineage:t7W2Dlk1TRiYh1G_xvv78A | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=Connectorcust | urn:adsk.wipprod:dm.lineage:igUmLseoQQ6BJsJLfTLd6g | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+MATCH=PCB2 | urn:adsk.wipprod:dm.lineage:SoFJXjL8RjyrG6MS-hq-GQ | Radium Girls | Radium Girls | subfolder=radium-girls | formats=f3d,step
+EXPORTED_COUNT=37
+FAILED_COUNT=0
+EXPORTED=0000 Device Assembly -> orciny-device
+EXPORTED=Donuts -> orciny-device
+EXPORTED=Large disk insert -> orciny-device
+EXPORTED=Pincer2 -> orciny-device
+EXPORTED=adafruit -> orciny-device
+EXPORTED=Pin -> orciny-device
+EXPORTED=End connector -> orciny-device
+EXPORTED=Nozzle -> orciny-device
+EXPORTED=Rotary Shaft -> orciny-device
+EXPORTED=Coupler -> orciny-device
+EXPORTED=Central shaft -> orciny-device
+EXPORTED=Broken tail -> orciny-device
+EXPORTED=Mounting Martrix -> orciny-device
+EXPORTED=emeey pinchers pt1 -> orciny-device
+EXPORTED=Pincer Mesh -> orciny-device
+EXPORTED=Clay pincer meshmodel -> orciny-device
+EXPORTED=Device Nozzle -> orciny-device
+EXPORTED=Pincer -> orciny-device
+EXPORTED=emery test -> orciny-device
+EXPORTED=Emery Test -> orciny-device
+EXPORTED=emery test -> orciny-device
+EXPORTED=Nozzle Cap -> orciny-device
+EXPORTED=000 Claw assembly -> orciny-device-next
+EXPORTED=Screw -> orciny-device-next
+EXPORTED=0000 Effect Assembly -> radium-girls
+EXPORTED=Bung -> radium-girls
+EXPORTED=PCB3 -> radium-girls
+EXPORTED=PCB3 -> radium-girls
+EXPORTED=PCB3 -> radium-girls
+EXPORTED=PCB Assembly -> radium-girls
+EXPORTED=PCB3 -> radium-girls
+EXPORTED=4 pin fpc -> radium-girls
+EXPORTED=2026-02-20_17-37-38_Library -> radium-girls
+EXPORTED=CONN4_93-0470_MOL -> radium-girls
+EXPORTED=4pin FPC Connector -> radium-girls
+EXPORTED=Connectorcust -> radium-girls
+EXPORTED=PCB2 -> radium-girls

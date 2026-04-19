@@ -1,0 +1,12 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "addin",
+  "author": "Eben + Copilot",
+  "description": {
+    "": "Adds a toolbar command to export the active Fusion design to a local archive folder (F3D/STEP/STL)."
+  },
+  "version": "0.1.0",
+  "supportedOS": "windows|mac",
+  "runOnStartup": false,
+  "editEnabled": true
+}

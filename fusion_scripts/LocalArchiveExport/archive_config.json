@@ -1,0 +1,7 @@
+{
+  "version": "0.1.0",
+  "exportRoot": "",
+  "formats": ["f3d", "step", "stl"],
+  "stlOneFilePerBody": false,
+  "createTimestampRunFolder": true
+}

@@ -1,0 +1,20 @@
+{
+  "version": "0.1.0",
+  "rules": [
+    {
+      "project": "City and the City - Orciny Device",
+      "outputSubfolder": "orciny-device",
+      "formats": ["f3d", "step", "stl"]
+    },
+    {
+      "project": "Orciny device",
+      "outputSubfolder": "orciny-device-next",
+      "formats": ["f3d", "step", "stl"]
+    },
+    {
+      "project": "Radium Girls",
+      "outputSubfolder": "radium-girls",
+      "formats": ["f3d", "step"]
+    }
+  ]
+}

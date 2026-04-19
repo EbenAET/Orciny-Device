@@ -1,0 +1,9 @@
+﻿Orciny Device Sequence,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"Sequence 2: ""Demonstrate""",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Output/Time (seconds),0,0.25,0.5,0.75,1,1.25,1.5,1.75,2,2.25,2.5,2.75,3,3.25,3.5,3.75,4,4.25,4.5,4.75,5,5.25,5.5,5.75,6,6.25,6.5,6.75,7,7.25,7.5,7.75,8,8.25,8.5,8.75,9,9.25,9.5,9.75,10,10.25,10.5,10.75,Loop until button press
+Sparks,,,Random sparks,,,,,,,,,,,,,,,Random sparks,,,,,,,,,,Random sparks,,,,Random sparks,,,Random sparks,,,,Random sparks,,,,,,
+Core,Core is flashing between cyan and orange quickly,,,,,,,,,"Along with flashing between teal and orange, a random chases a few pixels long in magenta start climbing up and down the neopixel strip",,,,,,,,,,,,,,,,,,,All lights off,"Entire strip fades up in magenta, slowly at first",,,,,,,,,,,,,,,
+Beam,Beam brigtens to orange at 90%,,Beam fades color to teal,,,,,,,,,,Beam pulses between teal and orange with an accellerating frequency,,,,,,,,,,,,,,,,,Beam turns magenta at 30 %,,Magenta fades up to full,,,,,,,,,,,,,
+Pincer,,,,,Both servos become rigid,,,,,"Servos create random movement, first slowly, then getting faster and more frantic",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Pimcers freeze up,,,
+Pump and filament,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
