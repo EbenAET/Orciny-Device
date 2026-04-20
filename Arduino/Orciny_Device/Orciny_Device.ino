@@ -1,6 +1,6 @@
 // =============================================================================
-// rp2040_fx_starter.ino
-// Version : V 0.2.6
+// Orciny_Device.ino
+// Version : V 0.2.7
 // Orciny Device — Plug-and-Play FX Starter Template
 // Board : Adafruit Feather RP2040
 // Wings : Prop-Maker FeatherWing + 8-Channel Servo FeatherWing (PCA9685)
@@ -31,59 +31,16 @@
 //   NeoPixel strip  — GP25 (166 pixels)           use neoPixelSetAll() helper
 // =============================================================================
 
+// Core libraries
 #include <Wire.h>                      // I2C bus (required for servo driver)
 #include <Adafruit_PWMServoDriver.h>   // PCA9685 servo wing library
 #include <Adafruit_NeoPixel.h>         // NeoPixel strip library
+#include "DeviceConfig.h"              // Centralized pin and parameter definitions
 
 // =============================================================================
-// STEP 1 — PIN CONFIGURATION
-// These are the physical pin numbers wired on the Orciny PCB.
+// STEP 1 — PIN CONFIGURATION & TUNING PARAMETERS
+// All pin and parameter definitions are now in DeviceConfig.h
 // Only change these if you are building on different hardware.
-// =============================================================================
-
-// Prop-Maker FeatherWing enable pin — MUST be HIGH or no outputs will work.
-#define PROP_MAKER_PWR_PIN   10
-
-// Prop-Maker MOSFET outputs (0–255 PWM, HIGH = on)
-#define BEAM_RED_PIN         11
-#define BEAM_GREEN_PIN       12
-#define BEAM_BLUE_PIN        13
-
-// Spark channels — current-limited GPIO outputs
-#define SPARK_PIN_1          18
-#define SPARK_PIN_2          19
-#define SPARK_PIN_3          20
-#define SPARK_PIN_4          24
-
-// NeoPixel strip data line
-#define NEO_DATA_PIN         25
-#define NEO_PIXEL_COUNT      166      // Number of pixels on the strip
-#define NEO_COLOR_ORDER      NEO_GRBW // SK6812 RGBW pixel order
-
-// Momentary switches (INPUT_PULLUP: LOW = pressed)
-#define SW_POWER_PIN         27       // GP27 — on/off toggle
-#define SW_PREV_PIN          28       // GP28 — previous state
-#define SW_NEXT_PIN          29       // GP29 — next state
-
-// =============================================================================
-// STEP 2 — TUNING PARAMETERS
-// Adjust these values to change timing and behavior without touching the code.
-// =============================================================================
-
-// Debounce: ignore button transitions shorter than this (milliseconds).
-// If buttons feel unresponsive, raise slightly.  If they double-trigger, raise more.
-#define DEBOUNCE_MS          30
-
-// Reset chord: hold SW1 + SW3 for this long to reset (milliseconds).
-#define RESET_HOLD_MS        5000
-
-// PCA9685 I2C address — 0x40 is the default (all address pads open).
-#define SERVO_I2C_ADDR       0x40
-
-// Servo pulse width range.  Tune these if servos don't reach full travel.
-#define SERVO_PULSE_MIN      120
-#define SERVO_PULSE_MAX      600
-
 // =============================================================================
 // STEP 2B - COLOR PALETTE DESIGNATORS
 // Use these enums to select named color palettes for beam and NeoPixels.

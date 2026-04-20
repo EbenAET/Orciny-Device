@@ -1,26 +1,20 @@
 // =============================================================================
 // AnimationPalettes.h
-// Version : V 0.2.5
+// Version : V 0.2.7
 // Animation preset definitions for Orciny beam, NeoPixel, and spark effects.
 // =============================================================================
 //
 // BEAM ANIMATIONS — Swell envelope patterns
 //   Defines timing and modulation for the beam breathing/pulsing effect.
+//   All animation minutiae for beam actions are encapsulated here.
 //
 // NEO ANIMATIONS — NeoPixel animation modes
 //   Preset patterns with timing and color cycling parameters.
+//   All animation minutiae for NeoPixel actions are encapsulated here.
 //
 // SPARK ANIMATIONS — Spark burst and timing patterns
 //   Controls flash intensity, frequency, and burst characteristics.
-//
-// USAGE EXAMPLE
-//   // Apply a slow pulse beam animation
-//   auto beam_anim = AnimationPalettes::kBeamPulseSlow;
-//   uint8_t swell = beam_anim.getCurrentSwell(millis());
-//
-//   // Configure spark channel with crackle animation
-//   auto spark_anim = AnimationPalettes::kSparkCrackle;
-//
+//   All animation minutiae for spark actions are encapsulated here.
 // =============================================================================
 
 #pragma once
