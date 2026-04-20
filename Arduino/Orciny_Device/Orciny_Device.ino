@@ -1,6 +1,6 @@
 // =============================================================================
 // Orciny_Device.ino
-// Version : V 0.3.5
+// Version : V 0.3.7
 // Orciny Device — Plug-and-Play FX Starter Template
 // Board : Adafruit Feather RP2040
 // Wings : Prop-Maker FeatherWing + 8-Channel Servo FeatherWing (PCA9685)
@@ -58,7 +58,7 @@ uint32_t doStateFailure_nextServoMs    = 0;
 // All pin and parameter definitions are now in DeviceConfig.h
 // Only change these if you are building on different hardware.
 // =============================================================================
-// STEP 2B - COLOR PALETTE DESIGNATORS
+// STEP 2 - COLOR PALETTE DESIGNATORS
 // Use these enums to select named color palettes for beam and NeoPixels.
 // To add more, be sure to create a name  in the ID field and add the corresponding RGB(W) values in the BEAM_PALETTES and NEO_PALETTES arrays below.
 // =============================================================================
@@ -93,11 +93,11 @@ struct BeamPaletteColor {
   uint8_t blue;
 };
 
+
 struct NeoPaletteColor {
   uint8_t red;
   uint8_t green;
   uint8_t blue;
-  uint8_t white;
 };
 
 const BeamPaletteColor BEAM_PALETTES[] = {
@@ -113,19 +113,19 @@ const BeamPaletteColor BEAM_PALETTES[] = {
 };
 
 const NeoPaletteColor NEO_PALETTES[] = {
-  {0,   0,   0,   0},   // OFF
-  {140, 130, 110, 40},  // WARM_WHITE
-  {220, 70,  8,   0},   // EMBER
-  {0,   180, 230, 0},   // CYAN
-  {140, 45,  210, 0},   // VIOLET
-  {255, 0,   180, 0},   // MAGENTA
-  {255, 180, 0,   80},  // GOLDEN
-  {0,   200, 180, 0},   // TEAL
-  {200, 200, 200, 100}, // WHITE
+  {0,   0,   0},    // OFF
+  {140, 130, 110},  // WARM_WHITE (approximation)
+  {220, 70,  8},    // EMBER
+  {0,   180, 230},  // CYAN
+  {140, 45,  210},  // VIOLET
+  {255, 0,   180},  // MAGENTA
+  {255, 180, 0},    // GOLDEN
+  {0,   200, 180},  // TEAL
+  {200, 200, 200},  // WHITE
 };
 
 // =============================================================================
-// STEP 2C - STATE PALETTE SELECTORS
+// STEP 3 - STATE PALETTE SELECTORS
 // One-line per-state color selectors.  Change these values to retheme states
 // without editing state logic code.
 // =============================================================================
@@ -143,7 +143,7 @@ const NeoPaletteId STATE_DEMO_NEO_PALETTE       = NEO_PALETTE_CYAN;
 const NeoPaletteId STATE_FAILURE_NEO_PALETTE    = NEO_PALETTE_WHITE;
 
 // =============================================================================
-// STEP 3 — STATE DEFINITIONS
+// STEP 4 — STATE DEFINITIONS
 // Add or remove states here.  Update STATE_COUNT to match.
 // The state names show up in Serial Monitor output.
 // =============================================================================
@@ -161,7 +161,7 @@ enum DeviceState : uint8_t {
 const char* STATE_NAMES[] = { "OFF", "Inactive", "Boot Up", "Demonstrate", "Device Failure" };
 
 // =============================================================================
-// STEP 4 — GLOBAL OBJECTS (nothing to change here in most cases)
+// STEP 5 — GLOBAL OBJECTS (nothing to change here in most cases)
 // =============================================================================
 
 Adafruit_PWMServoDriver servoDriver(SERVO_I2C_ADDR);
@@ -768,8 +768,7 @@ void setNeoPalette(NeoPaletteId paletteId, uint8_t level) {
   const NeoPaletteColor &palette = NEO_PALETTES[index];
   neoPixelSetAll((palette.red   * level) / 255,
                  (palette.green * level) / 255,
-                 (palette.blue  * level) / 255,
-                 (palette.white * level) / 255);
+                 (palette.blue  * level) / 255);
 }
 
 // Set every NeoPixel to the same RGBW color.

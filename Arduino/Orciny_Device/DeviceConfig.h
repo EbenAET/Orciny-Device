@@ -1,6 +1,6 @@
 // =============================================================================
 // DeviceConfig.h
-// Version : V 0.3.5
+// Version : V 0.3.7
 // Centralized configuration for Orciny Device
 // =============================================================================
 #ifndef ORCINY_DEVICE_CONFIG_H
