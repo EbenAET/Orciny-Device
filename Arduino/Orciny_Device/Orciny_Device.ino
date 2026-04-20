@@ -37,6 +37,22 @@
 #include <Adafruit_NeoPixel.h>         // NeoPixel strip library
 #include "DeviceConfig.h"              // Centralized pin and parameter definitions
 
+// --- Global static variables for state tracking (resettable) ---
+uint32_t doStateInactive_nextSparkMs = 0;
+uint32_t doStateBootUp_stateEnteredMs  = 0;
+uint32_t doStateBootUp_nextSparkMs     = 0;
+uint32_t doStateBootUp_nextChaseMs     = 0;
+uint32_t doStateBootUp_nextServoMs     = 0;
+bool     doStateBootUp_pincersRigid    = false;
+bool     doStateBootUp_servo1Active    = false;
+bool     doStateBootUp_servoLimp       = false;
+int8_t   doStateBootUp_servoDir        = 1;
+uint8_t  doStateBootUp_servoAngle      = 22;
+bool     doStateBootUp_cyanPulsePhase  = true;
+uint32_t doStateFailure_stateEnteredMs = 0;
+uint32_t doStateFailure_nextSparkMs    = 0;
+uint32_t doStateFailure_nextServoMs    = 0;
+
 // =============================================================================
 // STEP 1 — PIN CONFIGURATION & TUNING PARAMETERS
 // All pin and parameter definitions are now in DeviceConfig.h
@@ -174,6 +190,29 @@ bool     resetFired         = false;
 bool     suppressPowerEvent = false;
 bool     suppressNextEvent  = false;
 
+// Helper to reset all static variables in state functions
+void resetStateStatics() {
+  // doStateInactive static
+  doStateInactive_nextSparkMs = 0;
+
+  // doStateBootUp statics
+  doStateBootUp_stateEnteredMs = 0;
+  doStateBootUp_nextSparkMs = 0;
+  doStateBootUp_nextChaseMs = 0;
+  doStateBootUp_nextServoMs = 0;
+  doStateBootUp_pincersRigid = false;
+  doStateBootUp_servo1Active = false;
+  doStateBootUp_servoLimp = false;
+  doStateBootUp_servoDir = 1;
+  doStateBootUp_servoAngle = 22;
+  doStateBootUp_cyanPulsePhase = true;
+
+  // doStateFailure statics
+  doStateFailure_stateEnteredMs = 0;
+  doStateFailure_nextSparkMs = 0;
+  doStateFailure_nextServoMs = 0;
+}
+
 // =============================================================================
 // HELPER FUNCTIONS — forward declarations
 // These are implemented at the bottom of the file.
@@ -204,7 +243,7 @@ void servoIdle(uint8_t channel);
 // Sparse random single sparks with 3-5 second gaps. Beam and NeoPixels off.
 
 void doStateInactive() {
-  static uint32_t nextSparkMs = 0;
+  static uint32_t &nextSparkMs = doStateInactive_nextSparkMs;
   uint32_t now = millis();
 
   if (now >= nextSparkMs) {
@@ -234,16 +273,16 @@ void doStateInactive() {
 //             servo 1 begins slow oscillation; then both go limp
 
 void doStateBootUp() {
-  static uint32_t stateEnteredMs  = 0;
-  static uint32_t nextSparkMs     = 0;
-  static uint32_t nextChaseMs     = 0;
-  static uint32_t nextServoMs     = 0;
-  static bool     pincersRigid    = false;
-  static bool     servo1Active    = false;
-  static bool     servoLimp       = false;
-  static int8_t   servoDir        = 1;
-  static uint8_t  servoAngle      = 22;
-  static bool     cyanPulsePhase  = true;  // true = cyan, false = orange
+  static uint32_t &stateEnteredMs  = doStateBootUp_stateEnteredMs;
+  static uint32_t &nextSparkMs     = doStateBootUp_nextSparkMs;
+  static uint32_t &nextChaseMs     = doStateBootUp_nextChaseMs;
+  static uint32_t &nextServoMs     = doStateBootUp_nextServoMs;
+  static bool     &pincersRigid    = doStateBootUp_pincersRigid;
+  static bool     &servo1Active    = doStateBootUp_servo1Active;
+  static bool     &servoLimp       = doStateBootUp_servoLimp;
+  static int8_t   &servoDir        = doStateBootUp_servoDir;
+  static uint8_t  &servoAngle      = doStateBootUp_servoAngle;
+  static bool     &cyanPulsePhase  = doStateBootUp_cyanPulsePhase;
 
   uint32_t now = millis();
 
@@ -512,10 +551,26 @@ void doStateDemo() {
 //   3.5s   : Pincers go limp
 //   4s+    : Everything off, outputEnabled goes false
 
+void resetToBaseline() {
+  // Reset all relevant state variables to baseline values
+  outputEnabled = false;
+  currentState = STATE_INACTIVE;
+  resetStartMs = 0;
+  resetFired = false;
+  allOutputsOff();
+  // Extra NeoPixel reset for robustness
+  strip.clear();
+  strip.show();
+  setBeamPalette(BEAM_PALETTE_OFF, 0);
+  servoIdle(0);
+  servoIdle(1);
+  resetStateStatics();
+}
+
 void doStateFailure() {
-  static uint32_t stateEnteredMs = 0;
-  static uint32_t nextSparkMs    = 0;
-  static uint32_t nextServoMs    = 0;
+  static uint32_t &stateEnteredMs = doStateFailure_stateEnteredMs;
+  static uint32_t &nextSparkMs    = doStateFailure_nextSparkMs;
+  static uint32_t &nextServoMs    = doStateFailure_nextServoMs;
 
   uint32_t now = millis();
 
@@ -527,9 +582,8 @@ void doStateFailure() {
 
   // After 4s, kill outputs and disable
   if (elapsed >= 4000) {
-    Serial.println(F("Failure: Sequence end, outputs off"));
-    allOutputsOff();
-    outputEnabled  = false;
+    Serial.println(F("Failure: Sequence end, outputs off and reset to baseline"));
+    resetToBaseline();
     stateEnteredMs = 0;  // Reset so it restarts cleanly next time
     printState();
     return;
