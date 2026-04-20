@@ -1,15 +1,19 @@
+
 # Arduino Setup And Troubleshooting
 
-Version: V 0.1.0
+Version: V 0.2.8
+
 
 This folder contains both sketches and local libraries used by the Orciny Device Arduino code.
 
-If a sketch fails to compile after downloading the project, the issue is usually one of these:
 
-1. Arduino IDE is not using the correct sketchbook path.
-2. A local library was copied with the wrong folder structure.
-3. Required third-party libraries are not installed.
+If a sketch fails to compile after downloading the project, check these common issues:
+
+1. Arduino IDE is not using the correct sketchbook path (should be set to the repo's `arduino` folder).
+2. Local libraries are not in the correct folder structure (see below).
+3. Required third-party libraries (Adafruit NeoPixel, Adafruit PWM Servo Driver, Adafruit BusIO) are not installed.
 4. Arduino IDE needs to be restarted after library changes.
+
 
 ## Expected Folder Structure
 
@@ -36,7 +40,8 @@ arduino/
 
 Important rule:
 
-Public Arduino library headers should live in the library's `src` folder. For this project, `ColorPalettes.h` and `AnimationPalettes.h` belong in `libraries/OrcinyCommon/src/`, not beside the sketch.
+All public Arduino library headers must live in the library's `src` folder. For this project, `ColorPalettes.h` and `AnimationPalettes.h` belong in `libraries/OrcinyCommon/src/`, not beside the sketch.
+
 
 ## Recommended Arduino IDE Setup
 
@@ -64,9 +69,11 @@ https://github.com/earlephilhower/arduino-pico/releases/download/global/package_
 7. Install the `Raspberry Pi Pico/RP2040` package by Earle F. Philhower, III.
 8. Restart Arduino IDE.
 
+
 Why this matters:
 
 Arduino automatically scans the sketchbook's `libraries` folder. If the sketchbook points somewhere else, includes such as `#include <ColorPalettes.h>` and `#include <AnimationPalettes.h>` will fail even if the files exist in the repo.
+
 
 ## Common Problems
 
@@ -117,6 +124,60 @@ The Adafruit NeoPixel library is missing.
 Fix:
 
 Install `Adafruit NeoPixel` from Library Manager.
+
+### Error related to `Adafruit_I2CDevice.h` or `Adafruit_BusIO`
+
+Cause:
+
+`Adafruit BusIO` is missing. Some Adafruit libraries depend on it.
+
+Fix:
+
+Install `Adafruit BusIO` from Library Manager.
+
+### The files are present but Arduino still will not compile
+
+Check these in order:
+
+1. Folder names must match the library names exactly.
+2. Public headers must be in the library `src` folder.
+3. `library.properties` must exist in each custom library root.
+4. Arduino IDE often needs a restart after moving library files.
+5. If you copied the project manually, remove stale duplicate headers from sketch folders.
+
+## Local Libraries In This Project
+
+These libraries are intended to be used as local sketchbook libraries:
+
+1. `OrcinyCommon`
+2. `OrcinyEffects`
+
+At the current stage, they do not need Arduino Library Manager publication. Local installation is simpler and avoids premature packaging overhead.
+
+## When A Packaging Pass Makes Sense
+
+Yes, it makes sense to plan a package version later, but not necessarily publish it yet.
+
+That future packaging pass should happen when the APIs and folder layout have mostly stabilized. The useful goal is a release-ready package, not immediate distribution.
+
+Recommended packaging targets:
+
+1. `OrcinyCommon` as a standalone Arduino library package.
+2. `OrcinyEffects` as a standalone Arduino library package.
+3. Starter sketches kept as examples or templates outside the library packages.
+
+Recommended pre-release checklist:
+
+1. Freeze public header names and namespaces.
+2. Verify all public headers live under `src/`.
+3. Add or review `library.properties` metadata.
+4. Confirm example sketches compile against the packaged libraries.
+5. Add a short changelog and versioning policy.
+6. Create ZIP artifacts for test installs with `Add .ZIP Library`.
+
+Practical recommendation:
+
+Do the packaging cleanup shortly before a broader handoff, first public share, or hardware beta. Until then, keep the repo optimized for active development.
 
 ### Error related to `Adafruit_I2CDevice.h` or `Adafruit_BusIO`
 
