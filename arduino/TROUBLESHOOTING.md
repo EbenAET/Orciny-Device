@@ -1,7 +1,7 @@
 
 # Arduino Setup And Troubleshooting
 
-Version: V 0.3.5
+Version: V 0.3.7
 
 
 This folder contains both sketches and local libraries used by the Orciny Device Arduino code.

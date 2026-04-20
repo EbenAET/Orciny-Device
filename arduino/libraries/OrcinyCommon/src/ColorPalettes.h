@@ -1,6 +1,6 @@
 // =============================================================================
 // ColorPalettes.h
-// Version : V 0.3.5
+// Version : V 0.3.7
 // Color palette definitions for Orciny beam (RGB) and NeoPixel effects.
 // =============================================================================
 //

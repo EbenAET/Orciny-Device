@@ -1,7 +1,7 @@
 
 # Orciny Device Firmware Framework
 
-Version: V 0.3.5
+Version: V 0.3.7
 
 Arduino IDE scaffold for a single-controller multi-effect device built around:
 
@@ -39,7 +39,7 @@ Set the Arduino sketchbook location to the repo's `arduino` folder so custom lib
 
 ## Versioning
 
-This repository is currently at V 0.3.5. All configuration, palette, and animation headers are centralized. State-tracking variables and reset logic are robust and up-to-date as of this version. Use this as your restore point for stable builds.
+This repository is currently at V 0.3.7. All configuration, palette, and animation headers are centralized. State-tracking variables and reset logic are robust and up-to-date as of this version. Use this as your restore point for stable builds.
 
 
 Use this section to pick the right sketch for your task.
@@ -229,7 +229,7 @@ Common serial commands:
 
 ## Notes
 
-- As of V 0.3.5, all pin/parameter definitions are centralized in `DeviceConfig.h`, and all color/animation minutiae are in `ColorPalettes.h` and `AnimationPalettes.h`.
+- As of V 0.3.7, all pin/parameter definitions are centralized in `DeviceConfig.h`, and all color/animation minutiae are in `ColorPalettes.h` and `AnimationPalettes.h`.
 - State-tracking variables are global and reset logic is robust (see `resetStateStatics()` in the main sketch).
 - Use this version as a restore point for stable, maintainable builds.
 
