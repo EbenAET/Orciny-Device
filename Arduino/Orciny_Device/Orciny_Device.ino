@@ -1,6 +1,6 @@
 // =============================================================================
 // Orciny_Device.ino
-// Version : V 0.2.7
+// Version : V 0.3.5
 // Orciny Device — Plug-and-Play FX Starter Template
 // Board : Adafruit Feather RP2040
 // Wings : Prop-Maker FeatherWing + 8-Channel Servo FeatherWing (PCA9685)
@@ -181,8 +181,12 @@ struct SwitchState {
 };
 
 SwitchState swPower = { SW_POWER_PIN };
-SwitchState swPrev  = { SW_PREV_PIN  };
-SwitchState swNext  = { SW_NEXT_PIN  };
+SwitchState swPlayPause  = { SW_PREV_PIN  }; // SW2: Play/Pause button
+SwitchState swBack  = { SW_NEXT_PIN  };      // SW3: Immediate Failure button
+
+// Pause/play state
+bool isPaused = false;
+DeviceState pausedState = STATE_INACTIVE;
 
 // Reset chord tracking
 uint32_t resetStartMs       = 0;
@@ -247,7 +251,6 @@ void doStateInactive() {
   uint32_t now = millis();
 
   if (now >= nextSparkMs) {
-    Serial.println(F("Inactive: Spark event"));
     // Pick a random spark channel
     const uint8_t pins[] = {SPARK_PIN_1, SPARK_PIN_2, SPARK_PIN_3, SPARK_PIN_4};
     uint8_t ch = pins[random(0, 4)];
@@ -300,8 +303,6 @@ void doStateBootUp() {
   if ((elapsed < 4000 || (elapsed >= 4000 && elapsed < 10000) ||
        (elapsed >= 18000 && elapsed < 28000) || elapsed >= 28000)) {
     if (now >= nextSparkMs) {
-      Serial.print(F("BootUp: Sparks phase, elapsed="));
-      Serial.println(elapsed);
       uint8_t count = (elapsed >= 28000) ? random(1, 5) : random(2, 4);
       for (uint8_t i = 0; i < count; i++) {
         const uint8_t pins[] = {SPARK_PIN_1, SPARK_PIN_2, SPARK_PIN_3, SPARK_PIN_4};
@@ -315,15 +316,7 @@ void doStateBootUp() {
       nextSparkMs = now + random(800, 1800);
     }
   }
-
-  // --- NeoPixel chases: ramp speed and intersperse orange after ~10s ---
-  if (elapsed < 10000) {
-    Serial.println(F("BootUp: Cyan chase phase"));
-  } else if (elapsed < 20000) {
-    Serial.println(F("BootUp: Cyan/Orange chase phase"));
-  } else {
-    Serial.println(F("BootUp: Core pulse phase"));
-  }
+  // No per-phase Serial prints here
   // Chase length grows from 5 to 12 pixels over time; interval shrinks.
   {
     uint16_t chaseInterval = (elapsed < 5000)  ? 600 :
@@ -388,16 +381,13 @@ void doStateBootUp() {
     nextServoMs = now + 40;   // Slow sweep
   }
 
-  // After 28s: loop in a steady cyan-orange pulsing core + golden beam hold
+  // After 28s: transition to Demonstrate
   if (elapsed >= 28000) {
-    uint32_t pulsePhase = (now % 800);
-    uint8_t  blend      = (pulsePhase < 400)
-                          ? map(pulsePhase, 0, 400, 0, 255)
-                          : map(pulsePhase, 400, 800, 255, 0);
-    uint8_t r = map(blend, 0, 255, 0,   220);
-    uint8_t g = map(blend, 0, 255, 180, 70);
-    uint8_t b = map(blend, 0, 255, 230, 8);
-    neoPixelSetAll(r, g, b, 0);
+    // Transition to Demonstrate state
+    stateEnteredMs = 0; // Reset for next entry
+    currentState = STATE_DEMO;
+    printState();
+    return;
   }
 }
 
@@ -431,21 +421,18 @@ void doStateDemo() {
     pincersRigid   = false;
   }
 
-  // Loop the sequence every 10.75s
-  uint32_t elapsed = (now - stateEnteredMs) % 10750;
+  // Track elapsed time for auto-transition
+  uint32_t elapsed = now - stateEnteredMs;
 
   // --- Beam ---
   if (elapsed < 500) {
-    Serial.println(F("Demo: Beam brighten to orange"));
     // Brighten to orange 90%
     uint8_t level = map(elapsed, 0, 500, 0, 230);
     setBeamPalette(BEAM_PALETTE_EMBER, level);
   } else if (elapsed < 3000) {
-    Serial.println(F("Demo: Beam fade to teal"));
     // Fade color toward teal
     setBeamPalette(BEAM_PALETTE_TEAL, 200);
   } else if (elapsed < 7000) {
-    Serial.println(F("Demo: Beam teal/orange pulse"));
     // Accelerating pulse between teal and orange
     uint32_t pulseElapsed = elapsed - 3000;
     uint16_t cycleMs = map(constrain(pulseElapsed, 0, 4000), 0, 4000, 1200, 200);
@@ -457,18 +444,23 @@ void doStateDemo() {
     bool useTeal = ((pulseElapsed / cycleMs) % 2 == 0);
     setBeamPalette(useTeal ? BEAM_PALETTE_TEAL : BEAM_PALETTE_EMBER, swell);
   } else if (elapsed < 7250) {
-    Serial.println(F("Demo: Beam magenta 30%"));
     setBeamPalette(BEAM_PALETTE_MAGENTA, 76);  // 30%
   } else {
-    Serial.println(F("Demo: Beam magenta fade up"));
     // Magenta fades up to full
     uint8_t level = map(constrain((int32_t)elapsed - 7250, 0, 2750), 0, 2750, 76, 255);
     setBeamPalette(BEAM_PALETTE_MAGENTA, level);
   }
 
+  // After 10.75s, transition to Device Failure
+  if (elapsed >= 10750) {
+    stateEnteredMs = 0; // Reset for next entry
+    currentState = STATE_FAILURE;
+    printState();
+    return;
+  }
+
   // --- NeoPixel core ---
   if (elapsed < 2000) {
-    Serial.println(F("Demo: Core cyan/orange flash"));
     // Flash between cyan and orange quickly (~200ms each)
     bool showOrange = ((now / 200) % 2 == 0);
     if (showOrange) {
@@ -477,7 +469,6 @@ void doStateDemo() {
       neoPixelSetAll(0, 180, 230, 0);
     }
   } else if (elapsed < 7000) {
-    Serial.println(F("Demo: Core flash + magenta chase"));
     // Cyan/orange flashing + magenta chases
     bool showOrange = ((now / 200) % 2 == 0);
     if (showOrange) {
@@ -490,11 +481,9 @@ void doStateDemo() {
       nextChaseMs = now + random(400, 700);
     }
   } else if (elapsed < 7250) {
-    Serial.println(F("Demo: Core all off"));
     // All lights off
     neoPixelOff();
   } else {
-    Serial.println(F("Demo: Core magenta fade up"));
     // Magenta fade-up
     uint8_t level = map(constrain((int32_t)elapsed - 7250, 0, 2750), 0, 2750, 0, 200);
     neoPixelSetAll((255 * level) / 255, 0, (180 * level) / 255, 0);
@@ -502,7 +491,6 @@ void doStateDemo() {
 
   // --- Sparks: occasional flicker 2s onward ---
   if (elapsed >= 500 && now >= nextSparkMs) {
-    Serial.println(F("Demo: Spark flicker"));
     const uint8_t pins[] = {SPARK_PIN_1, SPARK_PIN_2, SPARK_PIN_3, SPARK_PIN_4};
     analogWrite(pins[random(0, 4)], random(160, 240));
     delay(12);
@@ -515,16 +503,13 @@ void doStateDemo() {
 
   // --- Servos ---
   if (elapsed < 500) {
-    Serial.println(F("Demo: Servos free"));
     // Free (no drive)
   } else if (elapsed < 1500) {
-    Serial.println(F("Demo: Servos rigid"));
     // Both rigid
     setServo(0, 71);
     setServo(1, 71);
     pincersRigid = true;
   } else if (elapsed < 9500) {
-    Serial.println(F("Demo: Servos random movement"));
     // Random movement — slow early, frantic late
     uint16_t stepMs = (elapsed < 4000) ? 120 : map(elapsed, 4000, 9500, 120, 20);
     if (now >= nextServoMs) {
@@ -533,7 +518,6 @@ void doStateDemo() {
       nextServoMs = now + stepMs;
     }
   } else {
-    Serial.println(F("Demo: Servos freeze"));
     // Freeze
     setServo(0, servoAngle0);
     setServo(1, servoAngle1);
@@ -582,7 +566,6 @@ void doStateFailure() {
 
   // After 4s, kill outputs and disable
   if (elapsed >= 4000) {
-    Serial.println(F("Failure: Sequence end, outputs off and reset to baseline"));
     resetToBaseline();
     stateEnteredMs = 0;  // Reset so it restarts cleanly next time
     printState();
@@ -592,7 +575,6 @@ void doStateFailure() {
   // --- Sparks: increasing frequency ---
   uint32_t sparkInterval = map(constrain(elapsed, 0, 3500), 0, 3500, 600, 60);
   if (now >= nextSparkMs) {
-    Serial.println(F("Failure: Sparks increasing frequency"));
     uint8_t count = map(constrain(elapsed, 0, 3500), 0, 3500, 1, 4);
     for (uint8_t i = 0; i < count; i++) {
       const uint8_t pins[] = {SPARK_PIN_1, SPARK_PIN_2, SPARK_PIN_3, SPARK_PIN_4};
@@ -608,22 +590,18 @@ void doStateFailure() {
 
   // --- Beam ---
   if (elapsed < 1750) {
-    Serial.println(F("Failure: Beam flash teal/magenta/orange"));
     // Flash teal/magenta/orange at ~4 per second
     uint8_t phase = (now / 250) % 3;
     if      (phase == 0) setBeamPalette(BEAM_PALETTE_TEAL,    255);
     else if (phase == 1) setBeamPalette(BEAM_PALETTE_MAGENTA, 255);
     else                 setBeamPalette(BEAM_PALETTE_EMBER,   255);
   } else if (elapsed < 2000) {
-    Serial.println(F("Failure: Beam flash magenta/teal"));
     // Flash magenta then teal
     setBeamPalette(((now / 250) % 2 == 0) ? BEAM_PALETTE_MAGENTA : BEAM_PALETTE_TEAL, 255);
   } else if (elapsed < 2500) {
-    Serial.println(F("Failure: Beam all colors full"));
     // All colors full (white)
     setBeamPalette(BEAM_PALETTE_WHITE, 255);
   } else {
-    Serial.println(F("Failure: Beam fade out"));
     // Fade out
     uint8_t level = map(constrain(elapsed, 2500, 4000), 2500, 4000, 255, 0);
     setBeamPalette(BEAM_PALETTE_WHITE, level);
@@ -631,7 +609,6 @@ void doStateFailure() {
 
   // --- NeoPixel core ---
   if (elapsed < 1750) {
-    Serial.println(F("Failure: Core rapid color flash"));
     // Rapid flashing through all colors
     uint8_t colorIdx = (now / 100) % 5;
     switch (colorIdx) {
@@ -642,11 +619,9 @@ void doStateFailure() {
       case 4: neoPixelSetAll(40,  220, 200, 0);   break;  // teal
     }
   } else if (elapsed < 2000) {
-    Serial.println(F("Failure: Core bright white"));
     // Bright white
     neoPixelSetAll(200, 200, 200, 100);
   } else {
-    Serial.println(F("Failure: Core fade out"));
     // Fade out
     uint8_t level = map(constrain(elapsed, 2000, 3000), 2000, 3000, 255, 0);
     neoPixelSetAll((200 * level) / 255, (200 * level) / 255, (200 * level) / 255, (100 * level) / 255);
@@ -654,13 +629,11 @@ void doStateFailure() {
 
   // --- Servos: random twitching until ~3.5s then limp ---
   if (elapsed < 3500 && now >= nextServoMs) {
-    Serial.println(F("Failure: Servos twitching"));
     uint16_t stepMs = map(constrain(elapsed, 0, 3000), 0, 3000, 200, 40);
     setServo(0, random(22, 120));
     setServo(1, random(22, 120));
     nextServoMs = now + stepMs;
   } else if (elapsed >= 3500) {
-    Serial.println(F("Failure: Servos limp"));
     servoIdle(0);
     servoIdle(1);
   }
@@ -703,7 +676,8 @@ void setup() {
   servoDriver.setPWMFreq(50);  // 50 Hz standard for hobby servos
 
   // --- Switches (INPUT_PULLUP: floating = HIGH, pressed = LOW) ---------------
-  SwitchState *switches[] = {&swPower, &swPrev, &swNext};
+  // SW1: Power, SW2: Play/Pause, SW3: Immediate Failure
+  SwitchState *switches[] = {&swPower, &swPlayPause, &swBack};
   for (uint8_t i = 0; i < 3; i++) {
     SwitchState *sw = switches[i];
     pinMode(sw->pin, INPUT_PULLUP);
@@ -714,7 +688,14 @@ void setup() {
   // --- Random seed from analog noise ----------------------------------------
   randomSeed(analogRead(A0));
 
-  Serial.println(F("Orciny FX Starter ready.  SW1=on/off  SW2=prev  SW3=next"));
+  // Always start in INACTIVE state after upload/reset
+  currentState = STATE_INACTIVE;
+  isPaused = false;
+  resetFired = false;
+  suppressPowerEvent = false;
+  suppressNextEvent = false;
+
+  Serial.println(F("Orciny FX Starter ready.  SW1=on/off  SW2=Play/Pause  SW3=Failure"));
   printState();
 }
 
@@ -732,6 +713,12 @@ void loop() {
   if (!outputEnabled) {
     // Master off — ensure everything is dark.
     allOutputsOff();
+    return;
+  }
+
+  // If paused, do not advance state logic
+  if (isPaused) {
+    // Optionally, keep outputs as they were
     return;
   }
 
@@ -885,11 +872,13 @@ void updateSwitch(SwitchState &sw, uint32_t now) {
 // Process all three switches and update outputEnabled / currentState.
 void handleSwitches(uint32_t now) {
   updateSwitch(swPower, now);
-  updateSwitch(swPrev,  now);
-  updateSwitch(swNext,  now);
+  updateSwitch(swPlayPause,  now);
+  // Increase debounce for SW3 (Back/Immediate Failure)
+  static uint32_t lastBackReleaseMs = 0;
+  updateSwitch(swBack,  now);
 
   // --- Reset chord: SW1 + SW3 held together for RESET_HOLD_MS ---------------
-  const bool chordDown = swPower.stable && swNext.stable;
+  const bool chordDown = swPower.stable && swBack.stable;
 
   if (chordDown) {
     if (resetStartMs == 0) {
@@ -905,7 +894,7 @@ void handleSwitches(uint32_t now) {
       Serial.println(F("RESET"));
       printState();
     }
-  } else if (!swPower.stable && !swNext.stable) {
+  } else if (!swPower.stable && !swBack.stable) {
     // Both buttons fully released — clear chord tracking.
     resetStartMs       = 0;
     resetFired         = false;
@@ -913,14 +902,25 @@ void handleSwitches(uint32_t now) {
     suppressNextEvent  = false;
   }
 
-  // --- SW2: step forward through states (now always active) -----------------
-  if (swPrev.released) {
-    currentState = static_cast<DeviceState>((currentState + 1) % STATE_COUNT);
-    // Skip STATE_OFF when cycling forward — OFF is only reached via SW1 toggle.
-    if (currentState == STATE_OFF) {
-      currentState = STATE_INACTIVE;
+  // --- SW3 (Back): immediate Device Failure ---
+  // Only allow after both reset buttons have been released following a reset chord
+  static bool allowFailureAfterReset = true;
+  if (resetFired) {
+    allowFailureAfterReset = false;
+  }
+  if (!swPower.stable && !swBack.stable) {
+    // Both released, safe to allow failure again
+    allowFailureAfterReset = true;
+    resetFired = false;
+  }
+  if (swBack.released && allowFailureAfterReset) {
+    // Debounce: ignore if released too soon after reset or previous press
+    if (now - lastBackReleaseMs > 400) { // 400ms debounce for failure
+      isPaused = false;
+      currentState = STATE_FAILURE;
+      printState();
+      lastBackReleaseMs = now;
     }
-    printState();
   }
 
   // --- SW1: toggle output on/off --------------------------------------------
@@ -932,13 +932,27 @@ void handleSwitches(uint32_t now) {
     printState();
   }
 
-  // --- SW3: step backward through states ------------------------------------
-  if (swNext.released && !suppressNextEvent) {
-    if (currentState <= STATE_INACTIVE) {
-      currentState = static_cast<DeviceState>(STATE_COUNT - 1);
+  // --- SW2 (Play/Pause): Pause/Play logic ---
+  if (swPlayPause.released && !suppressNextEvent) {
+    if (isPaused) {
+      // Resume from pause
+      isPaused = false;
+      currentState = pausedState;
+      printState();
     } else {
-      currentState = static_cast<DeviceState>(currentState - 1);
+      if (currentState == STATE_INACTIVE) {
+        // Start sequence from Inactive
+        currentState = STATE_BOOT;
+        printState();
+      } else if (currentState == STATE_BOOT || currentState == STATE_DEMO) {
+        // Pause in place
+        isPaused = true;
+        pausedState = currentState;
+        printState();
+      }
+      // If in FAILURE, do nothing
     }
-    printState();
   }
+
+  // --- SW3: (old logic removed, now handled above) ---
 }
