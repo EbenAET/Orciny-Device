@@ -39,7 +39,9 @@ Set the Arduino sketchbook location to the repo's `arduino` folder so custom lib
 
 ## Versioning
 
-This repository is currently at V 0.3.7. All configuration, palette, and animation headers are centralized. State-tracking variables and reset logic are robust and up-to-date as of this version. Use this as your restore point for stable builds.
+This repository is currently at V 0.3.7. All configuration, palette, and animation headers are centralized. State-tracking variables and reset logic are robust and up-to-date as of this version. 
+
+**This is the most current functioning and validated version. Use this as your restore point for stable builds.**
 
 
 Use this section to pick the right sketch for your task.
