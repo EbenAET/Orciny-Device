@@ -1,4 +1,7 @@
+
 # Orciny Device Firmware Framework
+
+Version: V 0.3.7
 
 Arduino IDE scaffold for a single-controller multi-effect device built around:
 
@@ -22,17 +25,27 @@ Install these in the Arduino IDE before compiling:
 - Adafruit NeoPixel
 - Adafruit PWM Servo Driver Library
 
+
 If Arduino cannot find local headers or libraries, see `arduino/TROUBLESHOOTING.md` for setup and recovery steps.
+
 
 Set the Arduino sketchbook location to the repo's `arduino` folder so custom libraries resolve correctly:
 
 - Sketchbook location: `C:\Users\ebena\Box\Orciny Device\arduino`
 
+
 `OrcinyCommon` is intended to be used from `arduino/libraries/OrcinyCommon`. Do not keep per-sketch duplicate copies of that header.
 
-## Sketch Use Cases
+
+## Versioning
+
+This repository is currently at V 0.3.7. All configuration, palette, and animation headers are centralized. State-tracking variables and reset logic are robust and up-to-date as of this version. 
+
+**This is the most current functioning and validated version. Use this as your restore point for stable builds.**
+
 
 Use this section to pick the right sketch for your task.
+
 
 ### `arduino/rp2040_fx_starter/rp2040_fx_starter.ino` (recommended first)
 
@@ -48,6 +61,7 @@ Use this when you are doing hardware bring-up, learning the framework, or creati
 
 Edit `doState1()` through `doState4()` to customize behavior.
 
+
 ### `arduino/rp2040_fx_controller_demo/rp2040_fx_controller_demo.ino` (advanced controller)
 
 Use this when you need richer runtime control and USB command-driven testing.
@@ -56,6 +70,7 @@ Use this when you need richer runtime control and USB command-driven testing.
 - USB serial command interface (status, overrides, palette selection, servo/neo tests)
 - Sequence-driven profile system
 - Best choice for integration/bench testing and operator workflows
+
 
 ### `arduino/libraries/OrcinyEffects/examples/OrcinyEffects_Example/OrcinyEffects_Example.ino` (hybrid quick-start)
 
@@ -213,7 +228,12 @@ Common serial commands:
 2. Upload as-is for quick validation.
 3. Replace scene calls or tune library scene internals in `arduino/libraries/OrcinyEffects/src/OrcinyEffects.h`.
 
+
 ## Notes
+
+- As of V 0.3.7, all pin/parameter definitions are centralized in `DeviceConfig.h`, and all color/animation minutiae are in `ColorPalettes.h` and `AnimationPalettes.h`.
+- State-tracking variables are global and reset logic is robust (see `resetStateStatics()` in the main sketch).
+- Use this version as a restore point for stable, maintainable builds.
 
 - This is a framework, not a final tuned show controller. PWM levels, animation timing, motor speeds, and thermal limits all need bench validation.
 - Firmware includes a NeoPixel guard rail that caps strip output to a 2A maximum equivalent draw.

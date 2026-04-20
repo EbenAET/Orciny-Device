@@ -1,57 +1,17 @@
 // =============================================================================
 // ColorPalettes.h
-// Version : V 0.2.5
+// Version : V 0.3.7
 // Color palette definitions for Orciny beam (RGB) and NeoPixel effects.
 // =============================================================================
 //
 // BEAM PALETTES
 //   BeamPalette defines the peak RGB values for the sinusoidal beam swell.
 //   The swell envelope (0–255) is modulated by these base colours.
-//
-//   CALLING:
-//     Use with applyBeamPalette() to get scaled RGB values for direct PWM writes:
-//       uint8_t r, g, b;
-//       uint8_t swell = 128;  // 0–255 envelope value
-//       applyBeamPalette(ColorPalettes::kBeamEmber, swell, r, g, b);
-//       analogWrite(BEAM_RED_PIN, r);
-//       analogWrite(BEAM_GREEN_PIN, g);
-//       analogWrite(BEAM_BLUE_PIN, b);
-//
-//   CUSTOMIZING:
-//     Edit the palette struct directly to create new colours:
-//       static constexpr BeamPalette kBeamMyColor = {
-//         .red   = 255,   // 0–255, red channel peak
-//         .green = 128,   // 0–255, green channel peak
-//         .blue  = 64,    // 0–255, blue channel peak
-//       };
-//     Valid peak values: 0–255. Higher values = brighter channel in the swell.
+//   All palette minutiae for beam actions are encapsulated here.
 //
 // NEO PALETTES
 //   NeoPalette holds RGBW values for setting all NeoPixels to a solid colour.
-//   Use neoPixelSetAllFromPalette() helper to apply.
-//
-//   CALLING:
-//     Apply instantly to all pixels:
-//       neoPixelSetAllFromPalette(strip, ColorPalettes::kNeoCyan);
-//
-//     Or use in a loop() for dynamic switching:
-//       uint32_t now = millis();
-//       if (now % 2000 < 1000) {
-//         neoPixelSetAllFromPalette(strip, ColorPalettes::kNeoEmber);
-//       } else {
-//         neoPixelSetAllFromPalette(strip, ColorPalettes::kNeoCool);
-//       }
-//
-//   CUSTOMIZING:
-//     Create a new palette by adding to the namespace:
-//       static constexpr NeoPalette kNeoMyColor = {
-//         .red   = 200,   // 0–255, red channel
-//         .green = 100,   // 0–255, green channel
-//         .blue  = 50,    // 0–255, blue channel
-//         .white = 30,    // 0–255, white (warm) channel for SK6812 RGBW
-//       };
-//     White channel tip: Use between 0–50 for subtle warmth; 0 for pure RGB.
-//
+//   All palette minutiae for NeoPixel actions are encapsulated here.
 // =============================================================================
 
 #pragma once
