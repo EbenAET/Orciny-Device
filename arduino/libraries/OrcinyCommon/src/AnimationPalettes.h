@@ -1,6 +1,6 @@
 // =============================================================================
 // AnimationPalettes.h
-// Version : V 0.2.8
+// Version : V 0.3.5
 // Animation preset definitions for Orciny beam, NeoPixel, and spark effects.
 // =============================================================================
 //
