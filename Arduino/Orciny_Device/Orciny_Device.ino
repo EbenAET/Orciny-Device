@@ -4,7 +4,7 @@
 
 // =============================================================================
 // Orciny_Device.ino
-// Version : V 0.6.5
+// Version : V 0.6.7
 // Orciny Device — FX Controller Main Program
 // Board: Adafruit Feather RP2040
 // Wings: Prop-Maker FeatherWing, 8-Channel Servo FeatherWing (PCA9685)

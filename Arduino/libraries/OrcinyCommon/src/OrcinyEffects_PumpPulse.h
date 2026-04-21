@@ -60,7 +60,7 @@ inline bool PumpPulseAnimationRandomized(uint8_t pumpPin, uint8_t filamentPin, u
 }
 // =============================================================================
 // OrcinyEffects_PumpPulse.h
-// Version : V 0.6.5
+// Version : V 0.6.7
 // Modular pump and pulse filament animation for Orciny Device
 // =============================================================================
 #pragma once

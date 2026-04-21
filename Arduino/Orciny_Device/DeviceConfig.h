@@ -1,6 +1,6 @@
 // =============================================================================
 // DeviceConfig.h
-// Version : V 0.6.5
+// Version : V 0.6.7
 // Centralized pin and parameter definitions for Orciny Device
 // =============================================================================
 #ifndef ORCINY_DEVICE_CONFIG_H

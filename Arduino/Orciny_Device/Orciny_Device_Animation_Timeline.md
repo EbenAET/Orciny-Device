@@ -1,6 +1,6 @@
 # Orciny Device Animation Timeline
 
-**Version:** V 0.6.5  
+**Version:** V 0.6.7  
 **Board:** Adafruit Feather RP2040  
 **Wings:** Prop-Maker FeatherWing, 8-Channel Servo FeatherWing (PCA9685)
 
@@ -48,7 +48,10 @@
 - **3.5s**: Pincers go limp
 - **4s+**: Everything off, output disabled
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e218f0b (docs: sync all local changes before pull)
 ---
 
 ## Notes
