@@ -4,37 +4,35 @@
 
 // =============================================================================
 // Orciny_Device.ino
-// Version : V 0.6.0
-// Orciny Device — Plug-and-Play FX Starter Template
-// Board : Adafruit Feather RP2040
-// Wings : Prop-Maker FeatherWing + 8-Channel Servo FeatherWing (PCA9685)
-// -----------------------------------------------------------------------------
-// HOW TO USE THIS SKETCH
+// Version : V 0.6.5
+// Orciny Device — FX Controller Main Program
+// Board: Adafruit Feather RP2040
+// Wings: Prop-Maker FeatherWing, 8-Channel Servo FeatherWing (PCA9685)
 //
-//   1. Read through Step 1–4 below and adjust any values you need to change.
-//   2. Find the section labelled "STATE BEHAVIORS" (~halfway down).
-//   3. Add your effect code inside the doStateX() function for each state.
-//   4. Upload and test.  The three physical switches cycle through states.
+// USAGE INSTRUCTIONS:
+//   1. Review and adjust DeviceConfig.h for pin assignments and tuning.
+//   2. See "STATE BEHAVIORS" for effect logic (doStateX functions).
+//   3. Upload and test. Use the three physical switches to cycle states.
 //
-// PHYSICAL CONTROLS  (ready to go — no changes needed)
-//   SW1 (GP27) — tap: toggle all outputs on / off
-//   SW2 (GP28) — tap: step backward through states
-//   SW3 (GP29) — tap: step forward  through states
-//   SW1 + SW3 held 5 s — reset to State 1, outputs off
+// PHYSICAL CONTROLS:
+//   SW1 (GP27): Toggle all outputs on/off
+//   SW2 (GP28): Step backward through states
+//   SW3 (GP29): Step forward through states
+//   SW1 + SW3 held 5s: Reset to State 1, outputs off
 //
-// USB SERIAL (115200 baud, Arduino IDE Serial Monitor)
-//   Prints state changes.  Add Serial.println() calls anywhere for debugging.
+// USB SERIAL (115200 baud):
+//   Prints state changes. Add Serial.println() for debugging.
 //
-// OUTPUTS AVAILABLE
-//   Spark channels  — GP18 / GP19 / GP20 / GP24 analogWrite(pin, 0–255)
-//   Beam LED Red    — GP11                       analogWrite(GP11, 0–255)
-//   Beam LED Green  — GP12                       analogWrite(GP12, 0–255)
-//   Beam LED Blue   — GP13                       analogWrite(GP13, 0–255)
-//   Pump MOSFET     — GP1 (PUMP_PIN)             digitalWrite/analogWrite (PWM capable)
-//   Pulse Filament  — GP0 (PULSE_FILAMENT_PIN)   analogWrite (PWM capable, fading effect)
-//   Servo A (claw)  — PCA9685 channel 0          setServo(0, angle 22–120)
-//   Servo B (claw)  — PCA9685 channel 1          setServo(1, angle 22–120)
-//   NeoPixel strip  — GP25 (166 pixels)           use neoPixelSetAll() helper
+// OUTPUTS OVERVIEW:
+//   Spark channels   — GP18 / GP19 / GP20 / GP24 (analogWrite, 0–255)
+//   Beam LED Red     — GP11 (analogWrite, 0–255)
+//   Beam LED Green   — GP12 (analogWrite, 0–255)
+//   Beam LED Blue    — GP13 (analogWrite, 0–255)
+//   Pump MOSFET      — GP1 (PUMP_PIN, digitalWrite/analogWrite, PWM capable)
+//   Pulse Filament   — GP0 (PULSE_FILAMENT_PIN, analogWrite, PWM fading)
+//   Servo A (claw)   — PCA9685 channel 0 (setServo(0, angle 22–120))
+//   Servo B (claw)   — PCA9685 channel 1 (setServo(1, angle 22–120))
+//   NeoPixel strip   — GP25 (166 pixels, use neoPixelSetAll())
 // =============================================================================
 
 // Core libraries
@@ -251,7 +249,7 @@ void servoIdle(uint8_t channel);
 // =============================================================================
 
 // --- STATE: INACTIVE (Sequence 0) -------------------------------------------
-// Sparse random single sparks with 3-5 second gaps. Beam and NeoPixels off.
+// Sparse random single sparks with 3–5 second gaps. Beam and NeoPixels off.
 
 void doStateInactive() {
   static uint32_t &nextSparkMs = doStateInactive_nextSparkMs;
@@ -275,12 +273,11 @@ void doStateInactive() {
 }
 
 // --- STATE: BOOT UP (Sequence 1) ---------------------------------------------
-// Timeline (approximate, perfect timing not required):
-//   0–4s    : Sparse sparks; cyan chases, starting slow and speeding up
-//   4–10s   : Sparks continue; cyan chases ramp up in speed and length
-//   10–20s  : Orange chases begin interspersing with cyan; pincers go rigid
-//   20s+    : Core pulses between cyan and orange; beam fades to golden ~30%;
-//             servo 1 begins slow oscillation; then both go limp
+// Timeline (approximate):
+//   0–4s    : Sparse sparks; cyan chases, slow to fast
+//   4–10s   : Sparks continue; cyan chases ramp up
+//   10–20s  : Orange chases begin; pincers go rigid
+//   20s+    : Core pulses cyan/orange; beam fades to golden; servo 1 oscillates, then both limp
 
 void doStateBootUp() {
   static uint32_t &stateEnteredMs  = doStateBootUp_stateEnteredMs;
@@ -430,7 +427,12 @@ void doStateDemo() {
   uint32_t elapsed = now - stateEnteredMs;
 
   // --- Pump/Pulse Filament Animation: 1s onward ---
-  // PULSE_FILAMENT_PIN (GP0) is driven by analogWrite for PWM fading. If your filament does not fade, check hardware compatibility and wiring. Motor speed control on this pin confirms PWM is working.
+  // PULSE_FILAMENT_PIN (GP0) is driven by analogWrite for PWM fading.
+  // If your filament does not fade, check:
+  //   - Hardware supports PWM on GP0
+  //   - Filament is compatible with PWM dimming
+  //   - Wiring and MOSFET are correct
+  // Motor speed control on this pin confirms PWM is working.
   if (elapsed >= 1000) {
     OrcinyEffects::PumpPulseAnimation(PUMP_PIN, PULSE_FILAMENT_PIN, stateEnteredMs + 1000, now);
   } else {
@@ -539,14 +541,14 @@ void doStateDemo() {
 
 // --- STATE: DEVICE FAILURE (Sequence 3) ---------------------------------------
 // Timeline (~4s, then ends in held-off state):
-//   0s     : Random twitching servos; sparks increasing in frequency
-//            Core rapid flashing all colors
-//   0s–4s  : Beam flashes teal/magenta/orange alternating
+//   0s     : Random twitching servos; sparks increase in frequency
+//            Core rapid flashes all colors
+//   0–4s   : Beam flashes teal/magenta/orange
 //   1.75s  : Core → bright white
 //   2s     : Core fades out; beam all colors full
-//   2.5s   : Beam fades all the way out; pincers go limp
+//   2.5s   : Beam fades out; pincers go limp
 //   3.5s   : Pincers go limp
-//   4s+    : Everything off, outputEnabled goes false
+//   4s+    : Everything off, outputEnabled = false
 
 void resetToBaseline() {
   // Reset all relevant state variables to baseline values
@@ -766,13 +768,13 @@ void loop() {
 // HELPER IMPLEMENTATIONS
 // =============================================================================
 
-// Turn a servo to the specified angle (0–180°) on the given PCA9685 channel.
+// Set a servo to the specified angle (0–180°) on the given PCA9685 channel.
 void setServo(uint8_t channel, uint8_t angle) {
   uint16_t pulse = map(angle, 0, 180, SERVO_PULSE_MIN, SERVO_PULSE_MAX);
   servoDriver.setPWM(channel, 0, pulse);
 }
 
-// Apply a named RGB beam palette at a 0-255 brightness level.
+// Apply a named RGB beam palette at a 0–255 brightness level.
 void setBeamPalette(BeamPaletteId paletteId, uint8_t level) {
   const uint8_t index = static_cast<uint8_t>(paletteId);
   if (index >= (sizeof(BEAM_PALETTES) / sizeof(BEAM_PALETTES[0]))) {
@@ -785,7 +787,7 @@ void setBeamPalette(BeamPaletteId paletteId, uint8_t level) {
   analogWrite(BEAM_BLUE_PIN,  (palette.blue  * level) / 255);
 }
 
-// Apply a named RGBW NeoPixel palette at a 0-255 brightness level.
+// Apply a named RGB NeoPixel palette at a 0–255 brightness level.
 void setNeoPalette(NeoPaletteId paletteId, uint8_t level) {
   const uint8_t index = static_cast<uint8_t>(paletteId);
   if (index >= (sizeof(NEO_PALETTES) / sizeof(NEO_PALETTES[0]))) {
@@ -799,7 +801,7 @@ void setNeoPalette(NeoPaletteId paletteId, uint8_t level) {
 }
 
 // Set every NeoPixel to the same RGBW color.
-// w (white channel) defaults to 0 if not provided.
+// w (white channel) defaults to 0 if not provided (RGBW strips only).
 void neoPixelSetAll(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
   for (int i = 0; i < strip.numPixels(); i++) {
     strip.setPixelColor(i, strip.Color(r, g, b, w));
@@ -807,9 +809,9 @@ void neoPixelSetAll(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
   // Caller must call strip.show() to push the update — or rely on loop().
 }
 
-// Chase a short run of pixels from pixel 0 toward the end of the strip.
+// Animate a short run of pixels from pixel 0 toward the end of the strip.
 // r/g/b: chase color; len: length of the lit run; stepMs: ms per pixel advance.
-// Non-blocking — advances one step per call if stepMs has elapsed.
+// Non-blocking: advances one step per call if stepMs has elapsed.
 void neoChase(uint8_t r, uint8_t g, uint8_t b, uint8_t len, uint32_t stepMs) {
   static uint16_t head   = 0;
   static uint32_t nextMs = 0;
@@ -838,7 +840,7 @@ void neoPixelOff() {
   strip.show();
 }
 
-// Shut down every output subsystem.
+// Shut down all output subsystems (beam, sparks, servos, NeoPixels).
 void allOutputsOff() {
   analogWrite(BEAM_RED_PIN,   0);
   analogWrite(BEAM_GREEN_PIN, 0);
@@ -852,12 +854,12 @@ void allOutputsOff() {
   neoPixelOff();
 }
 
-// Stop driving a servo — removes the PWM signal so the servo goes limp.
+// Stop driving a servo (removes PWM signal so servo goes limp).
 void servoIdle(uint8_t channel) {
   servoDriver.setPWM(channel, 0, 0);
 }
 
-// Print current state to Serial Monitor.
+// Print current output and state to Serial Monitor.
 void printState() {
   Serial.print(F("Output: "));
   Serial.print(outputEnabled ? F("ON") : F("OFF"));
@@ -865,7 +867,7 @@ void printState() {
   Serial.println(STATE_NAMES[currentState]);
 }
 
-// Debounce one switch.  Call every loop with the current millis() value.
+// Debounce one switch. Call every loop with the current millis() value.
 // Populates sw.pressed and sw.released as single-shot flags.
 void updateSwitch(SwitchState &sw, uint32_t now) {
   sw.pressed  = false;
@@ -895,7 +897,7 @@ void updateSwitch(SwitchState &sw, uint32_t now) {
   }
 }
 
-// Process all three switches and update outputEnabled / currentState.
+// Process all three switches and update outputEnabled and currentState.
 void handleSwitches(uint32_t now) {
   updateSwitch(swPower, now);
   updateSwitch(swPlayPause,  now);

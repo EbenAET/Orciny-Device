@@ -1,9 +1,14 @@
+// =============================================================================
+// OrcinyCommon.h
+// Common types and helpers for Orciny Device
+// =============================================================================
 #pragma once
 
 #include <Arduino.h>
 
 namespace orciny {
 
+// Core operating modes
 enum CoreMode : uint8_t {
   CORE_MODE_OFF = 0,
   CORE_MODE_EMBER = 1,
@@ -13,6 +18,7 @@ enum CoreMode : uint8_t {
   CORE_MODE_SHOW = 5,
 };
 
+// Frame data for core effect
 struct CoreFrame {
   CoreMode mode;
   uint8_t brightness;
@@ -22,6 +28,7 @@ struct CoreFrame {
   uint8_t blue;
 };
 
+// Command structure for effect control
 struct EffectCommand {
   bool outputEnabled;
   bool sparksEnabled;
@@ -41,6 +48,7 @@ inline EffectCommand defaultEffectCommand() {
   return command;
 }
 
+// Clamp integer to 0–255
 inline uint8_t clampByte(int value) {
   if (value < 0) {
     return 0;
@@ -51,6 +59,7 @@ inline uint8_t clampByte(int value) {
   return static_cast<uint8_t>(value);
 }
 
+// Write a CoreFrame to a stream as CSV
 inline void writeCoreFrame(Stream &stream, const CoreFrame &frame) {
   stream.print(F("CORE,"));
   stream.print(static_cast<uint8_t>(frame.mode));
@@ -66,6 +75,7 @@ inline void writeCoreFrame(Stream &stream, const CoreFrame &frame) {
   stream.println(frame.blue);
 }
 
+// Parse a CoreFrame from a CSV line
 inline bool readCoreFrame(const String &line, CoreFrame &frame) {
   String trimmed = line;
   trimmed.trim();

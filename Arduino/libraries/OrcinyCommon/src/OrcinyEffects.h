@@ -4,23 +4,18 @@
 // Pre-built effect scenes and helpers for Orciny Device
 // =============================================================================
 //
-// OVERVIEW
-//   This library provides ready-to-use effect scenes for the Orciny Device.
-//   Use this library if you want to skip writing effect code and just call
-//   pre-configured scenes.  Beginners should edit rp2040_fx_starter.ino directly.
+// Provides ready-to-use effect scenes for the Orciny Device.
+// Use these helpers to quickly add spark, beam, and NeoPixel effects.
 //
-// INCLUDED SCENES
-//   Scene::Ember()      — Warm spark flash + ember beam + ember NeoPixels
-//   Scene::CyanPulse()  — Pulsing cyan beam + matching NeoPixel swell
-//   Scene::FullShow()   — Sparks + violet beam + claw sweep + cyan NeoPixels
+// INCLUDED SCENES:
+//   Scene::Ember()      — Warm spark flash, ember beam, ember NeoPixels
+//   Scene::CyanPulse()  — Pulsing cyan beam, matching NeoPixel swell
+//   Scene::FullShow()   — Sparks, violet beam, claw sweep, cyan NeoPixels
 //
-// USAGE EXAMPLE
+// USAGE:
 //   #include <OrcinyEffects.h>
 //   using namespace OrcinyEffects;
-//
-//   In your state function:
-//     Scene::Ember(millis());     // Run ember scene
-//
+//   Scene::Ember(millis());
 // =============================================================================
 
 #pragma once
@@ -32,7 +27,7 @@
 namespace OrcinyEffects {
 
 // Forward declarations for external hardware objects.
-// These should be initialized in your sketch before calling scene functions.
+// These must be initialized in your sketch before calling scene functions.
 extern uint8_t  SPARK_PIN_1;
 extern uint8_t  SPARK_PIN_2;
 extern uint8_t  SPARK_PIN_3;
