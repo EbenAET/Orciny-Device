@@ -1,6 +1,10 @@
+#include <OrcinyCommon.h>
+#include <ColorPalettes.h>
+#include <AnimationPalettes.h>
+
 // =============================================================================
 // Orciny_Device.ino
-// Version : V 0.3.7
+// Version : V 0.6.0
 // Orciny Device — Plug-and-Play FX Starter Template
 // Board : Adafruit Feather RP2040
 // Wings : Prop-Maker FeatherWing + 8-Channel Servo FeatherWing (PCA9685)
@@ -26,6 +30,8 @@
 //   Beam LED Red    — GP11                       analogWrite(GP11, 0–255)
 //   Beam LED Green  — GP12                       analogWrite(GP12, 0–255)
 //   Beam LED Blue   — GP13                       analogWrite(GP13, 0–255)
+//   Pump MOSFET     — GP1 (PUMP_PIN)             digitalWrite/analogWrite (PWM capable)
+//   Pulse Filament  — GP0 (PULSE_FILAMENT_PIN)   analogWrite (PWM capable, fading effect)
 //   Servo A (claw)  — PCA9685 channel 0          setServo(0, angle 22–120)
 //   Servo B (claw)  — PCA9685 channel 1          setServo(1, angle 22–120)
 //   NeoPixel strip  — GP25 (166 pixels)           use neoPixelSetAll() helper
@@ -36,6 +42,7 @@
 #include <Adafruit_PWMServoDriver.h>   // PCA9685 servo wing library
 #include <Adafruit_NeoPixel.h>         // NeoPixel strip library
 #include "DeviceConfig.h"              // Centralized pin and parameter definitions
+#include <OrcinyEffects_PumpPulse.h>
 
 // --- Global static variables for state tracking (resettable) ---
 uint32_t doStateInactive_nextSparkMs = 0;
@@ -404,6 +411,7 @@ void doStateBootUp() {
 //   Loop
 
 void doStateDemo() {
+
   static uint32_t stateEnteredMs = 0;
   static uint32_t nextSparkMs    = 0;
   static uint32_t nextChaseMs    = 0;
@@ -415,14 +423,19 @@ void doStateDemo() {
   static uint8_t  servoAngle1    = 120;
 
   uint32_t now = millis();
-
   if (stateEnteredMs == 0) {
     stateEnteredMs = now;
     pincersRigid   = false;
   }
-
-  // Track elapsed time for auto-transition
   uint32_t elapsed = now - stateEnteredMs;
+
+  // --- Pump/Pulse Filament Animation: 1s onward ---
+  // PULSE_FILAMENT_PIN (GP0) is driven by analogWrite for PWM fading. If your filament does not fade, check hardware compatibility and wiring. Motor speed control on this pin confirms PWM is working.
+  if (elapsed >= 1000) {
+    OrcinyEffects::PumpPulseAnimation(PUMP_PIN, PULSE_FILAMENT_PIN, stateEnteredMs + 1000, now);
+  } else {
+    OrcinyEffects::PumpPulseOff(PUMP_PIN, PULSE_FILAMENT_PIN);
+  }
 
   // --- Beam ---
   if (elapsed < 500) {
@@ -552,17 +565,26 @@ void resetToBaseline() {
 }
 
 void doStateFailure() {
+
+
   static uint32_t &stateEnteredMs = doStateFailure_stateEnteredMs;
   static uint32_t &nextSparkMs    = doStateFailure_nextSparkMs;
   static uint32_t &nextServoMs    = doStateFailure_nextServoMs;
 
   uint32_t now = millis();
-
   if (stateEnteredMs == 0) {
     stateEnteredMs = now;
   }
-
   uint32_t elapsed = now - stateEnteredMs;
+
+  // --- Continue pump/pulse filament animation until 3s ---
+  if (elapsed < 3000) {
+    OrcinyEffects::PumpPulseAnimation(PUMP_PIN, PULSE_FILAMENT_PIN, stateEnteredMs - 1000, now);
+  } else if (elapsed < 4000) {
+    OrcinyEffects::PumpPulseHold(PUMP_PIN, PULSE_FILAMENT_PIN);
+  } else {
+    OrcinyEffects::PumpPulseOff(PUMP_PIN, PULSE_FILAMENT_PIN);
+  }
 
   // After 4s, kill outputs and disable
   if (elapsed >= 4000) {
@@ -644,6 +666,11 @@ void doStateFailure() {
 // =============================================================================
 
 void setup() {
+    // --- Pump and Pulse Filament outputs --------------------------------------
+    pinMode(PULSE_FILAMENT_PIN, OUTPUT);
+    analogWrite(PULSE_FILAMENT_PIN, 0);
+    pinMode(PUMP_PIN, OUTPUT);
+    digitalWrite(PUMP_PIN, LOW);
   Serial.begin(115200);
 
   // --- Prop-Maker power enable -----------------------------------------------

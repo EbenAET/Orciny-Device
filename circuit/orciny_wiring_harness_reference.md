@@ -1,3 +1,10 @@
+### H-PULSE-FILAMENT - Pulse Filament Harness
+- Harness Label 10
+- Channel: RP2040 GP0 (PWM) -> [R605 10Ω] -> Pulse Filament load
+- Supply domain: RP2040_BAT
+- Return: GND_COMMON
+- Recommended wire: 22-24 AWG signal, 20 AWG power/return if needed
+- Notes: Dedicated PWM control for pulse filament effect. Label both ends as H-PULSE-FILAMENT.
 # Orciny Wiring Harness Reference
 
 This file groups cable runs into practical harness bundles for assembly and troubleshooting.
@@ -80,7 +87,7 @@ Design intent in this reference:
 - Pin 1 (blue) is SW1, pin 2 (brown) is SW2, pin 3 (orange) is SW3, and pin 4 (green) is common
 
 ### H-SPARK - Spark Output Harness
-- Harness Label 5
+-- Harness Label 5
 - Channels: RP2040 GP18/GP19/GP20/GP24 (through series resistors) -> Spark 1-4
 - Supply domain: RP2040_BAT
 - Return: GND_COMMON
@@ -122,12 +129,17 @@ Design intent in this reference:
 - Peltier uses Deans Micro2R connector
 - Pin 1 (red) is power, pin 2 (black) is common
 
-### H-PUMP-OPT - Optional Pump Harness
+
+### H-SIGNAL - GP0/GP1 Signal Harness
 - Harness Label 9
-- Gate control: unassigned in current revision (GP8 was repurposed to peltier control)
-- Load power: +5V_BUS and GND_COMMON pump branch
-- Recommended wire: 24-26 AWG control, 20 AWG load branch
-- Notes: Firmware currently keeps pump actions disabled.
+- Signal runs: RP2040 GP0 (blue), RP2040 GP1 (green)
+- Use 24-26 AWG wire
+- Notes: This harness carries logic-level signals only. Label both ends as H-SIGNAL.
+
+- Harness Label 11
+- Power runs: +5V_BUS to pump positive terminal, GND_COMMON to pump negative terminal (via MOSFET)
+- Use 20 AWG wire for power, 24-26 AWG for control if needed
+- Notes: This harness carries the main pump load current. Label both ends as H-PUMP-POWER.
 
 ## Labeling Convention
 

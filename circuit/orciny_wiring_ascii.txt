@@ -1,3 +1,4 @@
+
 ORCINY DEVICE - ASCII CIRCUIT DIAGRAM
 ======================================
 Rev F  (RP2040-only control; split battery domains)
@@ -50,9 +51,25 @@ Power:
  │                                                                 │
  │  I2C SDA/SCL ---------------------------> Servo FeatherWing     │
  │                                           (PCA9685 @ 0x40)      │
- │  Pump gate GPIO ---> unassigned in this revision [disabled in FW] │
+ │  GP1  (Pump MOSFET gate) ---> Pump MOSFET gate (on/off control) │
  └─────────────────────────────────────────────────────────────────┘
+   │  GP0  PWM ---> [R605 10Ω] ---> Pulse Fila                                  │
+   │  Harness ID: H-PULSE-FILAMENT             ment (dedicated PWM control)      │
+  │                                                                            │
+   │  Pulse Filament Channel (optional):                                      │
+   │                                                                            │
+   │  GP0  (Pulse Filament PWM) ---> [R605 10Ω] ---> Pulse Filament load      │
+   │  RP2040_BAT domain supply                                                  │
+   │  Return: GND_COMMON                                                        │
+   │  Use 22-24 AWG for signal, 20 AWG for power/return if needed             │
+  │                                                                            │
+ Pulse Filament Channel (optional):
+ Harness ID: H-PULSE-FILAMENT
 
+  GP0  (Pulse Filament PWM) ---> [R605 10Ω] ---> Pulse Filament load
+  RP2040_BAT domain supply
+  Return: GND_COMMON
+  Use 22-24 AWG for signal, 20 AWG for power/return if needed
   +5V_BUS (NeoPixel strip power)
        |
        v
@@ -133,17 +150,19 @@ Power:
    source -- GND_COMMON
 
   Load positive terminal -- +5V_BUS (beam/peltier domain)
-  Optional pump load positive terminal -- +5V_BUS
+  Pump load positive terminal -- +5V_BUS
+
 
 
  Spark Filament Channels (J601 -> R601-R604 -> J603):
  Harness ID: H-SPARK
 
   RP2040_BAT domain -> spark supply source (direct GPIO channels)
-   J601 PWM bus -> R601 10Ω -> Spark Filament 1 load
-   J601 PWM bus -> R602 10Ω -> Spark Filament 2 load
-   J601 PWM bus -> R603 10Ω -> Spark Filament 3 load
-   J601 PWM bus -> R604 10Ω -> Spark Filament 4 load
+  J601 PWM bus -> R601 10Ω -> Spark Filament 1 load (GP18)
+   J601 PWM bus -> R602 10Ω -> Spark Filament 2 load (GP19)
+   J601 PWM bus -> R603 10Ω -> Spark Filament 3 load (GP20)
+   J601 PWM bus -> R604 10Ω -> Spark Filament 4 load (GP24)
+
 
 
  Prop-Maker LED Outputs (3-9W LED):
@@ -158,10 +177,14 @@ Power:
   Peltier load is sourced from the Prop-Maker 5V supply domain.
 
 
- Pump Channel (optional):
- Harness ID: H-PUMP-OPT
+Pump Channel:
+Harness ID: H-PUMP
 
-  Pump MOSFET gate is unassigned in this revision (GP8 repurposed to peltier), and firmware actions remain disabled.
+  GP1 (Pump MOSFET gate) ---> N-channel MOSFET gate
+  MOSFET drain ---> Pump negative terminal
+  MOSFET source ---> GND_COMMON
+  Pump positive terminal ---> +5V_BUS
+  Add flyback diode across pump terminals (cathode to +5V, anode to MOSFET drain)
 
 
  Power Domain Summary:

@@ -1,12 +1,16 @@
+// Pulse filament and pump assignments
+
 // =============================================================================
 // DeviceConfig.h
-// Version : V 0.3.7
+// Version : V 0.6.0
 // Centralized configuration for Orciny Device
 // =============================================================================
 #ifndef ORCINY_DEVICE_CONFIG_H
 #define ORCINY_DEVICE_CONFIG_H
 
 // Pin assignments
+#define PULSE_FILAMENT_PIN   0
+#define PUMP_PIN             1
 #define PROP_MAKER_PWR_PIN   10
 #define BEAM_RED_PIN         11
 #define BEAM_GREEN_PIN       12
@@ -17,7 +21,7 @@
 #define SPARK_PIN_4          24
 #define NEO_DATA_PIN         25
 #define NEO_PIXEL_COUNT      166
-#define NEO_COLOR_ORDER      NEO_GRBW
+#define NEO_COLOR_ORDER      NEO_GRB
 #define SW_POWER_PIN         27
 #define SW_PREV_PIN          28
 #define SW_NEXT_PIN          29
