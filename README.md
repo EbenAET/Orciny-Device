@@ -1,22 +1,28 @@
 
+
 # Orciny Device Firmware Framework
 
-Version: V 0.3.7
+Version: V 0.6.7
 
-Arduino IDE scaffold for a single-controller multi-effect device built around:
+
+Firmware and documentation for a single-controller multi-effect device built around:
 
 - Feather RP2040
 
 The RP2040 handles scene control, switch and USB command handling, NeoPixel core rendering, spark filament outputs, Prop-Maker LED control, and dual-servo claw motion through an 8-channel Servo FeatherWing (PCA9685).
 
+
 ## Folder Layout
 
-- `arduino/rp2040_fx_controller_demo`: primary RP2040 FX controller sketch for the current demo/test build
-- `arduino/rp2040_fx_starter`: minimal RP2040 starter sketch for hardware bring-up (recommended for learning)
-- `arduino/depreciated/rp2040_fx_controller`: older RP2040 controller reference sketch
-- `arduino/depreciated/m0_core_controller`: legacy split-controller reference sketch
-- `arduino/libraries/OrcinyCommon`: shared protocol and data structures
-- `arduino/libraries/OrcinyEffects`: optional pre-built effect scenes (advanced users only)
+- `arduino/Orciny_Device/Orciny_Device.ino`: Main FX controller sketch (current, recommended)
+- `arduino/Orciny_Device/DeviceConfig.h`: Centralized pin and parameter definitions
+- `arduino/Orciny_Device/Orciny_Device_Animation_Timeline.md`: Animation sequence timeline (detailed)
+- `arduino/Orciny_Device/Orciny_Device_Animation_Timeline_Visual.md`: Visual timeline (ASCII & Mermaid)
+- `arduino/Orciny_Device/Orciny_Device_Troubleshooting.md`: Physical troubleshooting guide
+- `arduino/rp2040_fx_starter`: Minimal starter sketch for hardware bring-up
+- `arduino/depreciated/`: Older and legacy sketches
+- `arduino/libraries/OrcinyCommon`: Shared protocol and data structures
+- `arduino/libraries/OrcinyEffects`: Optional pre-built effect scenes (advanced users)
 
 ## Arduino Libraries
 
@@ -37,47 +43,42 @@ Set the Arduino sketchbook location to the repo's `arduino` folder so custom lib
 `OrcinyCommon` is intended to be used from `arduino/libraries/OrcinyCommon`. Do not keep per-sketch duplicate copies of that header.
 
 
+
 ## Versioning
 
-This repository is currently at V 0.3.7. All configuration, palette, and animation headers are centralized. State-tracking variables and reset logic are robust and up-to-date as of this version. 
+This repository is currently at V 0.6.7. All configuration, palette, and animation headers are centralized. State-tracking variables and reset logic are robust and up-to-date as of this version.
 
 **This is the most current functioning and validated version. Use this as your restore point for stable builds.**
 
 
-Use this section to pick the right sketch for your task.
 
+## How To Use
 
-### `arduino/rp2040_fx_starter/rp2040_fx_starter.ino` (recommended first)
+### Main Controller (recommended)
 
-Use this when you are doing hardware bring-up, learning the framework, or creating custom scenes quickly.
+1. In Arduino IDE, set Sketchbook location to your repo's `arduino` folder.
+2. Open `arduino/Orciny_Device/Orciny_Device.ino` and select Feather RP2040.
+3. Upload and test with hardware switches.
+4. Adjust `DeviceConfig.h` for your hardware.
+5. See the animation timeline and troubleshooting docs for effect and debug details.
 
-- Simple, single-file structure
-- Physical switch control only (no command parser)
-- Four state behaviors you can edit directly:
-	- State 1: Ember-style palette scene
-	- State 2: Cyan pulse palette scene
-	- State 3: Full show palette scene
-	- State 4: AnimationPalettes-only usage example
+Physical switch behavior:
+	- SW1 (`GP27`): toggle outputs on/off
+	- SW2 (`GP28`): previous state
+	- SW3 (`GP29`): next state
+	- Hold SW1 + SW3 for 5 seconds: reset to State 1 with outputs off
 
-Edit `doState1()` through `doState4()` to customize behavior.
+### Starter Sketch (for bring-up)
 
+See `arduino/rp2040_fx_starter/rp2040_fx_starter.ino` for a minimal, single-file starter.
 
-### `arduino/rp2040_fx_controller_demo/rp2040_fx_controller_demo.ino` (advanced controller)
+### Demo Controller (legacy/advanced)
 
-Use this when you need richer runtime control and USB command-driven testing.
+See `arduino/rp2040_fx_controller_demo/rp2040_fx_controller_demo.ino` for the previous demo controller with USB serial commands.
 
-- Full standalone controller flow
-- USB serial command interface (status, overrides, palette selection, servo/neo tests)
-- Sequence-driven profile system
-- Best choice for integration/bench testing and operator workflows
+### Hybrid with OrcinyEffects
 
-
-### `arduino/libraries/OrcinyEffects/examples/OrcinyEffects_Example/OrcinyEffects_Example.ino` (hybrid quick-start)
-
-Use this when you want minimal sketch logic and pre-built scene calls.
-
-- Demonstrates the hybrid model
-- Calls library scenes (`Scene::Ember()`, `Scene::CyanPulse()`, `Scene::FullShow()`) rather than writing effect internals inline
+See `arduino/libraries/OrcinyEffects/examples/OrcinyEffects_Example/OrcinyEffects_Example.ino` for a minimal sketch using pre-built scenes.
 - Good for rapid deployment and reusable scene architecture
 
 ### Library Roles
@@ -229,9 +230,16 @@ Common serial commands:
 3. Replace scene calls or tune library scene internals in `arduino/libraries/OrcinyEffects/src/OrcinyEffects.h`.
 
 
+
+## Documentation
+
+- [Orciny_Device_Animation_Timeline.md](arduino/Orciny_Device/Orciny_Device_Animation_Timeline.md): Detailed animation sequence timeline
+- [Orciny_Device_Animation_Timeline_Visual.md](arduino/Orciny_Device/Orciny_Device_Animation_Timeline_Visual.md): Visual timeline (ASCII & Mermaid)
+- [Orciny_Device_Troubleshooting.md](arduino/Orciny_Device/Orciny_Device_Troubleshooting.md): Physical troubleshooting guide
+
 ## Notes
 
-- As of V 0.3.7, all pin/parameter definitions are centralized in `DeviceConfig.h`, and all color/animation minutiae are in `ColorPalettes.h` and `AnimationPalettes.h`.
+- As of V 0.6.7, all pin/parameter definitions are centralized in `DeviceConfig.h`, and all color/animation minutiae are in `ColorPalettes.h` and `AnimationPalettes.h`.
 - State-tracking variables are global and reset logic is robust (see `resetStateStatics()` in the main sketch).
 - Use this version as a restore point for stable, maintainable builds.
 
