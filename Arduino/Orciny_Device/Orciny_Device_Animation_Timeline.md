@@ -48,9 +48,6 @@
 - **3.5s**: Pincers go limp
 - **4s+**: Everything off, output disabled
 
-- **Pump/Filament Sequence:**
-  - **Continues:** 0–3s (same as DEMONSTRATE)
-  - **Finishes:** 3–4s (filament held full, pump off), then both off after 4s
 
 ---
 
