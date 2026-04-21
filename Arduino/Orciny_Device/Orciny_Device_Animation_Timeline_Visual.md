@@ -1,6 +1,6 @@
 # Orciny Device Animation Timeline — Visual Overview
 
-**Version:** V 0.6.7
+**Version:** V 0.7.0
 
 ---
 
