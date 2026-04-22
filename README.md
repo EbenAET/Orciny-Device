@@ -59,7 +59,7 @@ This repository contains the complete, unified firmware and documentation for th
 ## Documentation
 
 - [Animation Timeline](arduino/Orciny_Device/Orciny_Device_Animation_Timeline.md): State-by-state effect breakdown
-- [Timeline Visual](arduino/Orciny_Device/Orciny_Device_Animation_Timeline_Visual.md): ASCII/Mermaid diagram
+- [Timeline Visual](arduino/Orciny_Device/Orciny_Device_Animation_Timeline_Mermaid.md): Mermaid Gantt diagram
 - [Troubleshooting](arduino/Orciny_Device/Orciny_Device_Troubleshooting.md): Physical device troubleshooting
 
 ## Versioning & Stability
