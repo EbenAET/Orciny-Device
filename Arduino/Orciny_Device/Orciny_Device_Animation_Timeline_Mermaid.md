@@ -1,26 +1,20 @@
-<!--
-Orciny Device Animation Timeline — Mermaid Visual
-Version: V 0.1.0
--->
 
-```mermaid
-gantt
-title Orciny Device Animation Timeline
-dateFormat  s
-section INACTIVE
-Inactive           :a1, 0, 1
-section BOOT UP
-Boot Up Sequence   :a2, 1, 27
-section DEMONSTRATE
-Demonstrate        :a3, 28, 10.75
-Pump/Filament      :active, 29, 9.75
-section FAILURE
-Failure Sequence   :a4, 38.75, 4
-Pump/Filament      :active, 38.75, 3
-Filament Hold      :hold, 41.75, 1
-Pump/Filament Off  :off, 42.75, 1
-```
+# Orciny Device Animation Timeline — Visual Table
+Version: V 0.9.0
+
+| Effect   | 0–2 | 2–4 | 4–6 | 6–8 | 8–10 | 10–12 | 12–14 | 14–16 | 16–18 | 18–20 | 20–22 | 22–24 | 24–26 | 26–28 | 28–30 | 30–32 | 32–34 | 34–36 | 36–38 | 38–40 | 40–42 | 42–44 |
+|----------------|-----|-----|-----|------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
+| **Sparks**     |     | █   | █   | █    |  █    |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |       |       |
+| **Core**       |     | █   | █   | █    |  █    |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |   █   |       |       |
+| **Pincers**    |     |     |     |      |       |       |       |       |       |       |       |       |       |       |   █   |   █   |   █   |   █   |   █   |   █   |       |
+| **Beam**       |     |     |     |      |       |       |       |       |       |       |       |       |       |       |   █   |   █   |   █   |   █   |   █   |       |       |
+| **Pump**       |     |     |     |      |       |       |       |       |       |       |       |       |       |       |       |       |       |       |   █   |   █   |   █   |
+||=============||=======||==========||=============||=============||=============||
+| Inactive || Boot Up || Demonstration || Device Failure || || |
 
 ---
 
-For details, see the main Animation Timeline document.
+**Legend:**
+- Each █ represents the effect being active during that time segment.
+- Sequences are grouped by the leftmost column.
+- For details, see the main Animation Timeline document.

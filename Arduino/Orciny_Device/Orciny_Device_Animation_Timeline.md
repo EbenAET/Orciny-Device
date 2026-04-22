@@ -1,6 +1,6 @@
 # Orciny Device Animation Timeline
 
-**Version:** V 0.7.0  
+**Version:** V 0.9.0  
 **Board:** Adafruit Feather RP2040  
 **Wings:** Prop-Maker FeatherWing, 8-Channel Servo FeatherWing (PCA9685)
 
@@ -16,11 +16,12 @@
 
 ### State 1: BOOT UP (Sequence 1)
 - **0–4s**: Sparse sparks; cyan chases (slow to fast)
-- **4–10s**: Sparks continue; cyan chases ramp up
-- **10–20s**: Orange chases begin; pincers go rigid
-- **20–24s**: Core pulses cyan/orange; beam fades to golden
-- **24–28s**: Servo 1 oscillates; both servos go limp at 28s
-- **28s+**: Transition to Demonstrate state
+- **4–14s**: Sparks continue; cyan chases ramp up
+- **14–22s**: Orange chases begin; pincers go rigid
+- **22–24s**: Core pulses cyan/orange; beam fades to golden
+- **24–26s**: Servo 1 oscillates
+- **26–32s**: Both servos limp
+- **32s+**: Transition to Demonstrate state
 
 ---
 

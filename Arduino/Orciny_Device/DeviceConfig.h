@@ -1,6 +1,6 @@
 // =============================================================================
 // DeviceConfig.h
-// Version : V 0.7.0
+// Version : V 0.9.0
 // Centralized pin and parameter definitions for Orciny Device
 // =============================================================================
 #ifndef ORCINY_DEVICE_CONFIG_H
@@ -25,7 +25,7 @@
 #define SW_NEXT_PIN          29  // SW3
 
 // Tuning parameters
-#define DEBOUNCE_MS          30    // ms debounce for switches
+#define DEBOUNCE_MS          40    // ms debounce for switches
 #define RESET_HOLD_MS        5000  // ms to hold SW1+SW3 for reset
 #define SERVO_I2C_ADDR       0x40  // PCA9685 I2C address
 #define SERVO_PULSE_MIN      120   // Servo min pulse (0 deg)

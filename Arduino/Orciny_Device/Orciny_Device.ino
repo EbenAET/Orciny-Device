@@ -4,7 +4,7 @@
 
 // =============================================================================
 // Orciny_Device.ino
-// Version : V 0.7.0
+// Version : V 0.9.0
 // Orciny Device — FX Controller Main Program
 // Board: Adafruit Feather RP2040
 // Wings: Prop-Maker FeatherWing, 8-Channel Servo FeatherWing (PCA9685)
@@ -275,9 +275,12 @@ void doStateInactive() {
 // --- STATE: BOOT UP (Sequence 1) ---------------------------------------------
 // Timeline (approximate):
 //   0–4s    : Sparse sparks; cyan chases, slow to fast
-//   4–10s   : Sparks continue; cyan chases ramp up
-//   10–20s  : Orange chases begin; pincers go rigid
-//   20s+    : Core pulses cyan/orange; beam fades to golden; servo 1 oscillates, then both limp
+//   4–14s   : Sparks continue; cyan chases ramp up
+//   14–22s  : Orange chases begin; pincers go rigid
+//   22–24s  : Core pulses cyan/orange; beam fades to golden
+//   24–26s  : Servo 1 oscillates
+//   26–32s  : Both servos limp
+//   32s+    : Transition to Demonstrate state
 
 void doStateBootUp() {
   static uint32_t &stateEnteredMs  = doStateBootUp_stateEnteredMs;
@@ -299,15 +302,19 @@ void doStateBootUp() {
     pincersRigid   = false;
     servo1Active   = false;
     servoLimp      = false;
+    // Visually reset NeoPixel chase to start at pixel 0
+    neoPixelSetAll(0, 0, 0, 0);
+    strip.setPixelColor(0, strip.Color(0, 180, 230, 0)); // Example: cyan
+    strip.show();
   }
 
   uint32_t elapsed = now - stateEnteredMs;
 
-  // --- Sparks: present 0-4s, 4-10s, 18-24s, 24s+ ---
-  if ((elapsed < 4000 || (elapsed >= 4000 && elapsed < 10000) ||
-       (elapsed >= 18000 && elapsed < 28000) || elapsed >= 28000)) {
+  // --- Sparks: present 0-4s, 4-14s, 22-32s, 32s+ ---
+  if ((elapsed < 4000 || (elapsed >= 4000 && elapsed < 14000) ||
+       (elapsed >= 22000 && elapsed < 32000) || elapsed >= 32000)) {
     if (now >= nextSparkMs) {
-      uint8_t count = (elapsed >= 28000) ? random(1, 5) : random(2, 4);
+      uint8_t count = (elapsed >= 32000) ? random(1, 5) : random(2, 4);
       for (uint8_t i = 0; i < count; i++) {
         const uint8_t pins[] = {SPARK_PIN_1, SPARK_PIN_2, SPARK_PIN_3, SPARK_PIN_4};
         analogWrite(pins[random(0, 4)], random(160, 240));
@@ -323,15 +330,15 @@ void doStateBootUp() {
   // No per-phase Serial prints here
   // Chase length grows from 5 to 12 pixels over time; interval shrinks.
   {
-    uint16_t chaseInterval = (elapsed < 5000)  ? 600 :
-                             (elapsed < 10000) ? 400 :
-                             (elapsed < 15000) ? 250 : 160;
-    uint8_t  chaseLen      = (elapsed < 5000)  ? 5 :
-                             (elapsed < 10000) ? 7 : 10;
+    uint16_t chaseInterval = (elapsed < 5000)  ? 200 :
+                             (elapsed < 14000) ? 150 :
+                             (elapsed < 19000) ? 100 : 90;
+    uint8_t  chaseLen      = (elapsed < 5000)  ? 10 :
+                             (elapsed < 14000) ? 15 : 20;
 
     if (now >= nextChaseMs) {
-      // After 10s, randomly pick cyan or orange
-      bool useOrange = (elapsed >= 10000) && (random(0, 2) == 0);
+      // After 14s, randomly pick cyan or orange
+      bool useOrange = (elapsed >= 14000) && (random(0, 2) == 0);
       if (useOrange) {
         neoChase(220, 70, 8, chaseLen, 18);
       } else {
@@ -341,22 +348,22 @@ void doStateBootUp() {
     }
   }
 
-  // --- Pincers rigid ~8s ---
-  if (elapsed >= 8000 && !pincersRigid) {
+  // --- Pincers rigid ~12s ---
+  if (elapsed >= 12000 && !pincersRigid) {
     Serial.println(F("BootUp: Pincers rigid"));
     setServo(0, 71);  // Midpoint = rigid hold
     setServo(1, 71);
     pincersRigid = true;
   }
 
-  // --- Beam: fade up to golden at ~30% after ~20s ---
-  if (elapsed >= 20000 && elapsed < 24000) {
+  // --- Beam: fade up to golden at ~30% after ~24s ---
+  if (elapsed >= 24000 && elapsed < 28000) {
     Serial.println(F("BootUp: Beam fading up to golden"));
-  } else if (elapsed >= 24000) {
+  } else if (elapsed >= 28000) {
     Serial.println(F("BootUp: Beam golden hold"));
   }
-  if (elapsed >= 20000) {
-    uint32_t fadeElapsed = elapsed - 20000;
+  if (elapsed >= 24000) {
+    uint32_t fadeElapsed = elapsed - 24000;
     uint8_t  level = (fadeElapsed >= 4000) ? 76 : map(fadeElapsed, 0, 4000, 0, 76);
     setBeamPalette(STATE_BOOT_BEAM_PALETTE, level);
   } else {
@@ -365,14 +372,14 @@ void doStateBootUp() {
     analogWrite(BEAM_BLUE_PIN, 0);
   }
 
-  // --- Servo 1 slow oscillation ~22s; both go limp ~28s ---
-  if (elapsed >= 28000 && !servoLimp) {
+  // --- Servo 1 slow oscillation ~26s; both go limp ~32s ---
+  if (elapsed >= 32000 && !servoLimp) {
     Serial.println(F("BootUp: Servos limp"));
     servoIdle(0);
     servoIdle(1);
     servoLimp    = true;
     servo1Active = false;
-  } else if (elapsed >= 22000 && !servoLimp) {
+  } else if (elapsed >= 26000 && !servoLimp) {
     Serial.println(F("BootUp: Servo 1 oscillation"));
     servo1Active = true;
   }
@@ -385,8 +392,8 @@ void doStateBootUp() {
     nextServoMs = now + 40;   // Slow sweep
   }
 
-  // After 28s: transition to Demonstrate
-  if (elapsed >= 28000) {
+  // After 32s: transition to Demonstrate
+  if (elapsed >= 32000) {
     // Transition to Demonstrate state
     stateEnteredMs = 0; // Reset for next entry
     currentState = STATE_DEMO;
@@ -397,14 +404,16 @@ void doStateBootUp() {
 
 // --- STATE: DEMONSTRATE (Sequence 2) -----------------------------------------
 // Timeline (approximate):
-//   0s     : Core flashing cyan/orange; beam brightens to orange 90%
+//   0s     : Core flashes cyan/orange; beam brightens to orange (90%)
 //   0.5s   : Beam fades to teal; both servos rigid
-//   1.5s   : Servos random movement, slow then frantic
-//   2s     : Sparks start; magenta chases start on core
+//   1s     : Pump and filament pulse start
+//   1.5s   : Servos random movement (slow, then frantic)
+//   2s     : Sparks start; magenta chases on core
 //   3–7s   : Beam pulses teal/orange with accelerating frequency
-//   7s     : Core all-off; beam turns magenta at 30%
+//   7s     : Core all-off; beam turns magenta (30%)
 //   7.25s  : Beam magenta fades to full; pincers freeze
 //   9.5s   : Pincers freeze up
+//   10.75s : Transition to Device Failure state
 //   Loop
 
 void doStateDemo() {
@@ -820,10 +829,31 @@ void neoChase(uint8_t r, uint8_t g, uint8_t b, uint8_t len, uint32_t stepMs) {
   for (int i = 0; i < strip.numPixels(); i++) {
     strip.setPixelColor(i, 0);
   }
+  // Main chase body: fade from head (brightest) to tail (dimmest)
   for (int i = 0; i < len; i++) {
     int px = head - i;
     if (px >= 0 && px < strip.numPixels()) {
       uint8_t fade = map(i, 0, len, 255, 30);
+      strip.setPixelColor(px, strip.Color((r * fade) / 255,
+                                          (g * fade) / 255,
+                                          (b * fade) / 255, 0));
+    }
+  }
+  // Fade-in: 3 pixels before the head (ascending brightness)
+  for (int j = 1; j <= 3; j++) {
+    int px = head + j;
+    if (px >= 0 && px < strip.numPixels()) {
+      uint8_t fade = map(j, 3, 0, 30, 255); // 3: dimmest, 1: brightest
+      strip.setPixelColor(px, strip.Color((r * fade) / 255,
+                                          (g * fade) / 255,
+                                          (b * fade) / 255, 0));
+    }
+  }
+  // Fade-out: 3 pixels after the tail (descending brightness)
+  for (int j = 1; j <= 3; j++) {
+    int px = head - len - j + 1;
+    if (px >= 0 && px < strip.numPixels()) {
+      uint8_t fade = map(j, 1, 3, 30, 0); // 1: dimmest, 3: off
       strip.setPixelColor(px, strip.Color((r * fade) / 255,
                                           (g * fade) / 255,
                                           (b * fade) / 255, 0));
@@ -982,5 +1012,4 @@ void handleSwitches(uint32_t now) {
     }
   }
 
-  // --- SW3: (old logic removed, now handled above) ---
-}
+ }
