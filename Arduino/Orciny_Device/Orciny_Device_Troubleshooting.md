@@ -1,6 +1,6 @@
 # Orciny Device Physical Troubleshooting Guide
 
-**Version:** V 0.7.0
+**Version:** V 0.9.0
 
 ---
 

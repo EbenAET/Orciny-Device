@@ -7,6 +7,8 @@
 ---
 
 ## Animation Sequence Timeline
+- **Program runtime:** Approximately 47 seconds from start of Boot Up to end of Device Failure
+	- Performer is able to pause the sequence to slow it down or jump to Device Failure if it needs to finish faster
 
 ### State 0: INACTIVE (Sequence 0)
 - **0s+**: Sparse random single sparks every 3–5 seconds
@@ -54,7 +56,7 @@
 ## Notes
 - **Physical Controls:**
   - SW1: Toggle all outputs on/off
-  - SW2: Step backward through states
-  - SW3: Step forward through states
+  - SW2: Play/Pause
+  - SW3: Jump to Device Failure
   - SW1 + SW3 held 5s: Reset to State 1, outputs off
 - **See** `Orciny_Device.ino` for detailed implementation.

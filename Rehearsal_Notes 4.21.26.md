@@ -1,4 +1,4 @@
-<!-- Device Rehearsal Notes | V 0.1.0 | Updated: 2026-04-21 -->
+<!-- Device Rehearsal Notes | V 1.0.0 (Show Release) | Updated: 2026-04-21 -->
 
 # Device Rehearsal Notes
 
@@ -49,4 +49,4 @@
     - Package design, instruct backstage and Emery on how to upload, debug, etc
 ---
 
-*Version: V 0.1.0*
+*Version: V 1.0.0 (Show Release)*

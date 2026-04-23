@@ -50,7 +50,7 @@ void resetAllStateVars() {
 }
 // =============================================================================
 // rp2040_fx_starter.ino
-// Version : V 0.1.0
+// Version : V 1.0.0 (Show Release)
 // Orciny Device — Plug-and-Play FX Starter Template
 // Board : Adafruit Feather RP2040
 // Wings : Prop-Maker FeatherWing + 8-Channel Servo FeatherWing (PCA9685)

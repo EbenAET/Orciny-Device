@@ -1,4 +1,4 @@
-# V 0.1.0
+# V 1.0.0 (Show Release)
 import adsk.core
 import adsk.fusion
 import traceback
