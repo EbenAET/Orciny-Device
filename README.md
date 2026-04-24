@@ -1,4 +1,4 @@
-# Orciny Device Unified Firmware (V 0.9.0)
+# Orciny Device Unified Firmware (V 1.0.0) ~ Show Release
 
 ## Overview
 
